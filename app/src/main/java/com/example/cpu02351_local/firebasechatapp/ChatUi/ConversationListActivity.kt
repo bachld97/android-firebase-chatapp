@@ -21,7 +21,7 @@ class ConversationListActivity :
     private val networkDataSource = FirebaseNetworkDataSource()
     private val chatController = ChatController(networkDataSource)
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mAdapter: ConversationListAdapter
+    private var mAdapter: ConversationListAdapter = ConversationListAdapter(ArrayList())
     private lateinit var mFloatingActionButton : FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +30,7 @@ class ConversationListActivity :
         mRecyclerView = findViewById(R.id.conversationListContainer)
         mFloatingActionButton = findViewById(R.id.fabAddConversation)
         mRecyclerView.layoutManager = LinearLayoutManager(this)
+        mRecyclerView.adapter = mAdapter
     }
 
     override fun onStart() {
@@ -40,9 +41,6 @@ class ConversationListActivity :
         }
     }
 
-    override fun addOrUpdateConversation(createdCon: Conversation) {
-        mAdapter.addOrUpdateConversation(createdCon)
-    }
 
     private fun loadConversations() {
         chatController.loadConversations(this, "user1")
@@ -53,9 +51,7 @@ class ConversationListActivity :
     }
 
     override fun onSuccessfulLoadConversations(result: ArrayList<Conversation>) {
-        // define and set adapter
-        mAdapter = ConversationListAdapter(result)
-        mRecyclerView.adapter = mAdapter
+       mAdapter.updateList(result)
     }
 
     override fun onFailLoadConversation(errorMessage: String?) {

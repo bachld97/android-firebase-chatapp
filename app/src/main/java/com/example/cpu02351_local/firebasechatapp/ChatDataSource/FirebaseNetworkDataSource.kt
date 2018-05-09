@@ -69,13 +69,10 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                 mCons.add(con)
                 mDisplayUnit.onSuccessfulLoadConversations(mCons)
             }
-
             override fun onCancelled(p0: DatabaseError?) {
                 // Do nothing :D
             }
         })
-
-
         return con
     }
 
@@ -90,10 +87,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         val newCon = HashMap<String, String>()
         newCon[CONVERSATION_PARTICIPANT] = participantString
         newCon[CONVERSATION_TIME] = System.currentTimeMillis().toString()
-        val createdCon = Conversation(uuid)
-        createdCon.createdTime = newCon[CONVERSATION_TIME]
-        createdCon.participantIds = participants
-        mDisplayUnit.addOrUpdateConversation(createdCon)
+        Conversation(uuid)
         reference.child("$CONVERSATIONS/$uuid").updateChildren(newCon as Map<String, Any>?,
                 { databaseError, _ ->
                     if (databaseError != null) {
@@ -117,7 +111,6 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                     data.value = u
                 } else {
                 }
-
                 return Transaction.success(data)
             }
 
@@ -125,4 +118,6 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
             }
         })
     }
+
+
 }

@@ -7,5 +7,4 @@ interface ListConversationDisplayUnit {
     fun getDisplayThread() : Scheduler
     fun onSuccessfulLoadConversations(result: ArrayList<Conversation>)
     fun onFailLoadConversation(errorMessage: String?)
-    fun addOrUpdateConversation(createdCon: Conversation)
 }

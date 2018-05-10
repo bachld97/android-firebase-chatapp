@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="message"
+            type="com.example.cpu02351_local.firebasechatapp.ChatCore.model.Message"/>
+    </data>
+
+    <LinearLayout
+        android:background="#C0C0C0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_margin="4dp"
+        android:padding="4dp"
+        android:layout_height="72dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:text="@{message.content}"
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
+
+    </LinearLayout>
+</layout>

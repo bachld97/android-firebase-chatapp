@@ -5,6 +5,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.User
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListConversationDisplayUnit
+import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListMessageDisplayUnit
 import com.google.firebase.database.*
 import java.util.*
 
@@ -16,21 +17,24 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         const val CONVERSATION_PARTICIPANT = "participants"
         const val CONVERSATION_TIME = "at_time"
         const val CHILD_CONVERSATION_ID = "conversations"
+        const val MESSAGES = "messages"
+        const val CHILD_MESSAGE_ID = "messages"
     }
 
-
-
-
-
-
     private val mCons = ArrayList<Conversation>()
-    private lateinit var mDisplayUnit : ListConversationDisplayUnit
+    private val mMes = ArrayList<Message>()
+    private lateinit var mListConversationDisplayUnit : ListConversationDisplayUnit
+    private lateinit var mListMessageDisplayUnit: ListMessageDisplayUnit
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference!!
 
+    override fun loadUserDetail(userId: String) : User {
+        TODO()
+    }
+
     override fun loadConversationList(displayUnit: ListConversationDisplayUnit, userId: String) {
-        mDisplayUnit = displayUnit
-        reference.child(USERS).child(userId).addValueEventListener(object : ValueEventListener {
+        mListConversationDisplayUnit = displayUnit
+        reference.child("$USERS/$userId").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val tem = snapshot?.child(CHILD_CONVERSATION_ID)!!.getValue(String::class.java)
                 val conIds = tem?.split(" ")
@@ -47,27 +51,26 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
             }
 
             override fun onCancelled(error: DatabaseError?) {
-                mDisplayUnit.onFailLoadConversation(error?.message)
+                mListConversationDisplayUnit.onFailLoadConversation(error?.message)
             }
 
         })
     }
-
-    override fun addConversation(displayUnit: ListConversationDisplayUnit, participants: List<String>) {
-        createNewConversation(participants)
-    }
-    override fun loadUserDetail(userId: String) : User {
-        TODO()
-    }
-
     override fun loadConversation(conversationId: String): Conversation {
         val con = Conversation(conversationId)
         reference.child(CONVERSATIONS).child(conversationId).addListenerForSingleValueEvent(object : ValueEventListener {
+
             override fun onDataChange(snapshot: DataSnapshot?) {
                 con.participantIds = snapshot?.child(CONVERSATION_PARTICIPANT)?.getValue(String::class.java)?.split(" " )
                 con.createdTime = snapshot?.child(CONVERSATION_TIME)?.getValue(String::class.java)
-                mCons.add(con)
-                mDisplayUnit.onSuccessfulLoadConversations(mCons)
+
+                if (!mCons.contains(con)) {
+                    mCons.add(con)
+                } else {
+                    val pos = mCons.indexOf(con)
+                    mCons[pos] = con
+                }
+                mListConversationDisplayUnit.onSuccessfulLoadConversation(mCons)
             }
             override fun onCancelled(p0: DatabaseError?) {
                 // Do nothing :D
@@ -75,11 +78,9 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         })
         return con
     }
-
-    override fun loadMessage(messageId: String): Message {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun addConversation(displayUnit: ListConversationDisplayUnit, participants: List<String>) {
+        createNewConversation(participants)
     }
-
 
     private fun createNewConversation(participants: List<String>): String {
         val participantString = participants.joinToString(" ")
@@ -87,7 +88,11 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         val newCon = HashMap<String, String>()
         newCon[CONVERSATION_PARTICIPANT] = participantString
         newCon[CONVERSATION_TIME] = System.currentTimeMillis().toString()
-        Conversation(uuid)
+
+        val conObj = FirebaseUtils.convertToConversation(uuid, newCon)
+        mCons.add(conObj)
+        mListConversationDisplayUnit.onSuccessfulLoadConversation(mCons)
+
         reference.child("$CONVERSATIONS/$uuid").updateChildren(newCon as Map<String, Any>?,
                 { databaseError, _ ->
                     if (databaseError != null) {
@@ -107,7 +112,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                 Log.d("add_or_update", data.toString())
                 val u = data?.getValue<User>(User::class.java)
                 if (u != null) {
-                    u.conversations = uuid + " " + u.conversations
+                    u.conversations = (uuid + " " + u.conversations).trim()
                     data.value = u
                 } else {
                 }
@@ -120,4 +125,77 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     }
 
 
+    override fun loadMessageList(displayUnit: ListMessageDisplayUnit, conversationId: String) {
+        mListMessageDisplayUnit = displayUnit
+        reference.child("$CONVERSATIONS/$conversationId/$CHILD_MESSAGE_ID").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot?) {
+
+                val tem = snapshot?.value as Map<String, *>
+                tem.forEach { msgId, msgContent ->
+                    val msg = Message(msgId)
+                    val msgMap = msgContent as Map<String, *>
+                    msg.atTime = msgMap["at_time"] as Long
+                    msg.byUser = msgMap["by_user"] as String
+                    msg.content = msgMap["content"] as String
+                    mMes.addIfNotExist(msg)
+                    displayUnit.onSuccessfulLoadMessage(mMes)
+                }
+
+                /*
+                val tem = snapshot?.child(CHILD_MESSAGE_ID)!!.getValue(String::class.java)
+                val mesIds = tem?.split(" ")
+
+                if (mesIds == null) {
+                    displayUnit.onFailLoadMessage("Empty")
+                    return
+                }
+
+                mCons.clear()
+                for (id in mesIds) {
+                    loadMessage(id)
+                }
+                */
+            }
+
+            override fun onCancelled(p0: DatabaseError?) {
+                // Err
+            }
+        })
+    }
+
+    override fun loadMessage(messageId: String): Message {
+        val mes = Message(messageId)
+        reference.child("$MESSAGES/$messageId").addListenerForSingleValueEvent(object : ValueEventListener {
+
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                // con.participantIds = snapshot?.child(CONVERSATION_PARTICIPANT)?.getValue(String::class.java)?.split(" " )
+                // con.createdTime = snapshot?.child(CONVERSATION_TIME)?.getValue(String::class.java)
+
+                if (!mMes.contains(mes)) {
+                    mMes.add(mes)
+                } else {
+                    val pos = mMes.indexOf(mes)
+                    mMes[pos] = mes
+                }
+                 mListMessageDisplayUnit.onSuccessfulLoadMessage(mMes)
+            }
+            override fun onCancelled(p0: DatabaseError?) {
+                // Do nothing :D
+            }
+        })
+        return mes
+    }
+
+    override fun dispose() {
+
+    }
+}
+
+private fun ArrayList<Message>.addIfNotExist(msg: Message) {
+    if (!this.contains(msg)) {
+        this.add(msg)
+    } else {
+        val pos = this.indexOf(msg)
+        this[pos] = msg
+    }
 }

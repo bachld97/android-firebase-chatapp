@@ -5,6 +5,6 @@ import io.reactivex.Scheduler
 
 interface ListConversationDisplayUnit {
     fun getDisplayThread() : Scheduler
-    fun onSuccessfulLoadConversations(result: ArrayList<Conversation>)
+    fun onSuccessfulLoadConversation(result: ArrayList<Conversation>)
     fun onFailLoadConversation(errorMessage: String?)
 }

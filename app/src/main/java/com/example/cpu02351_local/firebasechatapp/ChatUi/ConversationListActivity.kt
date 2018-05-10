@@ -13,6 +13,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseNetwork
 import com.example.cpu02351_local.firebasechatapp.R
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
+import java.util.*
 
 class ConversationListActivity :
         ListConversationDisplayUnit,
@@ -21,7 +22,7 @@ class ConversationListActivity :
     private val networkDataSource = FirebaseNetworkDataSource()
     private val chatController = ChatController(networkDataSource)
     private lateinit var mRecyclerView: RecyclerView
-    private var mAdapter: ConversationListAdapter = ConversationListAdapter(ArrayList())
+    private lateinit var mAdapter: ConversationListAdapter
     private lateinit var mFloatingActionButton : FloatingActionButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,6 +31,7 @@ class ConversationListActivity :
         mRecyclerView = findViewById(R.id.conversationListContainer)
         mFloatingActionButton = findViewById(R.id.fabAddConversation)
         mRecyclerView.layoutManager = LinearLayoutManager(this)
+        mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView)
         mRecyclerView.adapter = mAdapter
     }
 
@@ -41,6 +43,10 @@ class ConversationListActivity :
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        chatController.dispose()
+    }
 
     private fun loadConversations() {
         chatController.loadConversations(this, "user1")
@@ -50,8 +56,10 @@ class ConversationListActivity :
         return AndroidSchedulers.mainThread()
     }
 
-    override fun onSuccessfulLoadConversations(result: ArrayList<Conversation>) {
-       mAdapter.updateList(result)
+    override fun onSuccessfulLoadConversation(result: ArrayList<Conversation>) {
+        result.sortWith(Comparator { c1, c2 -> c2.createdTime!!.compareTo(c1.createdTime!!)
+        })
+        mAdapter.updateList(result)
     }
 
     override fun onFailLoadConversation(errorMessage: String?) {

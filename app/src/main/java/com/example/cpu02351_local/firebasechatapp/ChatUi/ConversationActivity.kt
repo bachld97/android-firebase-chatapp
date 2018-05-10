@@ -13,6 +13,7 @@ import com.example.cpu02351_local.firebasechatapp.R
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_conversation.*
+import java.util.*
 
 class ConversationActivity :
         ListMessageDisplayUnit,
@@ -28,6 +29,7 @@ class ConversationActivity :
     }
 
     override fun onSuccessfulLoadMessage(result: ArrayList<Message>) {
+        result.sortWith(Comparator { m1, m2 -> m1.atTime.compareTo(m2.atTime) })
         mAdapter.updateList(result)
     }
 

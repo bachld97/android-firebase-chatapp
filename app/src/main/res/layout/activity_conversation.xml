@@ -19,11 +19,13 @@
         android:layout_height="wrap_content">
 
         <EditText
+            android:layout_toLeftOf="@id/sendMes"
             android:id="@+id/mess"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
+            android:layout_alignParentEnd="true"
             android:id="@+id/sendMes"
             android:text="Send"
             android:layout_width="wrap_content"

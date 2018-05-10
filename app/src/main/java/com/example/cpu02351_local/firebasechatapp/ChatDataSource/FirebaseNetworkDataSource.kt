@@ -28,6 +28,10 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference!!
 
+    init {
+        reference.keepSynced(true)
+    }
+
     override fun loadUserDetail(userId: String) : User {
         TODO()
     }
@@ -129,8 +133,11 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         mListMessageDisplayUnit = displayUnit
         reference.child("$CONVERSATIONS/$conversationId/$CHILD_MESSAGE_ID").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
+                if (snapshot?.value == null) {
+                    return
+                }
 
-                val tem = snapshot?.value as Map<String, *>
+                val tem = snapshot.value as Map<String, *>
                 tem.forEach { msgId, msgContent ->
                     val msgMap = msgContent as Map<String, *>
                     val msg = FirebaseUtils.convertToMessage(msgMap, msgId)

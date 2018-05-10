@@ -25,16 +25,16 @@ class ConversationActivity :
         chatController.dispose()
     }
 
-    override fun getDisplayThread(): Scheduler {
+    override fun displayThread(): Scheduler {
         return AndroidSchedulers.mainThread()
     }
 
-    override fun onSuccessfulLoadMessage(result: ArrayList<Message>) {
+    override fun onDataLoaded(result: ArrayList<Message>) {
         result.sortWith(Comparator { m1, m2 -> m1.atTime.compareTo(m2.atTime) })
         mAdapter.updateList(result)
     }
 
-    override fun onFailLoadMessage(errorMessage: String?) {
+    override fun onDataError(errorMessage: String?) {
         // Should introduce an error code here :)
         // Do nothing for now :D
     }

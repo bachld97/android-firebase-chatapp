@@ -36,17 +36,17 @@ class ConversationListFragment :
     private lateinit var mAdapter: ConversationListAdapter
     private lateinit var mFloatingActionButton : FloatingActionButton
 
-    override fun getDisplayThread(): Scheduler {
+    override fun displayThread(): Scheduler {
         return AndroidSchedulers.mainThread()
     }
 
-    override fun onSuccessfulLoadConversation(result: ArrayList<Conversation>) {
+    override fun onDataLoaded(result: ArrayList<Conversation>) {
         result.sortWith(Comparator {c1, c2 ->
             c2.createdTime!!.compareTo(c1.createdTime!!)})
         mAdapter.updateList(result)
     }
 
-    override fun onFailLoadConversation(errorMessage: String?) {
+    override fun onDataError(errorMessage: String?) {
         // Do nothing for now
     }
 

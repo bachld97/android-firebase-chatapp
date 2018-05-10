@@ -4,7 +4,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Conversation
 import io.reactivex.Scheduler
 
 interface ListConversationDisplayUnit {
-    fun getDisplayThread() : Scheduler
-    fun onSuccessfulLoadConversation(result: ArrayList<Conversation>)
-    fun onFailLoadConversation(errorMessage: String?)
+    fun displayThread() : Scheduler
+    fun onDataLoaded(result: ArrayList<Conversation>)
+    fun onDataError(errorMessage: String?)
 }

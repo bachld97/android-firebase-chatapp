@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
 import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListContactDisplayUnit
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.User
@@ -41,6 +42,12 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         TODO()
     }
 
+    override fun addUser(displayUnit: ListContactDisplayUnit, user: User) {
+        TODO()
+    }
+
+
+
     override fun loadConversationList(displayUnit: ListConversationDisplayUnit, userId: String) {
         mListConversationDisplayUnit = displayUnit
         reference.child("$USERS/$userId").addValueEventListener(object : ValueEventListener {
@@ -49,7 +56,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                 val conIds = tem?.split(" ")
 
                 if (conIds == null) {
-                    displayUnit.onFailLoadConversation("Error")
+                    displayUnit.onDataError("Error")
                     return
                 }
 
@@ -60,7 +67,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
             }
 
             override fun onCancelled(error: DatabaseError?) {
-                mListConversationDisplayUnit.onFailLoadConversation(error?.message)
+                mListConversationDisplayUnit.onDataError(error?.message)
             }
 
         })
@@ -79,7 +86,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                     val pos = mCons.indexOf(con)
                     mCons[pos] = con
                 }
-                mListConversationDisplayUnit.onSuccessfulLoadConversation(mCons)
+                mListConversationDisplayUnit.onDataLoaded(mCons)
             }
             override fun onCancelled(p0: DatabaseError?) {
                 // Do nothing :D
@@ -100,7 +107,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
 
         val conObj = FirebaseUtils.convertToConversation(uuid, newCon)
         mCons.add(conObj)
-        mListConversationDisplayUnit.onSuccessfulLoadConversation(mCons)
+        mListConversationDisplayUnit.onDataLoaded(mCons)
 
         reference.child("$CONVERSATIONS/$uuid").updateChildren(newCon as Map<String, Any>?,
                 { databaseError, _ ->
@@ -149,7 +156,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                     val msgMap = msgContent as Map<String, *>
                     val msg = FirebaseUtils.convertToMessage(msgMap, msgId)
                     mMes.addIfNotExist(msg)
-                    displayUnit.onSuccessfulLoadMessage(mMes)
+                    displayUnit.onDataLoaded(mMes)
                 }
 
                 /*
@@ -157,7 +164,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                 val mesIds = tem?.split(" ")
 
                 if (mesIds == null) {
-                    displayUnit.onFailLoadMessage("Empty")
+                    displayUnit.onDataError("Empty")
                     return
                 }
 
@@ -188,7 +195,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                     val pos = mMes.indexOf(mes)
                     mMes[pos] = mes
                 }
-                 mListMessageDisplayUnit.onSuccessfulLoadMessage(mMes)
+                 mListMessageDisplayUnit.onDataLoaded(mMes)
             }
             override fun onCancelled(p0: DatabaseError?) {
                 // Do nothing :D
@@ -206,13 +213,15 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     override fun dispose() {
 
     }
-}
 
-private fun ArrayList<Message>.addIfNotExist(msg: Message) {
-    if (!this.contains(msg)) {
-        this.add(msg)
-    } else {
-        val pos = this.indexOf(msg)
-        this[pos] = msg
+
+    private fun ArrayList<Message>.addIfNotExist(msg: Message) {
+        if (!this.contains(msg)) {
+            this.add(msg)
+        } else {
+            val pos = this.indexOf(msg)
+            this[pos] = msg
+        }
     }
 }
+

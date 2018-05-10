@@ -1,0 +1,1 @@
+[Fatal Error] :9:9: Attribute name "android:id" associated with an element type "android.support.v4.view.ViewPager" must be followed by the ' = ' character.

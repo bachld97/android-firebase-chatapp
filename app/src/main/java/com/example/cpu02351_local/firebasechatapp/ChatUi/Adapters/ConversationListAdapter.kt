@@ -1,13 +1,13 @@
-package com.example.cpu02351_local.firebasechatapp.ChatUi
+package com.example.cpu02351_local.firebasechatapp.ChatUi.Adapters
 
 import android.content.Intent
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.ChatUi.ConversationActivity
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationListBinding
 
 

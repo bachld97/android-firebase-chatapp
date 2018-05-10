@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatUi
+package com.example.cpu02351_local.firebasechatapp.ChatUi.Adapters
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater

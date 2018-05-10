@@ -32,6 +32,11 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         reference.keepSynced(true)
     }
 
+
+    override fun loadContact(userId: String): User {
+        TODO()
+    }
+
     override fun loadUserDetail(userId: String) : User {
         TODO()
     }
@@ -129,6 +134,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     }
 
 
+    @Suppress("UNCHECKED_CAST")
     override fun loadMessageList(displayUnit: ListMessageDisplayUnit, conversationId: String) {
         mListMessageDisplayUnit = displayUnit
         reference.child("$CONVERSATIONS/$conversationId/$CHILD_MESSAGE_ID").addValueEventListener(object : ValueEventListener {
@@ -136,6 +142,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
                 if (snapshot?.value == null) {
                     return
                 }
+
 
                 val tem = snapshot.value as Map<String, *>
                 tem.forEach { msgId, msgContent ->

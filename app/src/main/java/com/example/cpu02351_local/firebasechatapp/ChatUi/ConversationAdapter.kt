@@ -25,8 +25,8 @@ class ConversationAdapter(private val mMessages: ArrayList<Message>, private val
     fun updateList(result: ArrayList<Message>) {
         val oldSize = mMessages.size
         mMessages.clear()
-        mMessages.addAll(result)
-        notifyItemRangeInserted(oldSize, mMessages.size)
+        mMessages.addAll(result.reversed())
+        notifyItemRangeInserted(0, mMessages.size - oldSize)
         // notifyDataSetChanged()
     }
 

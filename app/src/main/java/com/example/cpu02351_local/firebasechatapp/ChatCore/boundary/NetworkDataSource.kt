@@ -12,6 +12,7 @@ interface NetworkDataSource {
     fun addConversation(displayUnit: ListConversationDisplayUnit, participants: List<String>)
 
     fun loadMessageList(displayUnit: ListMessageDisplayUnit, conversationId: String)
+    fun addMessage(displayUnit: ListMessageDisplayUnit, conversationId: String, newMess: Message)
     fun loadMessage(messageId: String): Message
 
     fun dispose()

@@ -12,6 +12,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseNetwork
 import com.example.cpu02351_local.firebasechatapp.R
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
+import kotlinx.android.synthetic.main.activity_conversation.*
 
 class ConversationActivity :
         ListMessageDisplayUnit,
@@ -43,8 +44,8 @@ class ConversationActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_conversation_list)
-        mRecyclerView = findViewById(R.id.conversationListContainer)
+        setContentView(R.layout.activity_conversation)
+        mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
         mAdapter = ConversationAdapter(ArrayList(), mRecyclerView)
         mRecyclerView.adapter = mAdapter
@@ -54,6 +55,12 @@ class ConversationActivity :
     override fun onStart() {
         super.onStart()
         loadMessages()
+        sendMes.setOnClickListener {
+            if (mess.text.toString().isNotEmpty())
+            chatController.addMessage(this, mConversationId, "user1", "text", mess.text.toString())
+            mess.text.clear()
+            mRecyclerView.smoothScrollToPosition(0)
+        }
     }
 
     private fun loadMessages() {
@@ -65,5 +72,4 @@ class ConversationActivity :
         checkNotNull(mConversationId)
         Toast.makeText(this, "Retrieved Id: $mConversationId", Toast.LENGTH_SHORT).show()
     }
-
 }

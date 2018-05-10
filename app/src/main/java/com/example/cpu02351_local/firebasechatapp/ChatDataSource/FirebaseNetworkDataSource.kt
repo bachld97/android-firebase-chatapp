@@ -132,11 +132,8 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
 
                 val tem = snapshot?.value as Map<String, *>
                 tem.forEach { msgId, msgContent ->
-                    val msg = Message(msgId)
                     val msgMap = msgContent as Map<String, *>
-                    msg.atTime = msgMap["at_time"] as Long
-                    msg.byUser = msgMap["by_user"] as String
-                    msg.content = msgMap["content"] as String
+                    val msg = FirebaseUtils.convertToMessage(msgMap, msgId)
                     mMes.addIfNotExist(msg)
                     displayUnit.onSuccessfulLoadMessage(mMes)
                 }
@@ -185,6 +182,12 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         })
         return mes
     }
+
+    override fun addMessage(displayUnit: ListMessageDisplayUnit, conversationId: String, newMess: Message) {
+        reference.child("$CONVERSATIONS/$conversationId/$MESSAGES/${newMess.id}")
+                .setValue(FirebaseUtils.convertToMessageMap(newMess))
+    }
+
 
     override fun dispose() {
 

@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatUi.Fragments
+package com.example.cpu02351_local.firebasechatapp.ChatUi.ConversationList
 
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
@@ -12,7 +12,6 @@ import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatController
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListConversationDisplayUnit
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseNetworkDataSource
-import com.example.cpu02351_local.firebasechatapp.ChatUi.Adapters.ConversationListAdapter
 import com.example.cpu02351_local.firebasechatapp.R
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers

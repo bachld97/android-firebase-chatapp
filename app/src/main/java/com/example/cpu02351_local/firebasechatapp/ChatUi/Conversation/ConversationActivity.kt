@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatUi
+package com.example.cpu02351_local.firebasechatapp.ChatUi.Conversation
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
@@ -9,7 +9,6 @@ import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatController
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListMessageDisplayUnit
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseNetworkDataSource
-import com.example.cpu02351_local.firebasechatapp.ChatUi.Adapters.ConversationAdapter
 import com.example.cpu02351_local.firebasechatapp.R
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers

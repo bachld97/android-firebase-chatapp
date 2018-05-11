@@ -1,5 +1,6 @@
-package com.example.cpu02351_local.firebasechatapp.ChatUi.Adapters
+package com.example.cpu02351_local.firebasechatapp.ChatUi.Conversation
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -34,6 +35,11 @@ class ConversationAdapter(private val mMessages: ArrayList<Message>, private val
         fun bind(message: Message) {
             binding.message = message
             binding.executePendingBindings()
+
+            // Mock feature - other users
+            if (message.byUser != "user1") {
+                binding.root.setBackgroundColor(Color.MAGENTA)
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatCore.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.User
 
 interface NetworkDataSource {
-    fun loadContact(userId: String) : User
+    fun loadContacts(displayUnit: ListContactDisplayUnit, userId: String)
     fun loadUserDetail(userId: String): User
     fun addUser(displayUnit: ListContactDisplayUnit, user: User)
 

@@ -1,9 +1,10 @@
 package com.example.cpu02351_local.firebasechatapp.ChatUi.Conversation
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.format.DateUtils
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatController
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListMessageDisplayUnit
@@ -58,8 +59,10 @@ class ConversationActivity :
         super.onStart()
         loadMessages()
         sendMes.setOnClickListener {
-            if (mess.text.toString().isNotEmpty())
-            chatController.addMessage(this, mConversationId, "user1", "text", mess.text.toString())
+            if (mess.text.toString().isNotEmpty()) {
+                val timestamp = Date().time
+                chatController.addMessage(this, mConversationId, "user1", "text", mess.text.toString(), timestamp)
+            }
             mess.text.clear()
             mRecyclerView.smoothScrollToPosition(0)
         }

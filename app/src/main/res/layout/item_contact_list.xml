@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+        <variable
+            name="user"
+            type="com.example.cpu02351_local.firebasechatapp.ChatCore.model.User"/>
+    </data>
+
+    <android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
+        android:background="#C0C0C0"
+        android:layout_margin="8dp">
+        
+        <TextView
+            android:text="@{user.name}"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+            
+    </android.support.constraint.ConstraintLayout>
+</layout>

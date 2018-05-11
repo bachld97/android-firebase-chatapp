@@ -9,6 +9,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListConversa
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListMessageDisplayUnit
 import com.google.firebase.database.*
 import java.util.*
+import kotlin.collections.HashMap
 
 class FirebaseNetworkDataSource : NetworkDataSource() {
 
@@ -20,12 +21,18 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         const val CHILD_CONVERSATION_ID = "conversations"
         const val MESSAGES = "messages"
         const val CHILD_MESSAGE_ID = "messages"
+        const val CHILD_CONTACT_ID = "contacts"
     }
 
     private val mCons = ArrayList<Conversation>()
     private val mMes = ArrayList<Message>()
+    private val mContacts = ArrayList<User>()
+
     private lateinit var mListConversationDisplayUnit : ListConversationDisplayUnit
     private lateinit var mListMessageDisplayUnit: ListMessageDisplayUnit
+    private lateinit var mListContactDisplayUnit: ListContactDisplayUnit
+
+
     private val database = FirebaseDatabase.getInstance()
     private val reference = database.reference!!
 
@@ -34,12 +41,44 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     }
 
 
-    override fun loadContact(userId: String): User {
-        TODO()
+    override fun loadContacts(displayUnit: ListContactDisplayUnit, userId: String) {
+        mListContactDisplayUnit = displayUnit
+        reference.child("$USERS/$userId").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                // Get List of contacts
+                val contactString = snapshot.child(CHILD_CONTACT_ID).getValue(String::class.java)
+                val contactIds = contactString!!.split(" ")
+
+                contactIds.forEach {
+                    loadUserDetail(it)
+                }
+
+            }
+
+            override fun onCancelled(error: DatabaseError?) {
+                displayUnit.onDataError(error?.message)
+            }
+        })
+
     }
 
     override fun loadUserDetail(userId: String) : User {
-        TODO()
+        val u = User(userId)
+        reference.child("$USERS/$userId").addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot?) {
+
+                val userMap = snapshot!!.value as HashMap<String, String>
+                val name = userMap["name"] as String
+                // We only need the name, later avatar_url :D
+                u.name = name
+                mContacts.addIfNotExist(u)
+                mListContactDisplayUnit.onDataLoaded(mContacts)
+            }
+            override fun onCancelled(p0: DatabaseError?) {
+                // Do nothing :D
+            }
+        })
+        return u
     }
 
     override fun addUser(displayUnit: ListContactDisplayUnit, user: User) {
@@ -74,18 +113,13 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     }
     override fun loadConversation(conversationId: String): Conversation {
         val con = Conversation(conversationId)
-        reference.child(CONVERSATIONS).child(conversationId).addListenerForSingleValueEvent(object : ValueEventListener {
+        reference.child("$CONVERSATIONS/$conversationId").addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot?) {
                 con.participantIds = snapshot?.child(CONVERSATION_PARTICIPANT)?.getValue(String::class.java)?.split(" " )
                 con.createdTime = snapshot?.child(CONVERSATION_TIME)?.getValue(String::class.java)
 
-                if (!mCons.contains(con)) {
-                    mCons.add(con)
-                } else {
-                    val pos = mCons.indexOf(con)
-                    mCons[pos] = con
-                }
+                mCons.addIfNotExist(con)
                 mListConversationDisplayUnit.onDataLoaded(mCons)
             }
             override fun onCancelled(p0: DatabaseError?) {
@@ -126,12 +160,13 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
         reference.child("$USERS/$participant").runTransaction(object : Transaction.Handler {
             override fun doTransaction(data: MutableData?): Transaction.Result {
                 Log.d("add_or_update", data.toString())
-                val u = data?.getValue<User>(User::class.java)
-                if (u != null) {
-                    u.conversations = (uuid + " " + u.conversations).trim()
-                    data.value = u
-                } else {
-                }
+
+                val u = data?.value as HashMap<String, String>
+                var temp = u[CHILD_CONVERSATION_ID]
+                if (temp == null) temp = ""
+                temp = ("$uuid $temp").trim()
+                u[CHILD_CONVERSATION_ID] = temp
+                data.value = u
                 return Transaction.success(data)
             }
 
@@ -207,6 +242,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     override fun addMessage(displayUnit: ListMessageDisplayUnit, conversationId: String, newMess: Message) {
         reference.child("$CONVERSATIONS/$conversationId/$MESSAGES/${newMess.id}")
                 .setValue(FirebaseUtils.convertToMessageMap(newMess))
+        reference.child("$CONVERSATIONS/$conversationId/at_time").setValue(newMess.atTime)
     }
 
 
@@ -215,12 +251,12 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
     }
 
 
-    private fun ArrayList<Message>.addIfNotExist(msg: Message) {
-        if (!this.contains(msg)) {
-            this.add(msg)
+    private fun <T> ArrayList<T>.addIfNotExist(item: T) {
+        if (!this.contains(item)) {
+            this.add(item)
         } else {
-            val pos = this.indexOf(msg)
-            this[pos] = msg
+            val pos = this.indexOf(item)
+            this[pos] = item
         }
     }
 }

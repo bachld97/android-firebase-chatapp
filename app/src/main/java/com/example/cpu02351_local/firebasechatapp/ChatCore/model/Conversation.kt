@@ -1,5 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.ChatCore.model
 
+import java.util.*
+
 class Conversation(val id: String) {
     var participantIds: List<String>? = null
     var messages: List<Message>? = null
@@ -9,6 +11,10 @@ class Conversation(val id: String) {
         const val ID_DELIM = "$"
         @JvmStatic
         fun uniqueId(users: Array<User>) : String {
+            if (users.size > 2) {
+                return UUID.randomUUID().toString()
+            }
+
             if (users[0].id < users[1].id) {
                 return "${users[0].id}$ID_DELIM${users[1].id}"
             }

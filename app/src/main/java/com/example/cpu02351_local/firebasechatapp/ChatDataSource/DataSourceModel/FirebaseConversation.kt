@@ -11,7 +11,7 @@ class FirebaseConversation : FirebaseObject() {
         }
     }
 
-    override fun load(id: String, value: Any?) {
+    override fun fromMap(id: String, value: Any?) {
         TODO()
     }
 

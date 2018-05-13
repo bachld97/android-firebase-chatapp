@@ -10,10 +10,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.addIfNotContains
 import com.example.cpu02351_local.firebasechatapp.addOrUpdate
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.*
 
 class FirebaseChatModel : ChatModel() {
 
@@ -64,7 +61,7 @@ class FirebaseChatModel : ChatModel() {
 
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val con = FirebaseConversation()
-                con.load(id, snapshot?.getValue())
+                con.fromMap(id, snapshot?.getValue())
                 mConversations.addOrUpdate(con)
                 notifyDataChanged()
             }
@@ -89,7 +86,7 @@ class FirebaseChatModel : ChatModel() {
                     }
                     tem?.forEach() {id, content ->
                         val msg = FirebaseMessage()
-                        msg.load(id, content)
+                        msg.fromMap(id, content)
                         mMessages.addIfNotContains(msg)
                         notifyDataChanged()
                     }
@@ -129,7 +126,7 @@ class FirebaseChatModel : ChatModel() {
 
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val con = FirebaseUser()
-                con.load(id, snapshot?.getValue())
+                con.fromMap(id, snapshot?.getValue())
                 mContacts.addOrUpdate(con)
                 notifyDataChanged()
             }
@@ -145,10 +142,43 @@ class FirebaseChatModel : ChatModel() {
     override fun addConversation(users: Array<User>, conversation: Conversation) {
         val firebaseConversation = FirebaseConversation.from(conversation)
         val id = Conversation.uniqueId(users)
+        mConversations.add(firebaseConversation)
+
+        reference.child("$CONVERSATIONS/$id")
+                .updateChildren(firebaseConversation.toMap(), { error, _ ->
+                   if (error != null) {
+                        // Do nothing for now
+                    } else {
+                       users.forEach { addConversationToUser(it, id) }
+                   }
+                })
+    }
+
+    private fun addConversationToUser(user: User, id: String) {
+        reference.child("$USERS/${user.id}")
+                .runTransaction(object : Transaction.Handler {
+                    override fun doTransaction(mutableData: MutableData?): Transaction.Result {
+                        val u = FirebaseUser()
+                        u.fromMap(id, mutableData?.value)
+                        var temp = u.conversationIds
+                        temp = ("$id $temp").trim()
+                        u.conversationIds = temp
+                        mutableData?.value = u.toMap()
+                        return Transaction.success(mutableData)
+                    }
+
+                    override fun onComplete(p0: DatabaseError?, p1: Boolean, p2: DataSnapshot?) {
+                        // Do nothing for now
+                    }
+
+                })
     }
 
     override fun addMessage(currentConversation: Conversation, message: Message) {
-        TODO()
+        reference.child("$CONVERSATIONS/$currentConversation/$MESSAGE/${message.id}")
+                .setValue(FirebaseMessage.from(message).toMap())
+        reference.child("$CONVERSATIONS/$currentConversation/$LAST_MOD")
+                .setValue(message.atTime)
     }
 
     override fun addContact(currentUser: User, addedContact: User) {

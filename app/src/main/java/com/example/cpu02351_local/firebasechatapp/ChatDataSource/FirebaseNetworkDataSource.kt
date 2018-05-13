@@ -111,6 +111,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
 
         })
     }
+
     override fun loadConversation(conversationId: String): Conversation {
         val con = Conversation(conversationId)
         reference.child("$CONVERSATIONS/$conversationId").addListenerForSingleValueEvent(object : ValueEventListener {

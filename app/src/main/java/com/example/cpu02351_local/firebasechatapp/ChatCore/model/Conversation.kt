@@ -5,6 +5,17 @@ class Conversation(val id: String) {
     var messages: List<Message>? = null
     var createdTime: String? = null
 
+    companion object {
+        const val ID_DELIM = "$"
+        @JvmStatic
+        fun uniqueId(users: Array<User>) : String {
+            if (users[0].id < users[1].id) {
+                return "${users[0].id}$ID_DELIM${users[1].id}"
+            }
+            return "${users[1].id}$ID_DELIM${users[0].id}"
+        }
+    }
+
     override fun equals(other: Any?): Boolean {
         return other is Conversation && other.id == id
     }

@@ -40,7 +40,7 @@ abstract class ChatModel {
 
     abstract fun loadConversations(userId: String)
     abstract fun loadMessages(conversationId: String)
-    abstract fun loadContact(userId: String)
+    abstract fun loadContacts(userId: String)
 
     abstract fun addConversation(users: Array<User>, conversation: Conversation)
     abstract fun addMessage(currentConversation: Conversation, message: Message)

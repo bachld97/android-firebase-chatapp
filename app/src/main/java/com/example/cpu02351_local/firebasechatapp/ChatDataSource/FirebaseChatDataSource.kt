@@ -79,8 +79,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     override fun addConversation(users: Array<User>, conversationId: String) {
-        val firebaseConversation = FirebaseConversation.from(Conversation(conversationId))
-
+        val firebaseConversation = FirebaseConversation.from(Conversation(conversationId, users))
         reference.child("$CONVERSATIONS/$conversationId")
                 .updateChildren(firebaseConversation.toMap(), { error, _ ->
                     if (error != null) {

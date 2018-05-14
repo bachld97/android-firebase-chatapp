@@ -5,13 +5,13 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
-import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationBinding
+import com.example.cpu02351_local.firebasechatapp.databinding.ItemMessageListBinding
 
 class MessageListAdapter(private val mMessages: ArrayList<Message>, private val mRecyclerView: RecyclerView)
     : RecyclerView.Adapter<MessageListAdapter.MessageViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val layoutInflater= LayoutInflater.from(parent.context)
-        val binding = ItemConversationBinding.inflate(layoutInflater, parent, false)
+        val binding = ItemMessageListBinding.inflate(layoutInflater, parent, false)
         return MessageViewHolder(binding)
     }
 
@@ -30,7 +30,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
         notifyItemRangeInserted(0, mMessages.size - oldSize)
     }
 
-    class MessageViewHolder(private val binding: ItemConversationBinding) : RecyclerView.ViewHolder(binding.root) {
+    class MessageViewHolder(private val binding: ItemMessageListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(message: Message) {
             binding.message = message
             binding.executePendingBindings()

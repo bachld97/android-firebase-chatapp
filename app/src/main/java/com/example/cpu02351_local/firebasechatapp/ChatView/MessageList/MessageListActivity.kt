@@ -10,7 +10,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.Mes
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
 import com.example.cpu02351_local.firebasechatapp.R
-import kotlinx.android.synthetic.main.activity_conversation.*
+import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 
 class MessageListActivity :
@@ -33,7 +33,7 @@ class MessageListActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_conversation)
+        setContentView(R.layout.activity_message_list)
         mChatViewModel = ChatViewModel(mChatModel, getLoggedInUser())
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
@@ -51,7 +51,7 @@ class MessageListActivity :
                 m.byUser = getLoggedInUser()
                 m.content = mess.text.toString()
                 m.atTime = System.currentTimeMillis()
-                mChatViewModel.sendMessage(mConversationId, m)
+                mChatViewModel.sendMessage(mConversationId, m, intent.getStringExtra("byUsers"))
                 mess.text.clear()
             }
         }

@@ -88,11 +88,11 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         mChatDataSource.loadMessages(id)
     }
 
-    fun sendMessage(conId: String, message: Message) {
-        val list = conId.split(Conversation.ID_DELIM)
-                .map { id -> User(id)}
+    fun sendMessage(conId: String, message: Message, byUsersString: String?) {
+        val list = (byUsersString?.split(Conversation.ID_DELIM)
+                ?: conId.split(Conversation.ID_DELIM)).map { id -> User(id) }
         val arr = list.toTypedArray()
-        mChatDataSource.addConversation(arr,conId)
+        mChatDataSource.addConversation(arr, conId)
         mChatDataSource.addMessage(conId, message)
     }
 }

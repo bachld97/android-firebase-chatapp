@@ -6,12 +6,14 @@ import android.support.v4.app.FragmentPagerAdapter
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatView.ContactList.ContactListFragment
 import com.example.cpu02351_local.firebasechatapp.ChatView.ConversationList.ConversationListFragment
+import com.example.cpu02351_local.firebasechatapp.ChatView.UserDetail.UserDetailFragment
 
 class AppFragmentPagerAdapter(fm: FragmentManager, mViewModel: ChatViewModel) : FragmentPagerAdapter(fm) {
 
     private val fragments = arrayOf(
             ConversationListFragment.newInstance(mViewModel),
-            ContactListFragment.newInstance(mViewModel))
+            ContactListFragment.newInstance(mViewModel),
+            UserDetailFragment.newInstance(mViewModel))
     private val titles = arrayOf("Chat", "Contact", "Setting")
 
     override fun getItem(position: Int): Fragment = fragments[position]

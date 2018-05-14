@@ -2,12 +2,12 @@ package com.example.cpu02351_local.firebasechatapp.ChatViewModel.model
 
 import java.util.*
 
-class Conversation(val id: String) {
+class Conversation(val id: String, users: Array<User> = arrayOf()) {
     var participantIds: List<String> = ArrayList()
     var createdTime = -1L
 
     init {
-        participantIds = id.split(ID_DELIM)
+        participantIds = users.joinToString("$").split("$")
     }
 
     companion object {
@@ -17,11 +17,8 @@ class Conversation(val id: String) {
             if (users.size > 2) {
                 return UUID.randomUUID().toString()
             }
-
-            if (users[0].id < users[1].id) {
-                return "${users[0].id}$ID_DELIM${users[1].id}"
-            }
-            return "${users[1].id}$ID_DELIM${users[0].id}"
+             users.sort()
+            return users.joinToString(ID_DELIM).trim(ID_DELIM[0])
         }
     }
 

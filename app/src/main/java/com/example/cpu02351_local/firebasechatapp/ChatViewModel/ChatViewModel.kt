@@ -117,8 +117,9 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         mChatDataSource.addMessage(conId, message)
     }
 
-    fun loadUserDetail(id: String) {
-        mChatDataSource.loadUserDetail(id)
+    fun saveImage(filePath: Any) {
+        Log.d("DEBUGGING", "Filepath: $filePath")
+        mChatDataSource.saveAvatar(loggedInUserId, filePath)
     }
 }
 

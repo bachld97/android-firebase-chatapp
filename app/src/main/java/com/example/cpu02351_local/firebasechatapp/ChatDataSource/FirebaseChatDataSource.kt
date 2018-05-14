@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
+import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
@@ -11,6 +12,8 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 import com.example.cpu02351_local.firebasechatapp.addIfNotContains
 import com.example.cpu02351_local.firebasechatapp.addOrUpdate
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import java.io.File
 
 class FirebaseChatDataSource : ChatDataSource() {
 
@@ -28,6 +31,7 @@ class FirebaseChatDataSource : ChatDataSource() {
         const val USERNAME = "name"
         const val TYPE = "type"
         const val CONTENT = "content"
+        private const val STORAGE_BASE_URL = "gs://fir-chat-47b52.appspot.com"
     }
 
     private lateinit var mCurrentUser: FirebaseUser
@@ -35,14 +39,40 @@ class FirebaseChatDataSource : ChatDataSource() {
     private val mMessages = ArrayList<FirebaseMessage>()
     private val mConversations = ArrayList<FirebaseConversation>()
     private val database = FirebaseDatabase.getInstance()
-    private val reference = database.reference!!
+    private val databaseRef = database.reference!!
+    var storage = FirebaseStorage.getInstance()
 
     init {
-        reference.keepSynced(true)
+        databaseRef.keepSynced(true)
+    }
+
+    override fun saveAvatar(userId: String, filePath: Any) {
+        val uri = filePath as Uri
+                // Uri.fromFile(File(filePath))
+        storage.getReferenceFromUrl("$STORAGE_BASE_URL/images").child(userId).putFile(uri)
+            .addOnSuccessListener {
+                val downloadUri = it.downloadUrl.toString()
+                Log.d("DEBUGGING", "URL $downloadUri")
+                databaseRef.child("$USERS/$userId")
+                        .runTransaction(object : Transaction.Handler {
+                            override fun doTransaction(mutableData: MutableData?): Transaction.Result {
+                                val u = FirebaseUser()
+                                u.fromMap(userId, mutableData?.value)
+                                u.avaUrl = downloadUri
+                                mutableData?.value = u.toMap()
+                                return Transaction.success(mutableData)
+                            }
+
+                            override fun onComplete(p0: DatabaseError?, p1: Boolean, p2: DataSnapshot?) {
+                                // Do nothing for now
+                            }
+
+                        })
+            }
     }
 
     override fun loadUserDetail(id: String) {
-        reference.child("$USERS/$id").addValueEventListener(object : ValueEventListener {
+        databaseRef.child("$USERS/$id").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 mCurrentUser = FirebaseUser()
                 mCurrentUser.fromMap(id, snapshot?.value)
@@ -56,7 +86,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     override fun loadConversations(userId: String) {
-        reference.child("$USERS/$userId")
+        databaseRef.child("$USERS/$userId")
                 .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val conIds = snapshot?.child(CONVERSATIONS)!!
@@ -79,7 +109,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     fun loadConversation(id : String) {
-        reference.child("$CONVERSATIONS/$id")
+        databaseRef.child("$CONVERSATIONS/$id")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val con = FirebaseConversation()
@@ -96,7 +126,7 @@ class FirebaseChatDataSource : ChatDataSource() {
 
     override fun addConversation(users: Array<User>, conversationId: String) {
         val firebaseConversation = FirebaseConversation.from(Conversation(conversationId, users))
-        reference.child("$CONVERSATIONS/$conversationId")
+        databaseRef.child("$CONVERSATIONS/$conversationId")
                 .updateChildren(firebaseConversation.toMap(), { error, _ ->
                     if (error != null) {
                         // Do nothing for now
@@ -106,7 +136,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     private fun addConversationToUser(user: User, id: String) {
-        reference.child("$USERS/${user.id}")
+        databaseRef.child("$USERS/${user.id}")
                 .runTransaction(object : Transaction.Handler {
                     override fun doTransaction(mutableData: MutableData?): Transaction.Result {
                         val u = FirebaseUser()
@@ -128,7 +158,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     override fun loadMessages(conversationId: String) {
-        reference.child("$CONVERSATIONS/$conversationId/$MESSAGE")
+        databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 if (snapshot?.value != null) {
@@ -154,15 +184,15 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     override fun addMessage(currentConversation: String, message: Message) {
-        reference.child("$CONVERSATIONS/$currentConversation/$MESSAGE/${message.id}")
+        databaseRef.child("$CONVERSATIONS/$currentConversation/$MESSAGE/${message.id}")
                 .setValue(FirebaseMessage.from(message).toMap())
-        reference.child("$CONVERSATIONS/$currentConversation/$LAST_MOD")
+        databaseRef.child("$CONVERSATIONS/$currentConversation/$LAST_MOD")
                 .setValue(message.atTime.toString())
     }
 
 
     override fun loadContacts(userId: String) {
-        reference.child("$USERS/$userId")
+        databaseRef.child("$USERS/$userId")
                 .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val conIds = snapshot?.child(CONTACTS)!!
@@ -182,7 +212,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     fun loadContact(id: String) {
-        reference.child("$USERS/$id")
+        databaseRef.child("$USERS/$id")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
 
             override fun onDataChange(snapshot: DataSnapshot?) {

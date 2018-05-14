@@ -58,5 +58,6 @@ abstract class ChatDataSource {
 
 
     abstract fun notifyDataChanged()
+    abstract fun saveAvatar(userId: String, filePath: Any)
 }
 

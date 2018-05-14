@@ -9,7 +9,7 @@ class FirebaseUser : FirebaseObject() {
     lateinit var conversationIds: String
     private lateinit var name: String
     private lateinit var contacts: String
-    private lateinit var avaUrl: String
+    lateinit var avaUrl: String
 
     override fun fromMap(id: String, value: Any?) {
         this.id = id

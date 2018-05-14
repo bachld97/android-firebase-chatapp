@@ -11,14 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChatUi.AppLaunchActivity">
+        <activity android:name=".ChatView.AppLaunchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ChatUi.Conversation.ConversationActivity"></activity>
+        <activity android:name=".ChatView.MessageList.MessageListActivity"></activity>
     </application>
 
 </manifest>

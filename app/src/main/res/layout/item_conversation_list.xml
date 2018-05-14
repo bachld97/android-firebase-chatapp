@@ -4,7 +4,7 @@
     <data>
         <variable
             name="conversation"
-            type="com.example.cpu02351_local.firebasechatapp.ChatCore.model.Conversation"/>
+            type="com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation"/>
     </data>
 
     <LinearLayout

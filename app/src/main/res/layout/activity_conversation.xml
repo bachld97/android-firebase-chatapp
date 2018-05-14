@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ChatUi.Conversation.ConversationActivity"
+    tools:context=".ChatView.MessageList.MessageListActivity"
     android:orientation="vertical">
 
     <android.support.v7.widget.RecyclerView
@@ -19,7 +19,7 @@
         android:layout_height="wrap_content">
 
         <EditText
-            android:layout_toLeftOf="@id/sendMes"
+            android:layout_toStartOf="@id/sendMes"
             android:id="@+id/mess"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

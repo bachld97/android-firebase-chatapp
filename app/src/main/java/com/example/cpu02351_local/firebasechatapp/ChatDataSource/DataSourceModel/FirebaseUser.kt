@@ -1,12 +1,14 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 
-import com.example.cpu02351_local.firebasechatapp.ChatCore.model.User
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatModel
+import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
 
 class FirebaseUser : FirebaseObject() {
     private lateinit var id: String
     lateinit var conversationIds: String
     private lateinit var name: String
+
+    private lateinit var contacts: String
 
     override fun fromMap(id: String, value: Any?) {
         this.id = id
@@ -16,8 +18,9 @@ class FirebaseUser : FirebaseObject() {
             null
         }
         if (valueMap != null) {
-            this.conversationIds = valueMap[FirebaseChatModel.CONVERSATIONS] ?: ""
-            this.name = valueMap[FirebaseChatModel.USERNAME] as String
+            this.conversationIds = valueMap[FirebaseChatDataSource.CONVERSATIONS] ?: ""
+            this.name = valueMap[FirebaseChatDataSource.USERNAME] as String
+            this.contacts = valueMap[FirebaseChatDataSource.CONTACTS] ?: ""
         }
     }
 
@@ -27,8 +30,9 @@ class FirebaseUser : FirebaseObject() {
 
     override fun toMap(): Map<String, Any> {
         val res = HashMap<String, String>()
-        res[FirebaseChatModel.CONVERSATIONS] = conversationIds
-        res[FirebaseChatModel.USERNAME] = name
+        res[FirebaseChatDataSource.CONTACTS] = contacts
+        res[FirebaseChatDataSource.CONVERSATIONS] = conversationIds
+        res[FirebaseChatDataSource.USERNAME] = name
         return res
     }
 }

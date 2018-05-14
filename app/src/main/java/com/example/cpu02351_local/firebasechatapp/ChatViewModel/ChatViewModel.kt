@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.ChatViewModel
 
 import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.ChatViewModel.DataObserver.UserDetailDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.*
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
@@ -10,7 +11,8 @@ import com.example.cpu02351_local.firebasechatapp.addOrUpdateAll
 import com.example.cpu02351_local.firebasechatapp.removeIfContains
 
 class ChatViewModel(private val mChatDataSource: ChatDataSource,
-                    private val loggedInUserId: String) : ConversationDataObserver, MessageDataObserver, ContactDataObserver {
+                    private val loggedInUserId: String) :
+        ConversationDataObserver, MessageDataObserver, ContactDataObserver, UserDetailDataObserver {
 
     private val mConversations = ArrayList<Conversation>()
     private val mMessages = ArrayList<Message>()
@@ -18,25 +20,34 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
     private val mConversationObservers: ArrayList<ConversationViewObserver> = ArrayList()
     private val mMessageObservers: ArrayList<MessageViewObserver> = ArrayList()
     private val mContactObservers: ArrayList<ContactViewObserver> = ArrayList()
-    lateinit var loggedInUser: User
+    private val mUserDetailObservers: ArrayList<UserDetailViewObserver> = ArrayList()
+    lateinit var mLoggedInUser: User
 
     fun init() {
         mChatDataSource.registerConversationObserver(this)
         mChatDataSource.registerContactObserver(this)
         mChatDataSource.registerMessageObserver(this)
+        mChatDataSource.registerUserDetailObserver(this)
+        mChatDataSource.loadUserDetail(loggedInUserId)
         mChatDataSource.loadContacts(loggedInUserId)
         mChatDataSource.loadConversations(loggedInUserId)
-        loggedInUser = User(loggedInUserId)
+        mLoggedInUser = User(loggedInUserId)
     }
 
     fun dispose() {
         mChatDataSource.unregisterContactObserver(this)
         mChatDataSource.unregisterConversationObserver(this)
         mChatDataSource.unregisterMessageObserver(this)
+        mChatDataSource.unregisterUserDetailObserver(this)
     }
 
     fun register(obs: ConversationViewObserver) {
         mConversationObservers.addIfNotContains(obs)
+        notifyDataChanged()
+    }
+
+    fun register(obs: UserDetailViewObserver) {
+        mUserDetailObservers.addIfNotContains(obs)
         notifyDataChanged()
     }
 
@@ -50,6 +61,10 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         notifyDataChanged()
     }
 
+    fun unregister(obs: UserDetailViewObserver) {
+        mUserDetailObservers.removeIfContains(obs)
+    }
+
     fun unregister(obs: ConversationViewObserver) {
         mConversationObservers.removeIfContains(obs)
     }
@@ -60,6 +75,11 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
 
     fun unregister(obs: ContactViewObserver) {
         mContactObservers.removeIfContains(obs)
+    }
+
+    override fun onUserDetailLoaded(user: User) {
+        mLoggedInUser = user
+        notifyDataChanged()
     }
 
     override fun onConversationsLoaded(conversations: List<Conversation>) {
@@ -82,6 +102,7 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         mConversationObservers.forEach { it.onConversationsLoaded(mConversations) }
         mMessageObservers.forEach { it.onMessagesLoaded(mMessages) }
         mContactObservers.forEach { it.onContactsLoaded(mContacts) }
+        mUserDetailObservers.forEach { it.onUserDetailLoaded(mLoggedInUser) }
     }
 
     fun loadMessages(id: String) {
@@ -94,6 +115,10 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         val arr = list.toTypedArray()
         mChatDataSource.addConversation(arr, conId)
         mChatDataSource.addMessage(conId, message)
+    }
+
+    fun loadUserDetail(id: String) {
+        mChatDataSource.loadUserDetail(id)
     }
 }
 

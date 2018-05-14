@@ -22,7 +22,7 @@ class ContactListAdapter(private var mContacts: ArrayList<User>,
         if (pos != RecyclerView.NO_POSITION) {
             val context = mRecyclerView.context
             val intent = Intent(context, MessageListActivity::class.java)
-            val users = arrayOf(mChatViewModel.loggedInUser, mContacts[pos])
+            val users = arrayOf(mChatViewModel.mLoggedInUser, mContacts[pos])
             intent.putExtra("conversationId", findConversationId(users))
             context.startActivity(intent)
         }

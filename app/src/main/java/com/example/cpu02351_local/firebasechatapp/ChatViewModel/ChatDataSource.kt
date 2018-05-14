@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.ChatViewModel
 
+import com.example.cpu02351_local.firebasechatapp.ChatViewModel.DataObserver.UserDetailDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.ContactDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.ConversationDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageDataObserver
@@ -12,6 +13,11 @@ abstract class ChatDataSource {
     protected val mConversationObservers: ArrayList<ConversationDataObserver> = ArrayList()
     protected val mMessageObservers: ArrayList<MessageDataObserver> = ArrayList()
     protected val mContactObservers: ArrayList<ContactDataObserver> = ArrayList()
+    protected val mUserDetailObservers: ArrayList<UserDetailDataObserver> = ArrayList()
+
+    fun registerUserDetailObserver(obs: UserDetailDataObserver) {
+        mUserDetailObservers.addIfNotContains(obs)
+    }
 
     fun registerConversationObserver(obs: ConversationDataObserver) {
         mConversationObservers.addIfNotContains(obs)
@@ -37,6 +43,11 @@ abstract class ChatDataSource {
         mContactObservers.removeIfContains(obs)
     }
 
+    fun unregisterUserDetailObserver(obs: UserDetailDataObserver) {
+        mUserDetailObservers.removeIfContains(obs)
+    }
+
+    abstract fun loadUserDetail(id: String)
     abstract fun loadConversations(userId: String)
     abstract fun loadMessages(conversationId: String)
     abstract fun loadContacts(userId: String)

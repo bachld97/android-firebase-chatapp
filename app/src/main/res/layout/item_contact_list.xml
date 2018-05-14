@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <variable
@@ -7,17 +7,25 @@
             type="com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="8dp"
         android:background="#C0C0C0"
+        android:orientation="horizontal"
         android:layout_margin="8dp">
-        
+
+        <ImageView
+            app:imageUrl="@{user.avaUrl}"
+            android:layout_weight="0"
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
         <TextView
             android:text="@{user.name}"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-            
-    </android.support.constraint.ConstraintLayout>
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
 </layout>

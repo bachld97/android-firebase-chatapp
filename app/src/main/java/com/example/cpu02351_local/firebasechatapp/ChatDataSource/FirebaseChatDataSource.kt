@@ -15,6 +15,7 @@ import com.google.firebase.database.*
 class FirebaseChatDataSource : ChatDataSource() {
 
     companion object {
+        const val AVA_URL = "ava_url"
         const val USERS = "users"
         const val CONVERSATIONS = "conversations"
         const val MESSAGE = "messages"
@@ -29,6 +30,7 @@ class FirebaseChatDataSource : ChatDataSource() {
         const val CONTENT = "content"
     }
 
+    private lateinit var mCurrentUser: FirebaseUser
     private val mContacts = ArrayList<FirebaseUser>()
     private val mMessages = ArrayList<FirebaseMessage>()
     private val mConversations = ArrayList<FirebaseConversation>()
@@ -37,6 +39,20 @@ class FirebaseChatDataSource : ChatDataSource() {
 
     init {
         reference.keepSynced(true)
+    }
+
+    override fun loadUserDetail(id: String) {
+        reference.child("$USERS/$id").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                mCurrentUser = FirebaseUser()
+                mCurrentUser.fromMap(id, snapshot?.value)
+                notifyDataChanged()
+            }
+
+            override fun onCancelled(p0: DatabaseError?) {
+                // Do Nothing for now
+            }
+        })
     }
 
     override fun loadConversations(userId: String) {
@@ -187,10 +203,12 @@ class FirebaseChatDataSource : ChatDataSource() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
+
     override fun notifyDataChanged() {
         mConversationObservers.forEach { it.onConversationsLoaded(mConversations.toConversations()) }
         mMessageObservers.forEach { it.onMessagesLoaded(mMessages.toMessages()) }
         mContactObservers.forEach { it.onContactsLoaded(mContacts.toContacts()) }
+        mUserDetailObservers.forEach { it.onUserDetailLoaded(mCurrentUser.toUser()) }
     }
 }
 

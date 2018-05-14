@@ -4,11 +4,10 @@ import java.util.*
 
 class Conversation(val id: String) {
     var participantIds: List<String>? = null
-    var messages: List<Message>? = null
-    var createdTime: String? = null
+    var createdTime = -1L
 
     companion object {
-        const val ID_DELIM = "$"
+        private const val ID_DELIM = "$"
         @JvmStatic
         fun uniqueId(users: Array<User>) : String {
             if (users.size > 2) {
@@ -29,8 +28,7 @@ class Conversation(val id: String) {
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + (participantIds?.hashCode() ?: 0)
-        result = 31 * result + (messages?.hashCode() ?: 0)
-        result = 31 * result + (createdTime?.hashCode() ?: 0)
+        result = 31 * result + createdTime.hashCode()
         return result
     }
 }

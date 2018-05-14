@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatController
+import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListContactDisplayUnit
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.NetworkDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.User
@@ -23,7 +24,7 @@ class ContactListFragment :
 
     companion object {
         @JvmStatic
-        fun newInstance() : ContactListFragment {
+        fun newInstance(mViewModel: ChatViewModel): ContactListFragment {
             return ContactListFragment()
         }
     }

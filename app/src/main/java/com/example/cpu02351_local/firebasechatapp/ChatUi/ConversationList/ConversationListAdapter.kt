@@ -42,7 +42,7 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
         holder.bind(mConversations[position])
     }
 
-    fun updateList(newList: ArrayList<Conversation>) {
+    fun updateList(newList: List<Conversation>) {
         val oldList = ArrayList<Conversation>(mConversations)
         val diffResult = DiffUtil.calculateDiff(ConversationDiffCallback(oldList, newList), true)
 

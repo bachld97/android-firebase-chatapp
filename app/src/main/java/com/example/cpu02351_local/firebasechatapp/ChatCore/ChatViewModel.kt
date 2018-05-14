@@ -8,7 +8,8 @@ import com.example.cpu02351_local.firebasechatapp.addIfNotContains
 import com.example.cpu02351_local.firebasechatapp.addOrUpdateAll
 import com.example.cpu02351_local.firebasechatapp.removeIfContains
 
-class ChatViewModel(private val chatModel: ChatModel) : ConversationDataObserver, MessageDataObserver, ContactDataObserver {
+class ChatViewModel(private val chatModel: ChatModel,
+                    private val loggedInUser: String) : ConversationDataObserver, MessageDataObserver, ContactDataObserver {
 
     private val mConversations = ArrayList<Conversation>()
     private val mMessages = ArrayList<Message>()
@@ -17,16 +18,28 @@ class ChatViewModel(private val chatModel: ChatModel) : ConversationDataObserver
     private val mMessageObservers: ArrayList<MessageViewObserver> = ArrayList()
     private val mContactObservers: ArrayList<ContactViewObserver> = ArrayList()
 
+    fun init() {
+        chatModel.registerConversationObserver(this)
+        chatModel.loadConversations(loggedInUser)
+    }
+
+    fun dispose() {
+        chatModel.unregisterConversationObserver(this)
+    }
+
     fun register(obs: ConversationViewObserver) {
         mConversationObservers.addIfNotContains(obs)
+        notifyDataChanged()
     }
 
     fun register(obs: MessageViewObserver) {
         mMessageObservers.addIfNotContains(obs)
+        notifyDataChanged()
     }
 
     fun register(obs: ContactViewObserver) {
         mContactObservers.addIfNotContains(obs)
+        notifyDataChanged()
     }
 
     fun unregister(obs: ConversationViewObserver) {

@@ -14,27 +14,27 @@ abstract class ChatModel {
     protected val mMessageObservers: ArrayList<MessageDataObserver> = ArrayList()
     protected val mContactObservers: ArrayList<ContactDataObserver> = ArrayList()
 
-    fun register(obs: ConversationDataObserver) {
+    fun registerConversationObserver(obs: ConversationDataObserver) {
         mConversationObservers.addIfNotContains(obs)
     }
 
-    fun register(obs: MessageDataObserver) {
+    fun registerMessageObserver(obs: MessageDataObserver) {
         mMessageObservers.addIfNotContains(obs)
     }
 
-    fun register(obs: ContactDataObserver) {
+    fun registerContactObserver(obs: ContactDataObserver) {
         mContactObservers.addIfNotContains(obs)
     }
 
-    fun unregister(obs: ConversationDataObserver) {
+    fun unregisterConversationObserver(obs: ConversationDataObserver) {
         mConversationObservers.removeIfContains(obs)
     }
 
-    fun unregister(obs: MessageDataObserver) {
+    fun unregisterMessageObserver(obs: MessageDataObserver) {
         mMessageObservers.removeIfContains(obs)
     }
 
-    fun unregister(obs: ContactDataObserver) {
+    fun unregisterContactObserver(obs: ContactDataObserver) {
         mContactObservers.removeIfContains(obs)
     }
 

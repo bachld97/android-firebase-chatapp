@@ -118,7 +118,7 @@ class FirebaseNetworkDataSource : NetworkDataSource() {
 
             override fun onDataChange(snapshot: DataSnapshot?) {
                 con.participantIds = snapshot?.child(CONVERSATION_PARTICIPANT)?.getValue(String::class.java)?.split(" " )
-                con.createdTime = snapshot?.child(CONVERSATION_TIME)?.getValue(String::class.java)
+                con.createdTime = snapshot?.child(CONVERSATION_TIME)?.getValue(Long::class.java)!!
 
                 mCons.addIfNotExist(con)
                 mListConversationDisplayUnit.onDataLoaded(mCons)

@@ -20,7 +20,7 @@ class FirebaseChatModel : ChatModel() {
         const val MESSAGE = "messages"
         const val CONTACTS = "contacts"
         const val PARTICIPANTS = "by_users"
-        const val LAST_MOD = "last_mode"
+        const val LAST_MOD = "last_mod"
         const val TIME = "at_time"
         const val DELIM = " "
     }
@@ -45,7 +45,11 @@ class FirebaseChatModel : ChatModel() {
                     // Do nothing for now
                     return
                 }
-                for (id in conIds) loadConversation(id)
+                Log.d("DEBUGGING", conIds.toString())
+                for (id in conIds) {
+                    Log.d("DEBUGGING", id)
+                    loadConversation(id)
+                }
             }
 
             override fun onCancelled(error: DatabaseError?) {
@@ -58,16 +62,15 @@ class FirebaseChatModel : ChatModel() {
     fun loadConversation(id : String) {
         reference.child("$CONVERSATIONS/$id")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
-
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val con = FirebaseConversation()
-                con.fromMap(id, snapshot?.getValue())
+                con.fromMap(id, snapshot?.value)
                 mConversations.addOrUpdate(con)
                 notifyDataChanged()
             }
 
             override fun onCancelled(p0: DatabaseError?) {
-                // Do nothing for now
+                Log.d("DEBUGGING", "Cannot load Conversation $id")
             }
         })
     }
@@ -126,7 +129,7 @@ class FirebaseChatModel : ChatModel() {
 
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val con = FirebaseUser()
-                con.fromMap(id, snapshot?.getValue())
+                con.fromMap(id, snapshot?.value)
                 mContacts.addOrUpdate(con)
                 notifyDataChanged()
             }

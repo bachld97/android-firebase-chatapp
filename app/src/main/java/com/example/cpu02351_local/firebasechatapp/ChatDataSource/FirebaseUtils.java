@@ -15,7 +15,7 @@ import static com.example.cpu02351_local.firebasechatapp.ChatDataSource.Firebase
 public class FirebaseUtils {
     static Conversation convertToConversation(String uuid, HashMap<String, String> in) {
         Conversation res = new Conversation(uuid);
-        res.setCreatedTime(in.get(CONVERSATION_TIME));
+        res.setCreatedTime(Long.parseLong(in.get(CONVERSATION_TIME)));
         res.setParticipantIds(Arrays.asList(in.get(CONVERSATION_PARTICIPANT).split(" ")));
         return res;
     }

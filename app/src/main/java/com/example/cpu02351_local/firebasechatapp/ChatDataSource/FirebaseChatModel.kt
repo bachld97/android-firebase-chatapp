@@ -23,6 +23,7 @@ class FirebaseChatModel : ChatModel() {
         const val LAST_MOD = "last_mod"
         const val TIME = "at_time"
         const val DELIM = " "
+        const val USERNAME = "name"
     }
 
     private val mContacts = ArrayList<FirebaseUser>()

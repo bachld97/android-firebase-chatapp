@@ -20,6 +20,9 @@ class ChatViewModel(private val chatModel: ChatModel,
 
     fun init() {
         chatModel.registerConversationObserver(this)
+        chatModel.registerContactObserver(this)
+
+        chatModel.loadContacts(loggedInUser)
         chatModel.loadConversations(loggedInUser)
     }
 

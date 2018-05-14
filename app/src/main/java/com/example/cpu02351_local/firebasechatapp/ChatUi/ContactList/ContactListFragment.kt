@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatController
 import com.example.cpu02351_local.firebasechatapp.ChatCore.ChatViewModel
+import com.example.cpu02351_local.firebasechatapp.ChatCore.ViewObserver.ContactViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.ListContactDisplayUnit
 import com.example.cpu02351_local.firebasechatapp.ChatCore.boundary.NetworkDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatCore.model.User
@@ -19,32 +20,24 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.*
 
 class ContactListFragment :
-        ListContactDisplayUnit,
+        ContactViewObserver,
         Fragment() {
 
     companion object {
         @JvmStatic
         fun newInstance(mViewModel: ChatViewModel): ContactListFragment {
-            return ContactListFragment()
+            val res = ContactListFragment()
+            res.mViewModel = mViewModel
+            return res
         }
     }
 
-    private val networkDataSource: NetworkDataSource = FirebaseNetworkDataSource()
-    private val chatController = ChatController(networkDataSource)
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: ContactListAdapter
+    private lateinit var mViewModel: ChatViewModel
 
-
-    override fun displayThread(): Scheduler {
-        return AndroidSchedulers.mainThread()
-    }
-
-    override fun onDataLoaded(result: java.util.ArrayList<User>) {
-        mAdapter.updateContacts(result.sortedWith(kotlin.Comparator { o1, o2 ->  o1.name.compareTo(o2.name, true)}))
-    }
-
-    override fun onDataError(message: String?) {
-
+    override fun onContactsLoaded(contacts: List<User>) {
+        mAdapter.updateContacts(contacts.sortedWith(kotlin.Comparator { c1, c2 ->  c1.name.compareTo(c2.name, true)}))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -58,7 +51,7 @@ class ContactListFragment :
 
     override fun onStart() {
         super.onStart()
-        chatController.loadContact(this, currentUser())
+        mViewModel.register(this)
     }
 
     private fun currentUser(): String {
@@ -67,6 +60,6 @@ class ContactListFragment :
 
     override fun onStop() {
         super.onStop()
-        chatController.dispose()
+        mViewModel.unregister(this)
     }
 }

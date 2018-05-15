@@ -2,18 +2,18 @@ package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
 import android.net.Uri
 import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseConversation
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseMessage
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseConversation
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseMessage
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.addIfNotContains
 import com.example.cpu02351_local.firebasechatapp.addOrUpdate
 import com.google.firebase.database.*
 import com.google.firebase.storage.FirebaseStorage
-import java.io.File
 
 class FirebaseChatDataSource : ChatDataSource() {
 
@@ -31,16 +31,14 @@ class FirebaseChatDataSource : ChatDataSource() {
         const val USERNAME = "name"
         const val TYPE = "type"
         const val CONTENT = "content"
-        private const val STORAGE_BASE_URL = "gs://fir-chat-47b52.appspot.com"
     }
 
     private lateinit var mCurrentUser: FirebaseUser
     private val mContacts = ArrayList<FirebaseUser>()
     private val mMessages = ArrayList<FirebaseMessage>()
     private val mConversations = ArrayList<FirebaseConversation>()
-    private val database = FirebaseDatabase.getInstance()
+    private val database = FirebaseHelper.getFirebaseInstance()
     private val databaseRef = database.reference!!
-    var storage = FirebaseStorage.getInstance()
 
     init {
         databaseRef.keepSynced(true)
@@ -48,8 +46,7 @@ class FirebaseChatDataSource : ChatDataSource() {
 
     override fun saveAvatar(userId: String, filePath: Any) {
         val uri = filePath as Uri
-                // Uri.fromFile(File(filePath))
-        storage.getReferenceFromUrl("$STORAGE_BASE_URL/images").child(userId).putFile(uri)
+        FirebaseHelper.getAvatarReference(userId).putFile(uri)
             .addOnSuccessListener {
                 val downloadUri = it.downloadUrl.toString()
                 Log.d("DEBUGGING", "URL $downloadUri")
@@ -72,7 +69,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     override fun loadUserDetail(id: String) {
-        databaseRef.child("$USERS/$id").addValueEventListener(object : ValueEventListener {
+        databaseRef.child("$USERS/$id").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 mCurrentUser = FirebaseUser()
                 mCurrentUser.fromMap(id, snapshot?.value)

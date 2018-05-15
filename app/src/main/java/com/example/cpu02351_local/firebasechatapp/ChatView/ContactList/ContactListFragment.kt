@@ -15,7 +15,6 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.Con
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.R
-import kotlinx.android.synthetic.main.fragment_contact_list.*
 import java.util.*
 
 class ContactListFragment :

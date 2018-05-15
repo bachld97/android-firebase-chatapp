@@ -12,17 +12,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+import com.example.cpu02351_local.firebasechatapp.ChatView.LogIn.AppLaunchActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.UserDetailViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.GlideDataBinder
+import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
-import android.provider.MediaStore
-import android.graphics.Bitmap
-import android.R.attr.data
-import android.util.Log
-import java.io.IOException
 
 
 class UserDetailFragment :
@@ -51,9 +47,17 @@ class UserDetailFragment :
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragmnent_user_deatil, container, false)
+
         mAvatar = v.findViewById(R.id.avatar)
         mAvatar.setOnClickListener {
             chooseNewAva()
+        }
+
+        v.findViewById<View>(R.id.log_out).setOnClickListener {
+            val intent = Intent(context, AppLaunchActivity::class.java)
+            LogInHelper.logOut(activity?.applicationContext!!)
+            context?.startActivity(intent)
+            activity?.finish()
         }
         return v
     }
@@ -96,6 +100,7 @@ class UserDetailFragment :
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             val filePath = data?.data
             if (filePath != null) {
+                GlideDataBinder.setImageUrl(mAvatar, filePath)
                 mViewModel.saveImage(filePath)
             }
         }

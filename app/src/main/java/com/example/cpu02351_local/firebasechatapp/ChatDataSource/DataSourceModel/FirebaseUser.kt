@@ -1,7 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
+import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 
 @Suppress("UNCHECKED_CAST")
 class FirebaseUser : FirebaseObject() {
@@ -20,7 +20,7 @@ class FirebaseUser : FirebaseObject() {
         }
         if (valueMap != null) {
             this.conversationIds = valueMap[FirebaseChatDataSource.CONVERSATIONS] ?: ""
-            this.name = valueMap[FirebaseChatDataSource.USERNAME] as String
+            this.name = valueMap[FirebaseChatDataSource.USERNAME] ?: ""
             this.contacts = valueMap[FirebaseChatDataSource.CONTACTS] ?: ""
             this.avaUrl = valueMap[FirebaseChatDataSource.AVA_URL] ?: ""
         }

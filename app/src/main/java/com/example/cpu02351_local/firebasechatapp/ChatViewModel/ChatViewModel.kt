@@ -121,5 +121,6 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         Log.d("DEBUGGING", "Filepath: $filePath")
         mChatDataSource.saveAvatar(loggedInUserId, filePath)
     }
+
 }
 

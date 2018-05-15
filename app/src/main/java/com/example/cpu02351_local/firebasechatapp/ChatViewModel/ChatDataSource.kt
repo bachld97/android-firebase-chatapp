@@ -47,6 +47,7 @@ abstract class ChatDataSource {
         mUserDetailObservers.removeIfContains(obs)
     }
 
+
     abstract fun loadUserDetail(id: String)
     abstract fun loadConversations(userId: String)
     abstract fun loadMessages(conversationId: String)

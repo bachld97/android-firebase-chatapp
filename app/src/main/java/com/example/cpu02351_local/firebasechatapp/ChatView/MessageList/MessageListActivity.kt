@@ -1,14 +1,15 @@
 package com.example.cpu02351_local.firebasechatapp.ChatView.MessageList
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
 import com.example.cpu02351_local.firebasechatapp.R
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
@@ -22,6 +23,7 @@ class MessageListActivity :
     private lateinit var mChatViewModel: ChatViewModel
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: MessageListAdapter
+    private lateinit var mLoggedInUser: String
 
     override fun onMessagesLoaded(messages: List<Message>) {
         Log.d("DEBUGGING", "Messages: ${messages.size}")
@@ -34,6 +36,11 @@ class MessageListActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message_list)
+
+        mLoggedInUser = applicationContext
+                .getSharedPreferences("mySharedPref", Context.MODE_PRIVATE)
+                .getString("loggedInUser", "")
+
         mChatViewModel = ChatViewModel(mChatModel, getLoggedInUser())
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
@@ -58,7 +65,7 @@ class MessageListActivity :
     }
 
     private fun getLoggedInUser(): String {
-        return "user1"
+        return mLoggedInUser
     }
 
     override fun onStart() {

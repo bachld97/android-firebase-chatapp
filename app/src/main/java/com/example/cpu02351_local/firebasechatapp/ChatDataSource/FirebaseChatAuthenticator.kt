@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.PASSWORD
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
@@ -14,8 +15,11 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
     private val databaseRef = database.reference!!
 
     override fun signUp(username: String, password: String, authenticationObserver: AuthenticationObserver) {
-        databaseRef.child(USERS).addListenerForSingleValueEvent(object : ValueEventListener{
+        Log.d("DEBUGGING", "Sign up clicked")
+        databaseRef.child(USERS).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
+                Log.d("DEBUGGING", "sign up callback")
+
                 if (snapshot!!.hasChild(username)) {
                     authenticationObserver.onAuthenticationResult(false, username)
                     return

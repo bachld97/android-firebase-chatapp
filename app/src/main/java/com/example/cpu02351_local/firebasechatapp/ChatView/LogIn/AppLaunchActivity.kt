@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
+import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatAuthenticator
 import com.example.cpu02351_local.firebasechatapp.ChatView.MainActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.AuthenticateViewModel
@@ -26,6 +27,7 @@ class AppLaunchActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Thread.sleep(300)
         loadLoggedInInformation()
         if (isLoggedIn && mLoggedInUser.isNotEmpty()) {
             logIn()
@@ -49,8 +51,11 @@ class AppLaunchActivity :
 
     override fun onCallbackResult(isSuccessful: Boolean, userId: String) {
         if (isSuccessful) {
+            mLoggedInUser = userId
             saveLogInInformation(userId)
             logIn()
+        } else {
+            Toast.makeText(this, "Something wrong, this error message is useless", Toast.LENGTH_SHORT).show()
         }
     }
 

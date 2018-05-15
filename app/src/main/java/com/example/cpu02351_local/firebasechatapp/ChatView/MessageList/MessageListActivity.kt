@@ -10,6 +10,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDat
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
@@ -37,14 +38,12 @@ class MessageListActivity :
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message_list)
 
-        mLoggedInUser = applicationContext
-                .getSharedPreferences("mySharedPref", Context.MODE_PRIVATE)
-                .getString("loggedInUser", "")
+        mLoggedInUser = LogInHelper.getLoggedInUser(applicationContext)
 
         mChatViewModel = ChatViewModel(mChatModel, getLoggedInUser())
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
-        mAdapter = MessageListAdapter(ArrayList(), mRecyclerView)
+        mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser)
         mRecyclerView.adapter = mAdapter
         mConversationId = intent.getStringExtra("conversationId")
 

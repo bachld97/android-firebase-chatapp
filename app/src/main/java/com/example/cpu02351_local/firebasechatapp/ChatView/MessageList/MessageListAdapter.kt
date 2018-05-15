@@ -5,9 +5,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemMessageListBinding
 
-class MessageListAdapter(private val mMessages: ArrayList<Message>, private val mRecyclerView: RecyclerView)
+class MessageListAdapter(private val mMessages: ArrayList<Message>, private val loggedInUser: String)
     : RecyclerView.Adapter<MessageListAdapter.MessageViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         val layoutInflater= LayoutInflater.from(parent.context)
@@ -20,7 +21,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
     }
 
     override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        holder.bind(mMessages[position])
+        holder.bind(mMessages[position], loggedInUser)
     }
 
     fun updateList(result: List<Message>) {
@@ -31,12 +32,12 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
     }
 
     class MessageViewHolder(private val binding: ItemMessageListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: Message) {
+        fun bind(message: Message, loggedInUser: String) {
             binding.message = message
             binding.executePendingBindings()
 
             // Mock feature - other users
-            if (message.byUser != "user1") {
+            if (message.byUser != loggedInUser) {
                 binding.root.setBackgroundColor(Color.MAGENTA)
             }
         }

@@ -32,7 +32,7 @@ class FirebaseConversation : FirebaseObject() {
             null
         }
         if (valueMap != null) {
-            lastModified = valueMap[FirebaseHelper.LAST_MOD]!!.toLong()
+            lastModified = valueMap[FirebaseHelper.LAST_MOD]?.toLong() ?: -1L
             userIds.clear()
             userIds.addAll((valueMap[FirebaseHelper.BY_USERS] as String).split(DELIM))
         }

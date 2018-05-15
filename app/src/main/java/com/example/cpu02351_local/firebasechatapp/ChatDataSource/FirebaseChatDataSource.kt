@@ -80,11 +80,8 @@ class FirebaseChatDataSource : ChatDataSource() {
                     // Do nothing for now
                     return
                 }
-                Log.d("DEBUGGING", conIds.toString())
-                for (id in conIds) {
-                    Log.d("DEBUGGING", id)
-                    loadConversation(id)
-                }
+                conIds.filter { it.isNotEmpty() }
+                        .forEach { loadConversation(it) }
             }
 
             override fun onCancelled(error: DatabaseError?) {
@@ -177,7 +174,21 @@ class FirebaseChatDataSource : ChatDataSource() {
 
 
     override fun loadContacts(userId: String) {
+        databaseRef.child(USERS).addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                snapshot?.children?.filter { it.key != userId }
+                        ?.forEach { loadContact(it.key) }
+            }
+
+            override fun onCancelled(p0: DatabaseError?) {
+                // Do nothing
+            }
+
+        })
+
+        /*
         databaseRef.child("$USERS/$userId")
+
                 .addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 val conIds = snapshot?.child(CONTACTS)!!
@@ -194,6 +205,7 @@ class FirebaseChatDataSource : ChatDataSource() {
             }
 
         })
+        */
     }
 
     fun loadContact(id: String) {

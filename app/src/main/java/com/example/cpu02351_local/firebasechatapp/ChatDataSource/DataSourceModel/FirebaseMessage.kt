@@ -1,6 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 
 class FirebaseMessage : FirebaseObject() {
@@ -31,10 +31,10 @@ class FirebaseMessage : FirebaseObject() {
         }
         if (valueMap != null) {
             this.id = id
-            this.atTime = valueMap[FirebaseChatDataSource.TIME]!!.toLong()
-            this.type = valueMap[FirebaseChatDataSource.TYPE] as String
-            this.byUser = valueMap[FirebaseChatDataSource.BY_USER] as String
-            this.content = valueMap[FirebaseChatDataSource.CONTENT] as String
+            this.atTime = valueMap[FirebaseHelper.TIME]!!.toLong()
+            this.type = valueMap[FirebaseHelper.TYPE] as String
+            this.byUser = valueMap[FirebaseHelper.BY_USER] as String
+            this.content = valueMap[FirebaseHelper.CONTENT] as String
         }
     }
 
@@ -49,10 +49,10 @@ class FirebaseMessage : FirebaseObject() {
 
     override fun toMap(): Map<String, Any> {
         val res = HashMap<String, String>()
-        res[FirebaseChatDataSource.TIME] = atTime.toString()
-        res[FirebaseChatDataSource.TYPE] = type
-        res[FirebaseChatDataSource.BY_USER] = byUser
-        res[FirebaseChatDataSource.CONTENT] = content
+        res[FirebaseHelper.TIME] = atTime.toString()
+        res[FirebaseHelper.TYPE] = type
+        res[FirebaseHelper.BY_USER] = byUser
+        res[FirebaseHelper.CONTENT] = content
         return res
     }
 }

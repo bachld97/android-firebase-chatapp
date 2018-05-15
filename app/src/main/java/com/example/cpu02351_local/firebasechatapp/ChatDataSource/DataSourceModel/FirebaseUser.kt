@@ -1,28 +1,33 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 
 @Suppress("UNCHECKED_CAST")
-class FirebaseUser : FirebaseObject() {
-    private lateinit var id: String
-    lateinit var conversationIds: String
-    private lateinit var name: String
-    private lateinit var contacts: String
-    lateinit var avaUrl: String
+class FirebaseUser(
+        var id: String = "",
+        private var password: String ="",
+        var conversationIds: String = "",
+        var name: String = id,
+        private var contacts: String = "",
+        var avaUrl: String ="") : FirebaseObject() {
 
     override fun fromMap(id: String, value: Any?) {
         this.id = id
+        this.name = id
+
         val valueMap = try {
             value as HashMap<String, String>
         } catch (e: TypeCastException) {
             null
         }
+
         if (valueMap != null) {
-            this.conversationIds = valueMap[FirebaseChatDataSource.CONVERSATIONS] ?: ""
-            this.name = valueMap[FirebaseChatDataSource.USERNAME] ?: ""
-            this.contacts = valueMap[FirebaseChatDataSource.CONTACTS] ?: ""
-            this.avaUrl = valueMap[FirebaseChatDataSource.AVA_URL] ?: ""
+            this.password = valueMap[FirebaseHelper.PASSWORD] ?: ""
+            this.conversationIds = valueMap[FirebaseHelper.CONVERSATIONS] ?: ""
+            this.name = valueMap[FirebaseHelper.USERNAME] ?: id
+            this.contacts = valueMap[FirebaseHelper.CONTACTS] ?: ""
+            this.avaUrl = valueMap[FirebaseHelper.AVA_URL] ?: ""
         }
     }
 
@@ -32,10 +37,11 @@ class FirebaseUser : FirebaseObject() {
 
     override fun toMap(): Map<String, Any> {
         val res = HashMap<String, String>()
-        res[FirebaseChatDataSource.AVA_URL] = avaUrl
-        res[FirebaseChatDataSource.CONTACTS] = contacts
-        res[FirebaseChatDataSource.CONVERSATIONS] = conversationIds
-        res[FirebaseChatDataSource.USERNAME] = name
+        res[FirebaseHelper.AVA_URL] = avaUrl
+        res[FirebaseHelper.CONTACTS] = contacts
+        res[FirebaseHelper.CONVERSATIONS] = conversationIds
+        res[FirebaseHelper.USERNAME] = name
+        res[FirebaseHelper.PASSWORD] = password
         return res
     }
 }

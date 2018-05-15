@@ -1,8 +1,8 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 
 import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource.Companion.DELIM
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.DELIM
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 
 class FirebaseConversation : FirebaseObject() {
@@ -32,16 +32,16 @@ class FirebaseConversation : FirebaseObject() {
             null
         }
         if (valueMap != null) {
-            lastModified = valueMap[FirebaseChatDataSource.LAST_MOD]!!.toLong()
+            lastModified = valueMap[FirebaseHelper.LAST_MOD]!!.toLong()
             userIds.clear()
-            userIds.addAll((valueMap[FirebaseChatDataSource.BY_USERS] as String).split(DELIM))
+            userIds.addAll((valueMap[FirebaseHelper.BY_USERS] as String).split(DELIM))
         }
     }
 
     override fun toMap(): Map<String, Any> {
         val res = HashMap<String, Any>()
-        // res[FirebaseChatDataSource.LAST_MOD] = lastModified
-        res[FirebaseChatDataSource.BY_USERS] = userIds.joinToString(DELIM)
+        // res[FirebaseHelper.LAST_MOD] = lastModified
+        res[FirebaseHelper.BY_USERS] = userIds.joinToString(DELIM)
         return res
     }
 

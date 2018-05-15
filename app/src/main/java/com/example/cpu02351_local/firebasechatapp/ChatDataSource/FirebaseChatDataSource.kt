@@ -3,9 +3,14 @@ package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseConversation
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseMessage
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.CONTACTS
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.CONVERSATIONS
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.DELIM
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.LAST_MOD
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.MESSAGE
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
@@ -13,25 +18,8 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.addIfNotContains
 import com.example.cpu02351_local.firebasechatapp.addOrUpdate
 import com.google.firebase.database.*
-import com.google.firebase.storage.FirebaseStorage
 
 class FirebaseChatDataSource : ChatDataSource() {
-
-    companion object {
-        const val AVA_URL = "ava_url"
-        const val USERS = "users"
-        const val CONVERSATIONS = "conversations"
-        const val MESSAGE = "messages"
-        const val CONTACTS = "contacts"
-        const val BY_USER = "by_user"
-        const val BY_USERS = "by_users"
-        const val LAST_MOD = "last_mod"
-        const val TIME = "at_time"
-        const val DELIM = " "
-        const val USERNAME = "name"
-        const val TYPE = "type"
-        const val CONTENT = "content"
-    }
 
     private lateinit var mCurrentUser: FirebaseUser
     private val mContacts = ArrayList<FirebaseUser>()

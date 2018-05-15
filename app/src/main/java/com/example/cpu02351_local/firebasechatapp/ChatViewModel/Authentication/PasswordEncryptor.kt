@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatViewModel
+package com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication
 
 class PasswordEncryptor {
     companion object {

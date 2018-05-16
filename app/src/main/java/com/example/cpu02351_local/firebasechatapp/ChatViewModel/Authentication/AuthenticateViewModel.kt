@@ -4,18 +4,14 @@ import io.reactivex.Single
 
 class AuthenticateViewModel(
         private val authenticator: ChatAuthenticator,
-        private val callback: AuthenticationCallback) : AuthenticationObserver {
+        private val callback: AuthenticationCallback) {
 
     var username =""
     var password =""
 
-    override fun onAuthenticationResult(result: Single<String>) {
-        callback.onCallbackResult(result)
-    }
-
     fun signIn() {
         val encryptedPass = PasswordEncryptor.encrypt(password)
-        authenticator.signIn(username, encryptedPass, this)
+        callback.onCallbackResult(authenticator.signIn(username, encryptedPass))
     }
 
     fun createAccount() {
@@ -25,6 +21,6 @@ class AuthenticateViewModel(
         }
 
         val encryptedPass = PasswordEncryptor.encrypt(password)
-        authenticator.signUp(username, encryptedPass, this)
+        callback.onCallbackResult(authenticator.signUp(username, encryptedPass))
     }
 }

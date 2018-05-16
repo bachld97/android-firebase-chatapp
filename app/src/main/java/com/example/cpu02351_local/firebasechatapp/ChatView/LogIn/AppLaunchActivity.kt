@@ -1,11 +1,9 @@
 package com.example.cpu02351_local.firebasechatapp.ChatView.LogIn
 
-import android.app.Activity
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatAuthenticator
 import com.example.cpu02351_local.firebasechatapp.ChatView.MainActivity
@@ -28,7 +26,6 @@ class AppLaunchActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Thread.sleep(300)
         loadLoggedInInformation()
         if (isLoggedIn && mLoggedInUser.isNotEmpty()) {
             logIn()

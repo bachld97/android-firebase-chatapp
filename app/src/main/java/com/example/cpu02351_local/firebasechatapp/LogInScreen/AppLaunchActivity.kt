@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.LogIn
+package com.example.cpu02351_local.firebasechatapp.LogInScreen
 
 import android.content.Intent
 import android.databinding.DataBindingUtil
@@ -17,6 +17,11 @@ import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchB
 class AppLaunchActivity :
         AuthenticationCallback,
         AppCompatActivity() {
+
+    override fun onStop() {
+        mViewModel.dispose()
+        super.onStop()
+    }
 
     private var isLoggedIn = false
     private var mLoggedInUser = ""

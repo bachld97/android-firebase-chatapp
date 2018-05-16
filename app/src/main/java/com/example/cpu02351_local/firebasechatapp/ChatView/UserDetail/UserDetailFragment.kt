@@ -12,7 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.example.cpu02351_local.firebasechatapp.ChatView.LogIn.AppLaunchActivity
+import com.example.cpu02351_local.firebasechatapp.LogInScreen.AppLaunchActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.UserDetailViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User

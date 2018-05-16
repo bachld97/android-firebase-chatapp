@@ -26,7 +26,7 @@ class FirebaseChatDataSource : ChatDataSource() {
     private val mConversations = ArrayList<FirebaseConversation>()
     private val database = FirebaseHelper.getFirebaseInstance()
     private val databaseRef = database.reference!!
-    private val eventRefernces = ArrayList<DatabaseReference>()
+    private val eventReferences = ArrayList<DatabaseReference>()
     private val eventListeners = ArrayList<ValueEventListener>()
 
     init {
@@ -58,11 +58,11 @@ class FirebaseChatDataSource : ChatDataSource() {
     }
 
     override fun dispose() {
-        eventRefernces.forEachIndexed { index, databaseReference ->
+        eventReferences.forEachIndexed { index, databaseReference ->
             databaseReference.removeEventListener(eventListeners[index])
         }
         eventListeners.clear()
-        eventRefernces.clear()
+        eventReferences.clear()
     }
 
     override fun loadUserDetail(id: String) {
@@ -78,7 +78,7 @@ class FirebaseChatDataSource : ChatDataSource() {
                 // Do Nothing for now
             }
         }
-        eventRefernces.add(reference)
+        eventReferences.add(reference)
         eventListeners.add(listener)
         reference.addListenerForSingleValueEvent(listener)
     }
@@ -101,7 +101,7 @@ class FirebaseChatDataSource : ChatDataSource() {
                 // Do nothing for now
             }
         }
-        eventRefernces.add(reference)
+        eventReferences.add(reference)
         eventListeners.add(listener)
         reference.addValueEventListener(listener)
     }
@@ -120,7 +120,7 @@ class FirebaseChatDataSource : ChatDataSource() {
                 // Do nothing for now
             }
         }
-        eventRefernces.add(reference)
+        eventReferences.add(reference)
         eventListeners.add(listener)
         reference.addValueEventListener(listener)
     }
@@ -183,7 +183,7 @@ class FirebaseChatDataSource : ChatDataSource() {
             }
 
         }
-        eventRefernces.add(reference)
+        eventReferences.add(reference)
         eventListeners.add(listener)
         reference.addValueEventListener(listener)
     }
@@ -208,7 +208,7 @@ class FirebaseChatDataSource : ChatDataSource() {
                 // Do nothing
             }
         }
-        eventRefernces.add(reference)
+        eventReferences.add(reference)
         eventListeners.add(listener)
         reference.addValueEventListener(listener)
     }
@@ -228,7 +228,7 @@ class FirebaseChatDataSource : ChatDataSource() {
             }
 
         }
-        eventRefernces.add(reference)
+        eventReferences.add(reference)
         eventListeners.add(listener)
         reference.addValueEventListener(listener)
     }

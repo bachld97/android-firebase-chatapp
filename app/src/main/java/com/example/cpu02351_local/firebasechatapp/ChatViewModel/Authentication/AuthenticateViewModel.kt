@@ -25,7 +25,6 @@ class AuthenticateViewModel(
             callback?.onAuthenticationError(e.message ?: "Sorry, something wrong happened")
             if (!disposable.isDisposed) disposable.dispose()
         }
-
     }
 
     fun signIn() {
@@ -41,5 +40,9 @@ class AuthenticateViewModel(
 
         val encryptedPass = PasswordEncryptor.encrypt(password)
         authenticator.signUp(username, encryptedPass).subscribe(authenticateResultHandle)
+    }
+
+    fun dispose() {
+        authenticator.dispose()
     }
 }

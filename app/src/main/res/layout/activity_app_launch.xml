@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:background="#BCF0F0F0"
         android:orientation="vertical"
-        tools:context=".ChatView.LogIn.AppLaunchActivity">
+        tools:context=".LogInScreen.AppLaunchActivity">
 
         <EditText
             android:text="@={viewModel.username}"

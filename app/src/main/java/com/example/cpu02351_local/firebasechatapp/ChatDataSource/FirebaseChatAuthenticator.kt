@@ -6,52 +6,75 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.ChatAuthenticator
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import io.reactivex.Single
+import io.reactivex.SingleEmitter
 
 class FirebaseChatAuthenticator : ChatAuthenticator() {
     private val database = FirebaseHelper.getFirebaseInstance()
     private val databaseRef = database.reference!!
 
+    private val eventReferences = ArrayList<DatabaseReference>()
+    private val eventListeners = ArrayList<ValueEventListener>()
+
+    override fun dispose() {
+        eventReferences.forEachIndexed { index, databaseReference ->
+            databaseReference.removeEventListener(eventListeners[index])
+        }
+        eventListeners.clear()
+        eventReferences.clear()
+    }
+
     override fun signUp(username: String, password: String): Single<String> {
-        return Single.create { emitter ->
-            databaseRef.child(USERS).addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    if (snapshot!!.hasChild(username)) {
-                        emitter.onError(Throwable("Username already exist"))
+        return Single.create { emitter -> firebaseSignUp(emitter, username, password) }
+    }
+
+    fun firebaseSignUp(emitter: SingleEmitter<String>, username: String, password: String) {
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                if (snapshot!!.hasChild(username)) {
+                    emitter.onError(Throwable("Username already exist"))
+                    return
+                }
+                emitter.onSuccess(username)
+                val u = FirebaseUser(username, password)
+                snapshot.ref.child(username).setValue(u.toMap())
+            }
+
+            override fun onCancelled(error: DatabaseError?) {
+                emitter.onError(Throwable("Network error, please try again later"))
+            }
+        }
+        val reference = databaseRef.child(USERS)
+        eventListeners.add(listener)
+        eventReferences.add(reference)
+        reference.addListenerForSingleValueEvent(listener)
+    }
+
+    fun firebaseSignIn(emitter: SingleEmitter<String>, username: String, password: String) {
+        val listener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot?) {
+                if (snapshot?.value != null) {
+                    if (snapshot.child(PASSWORD).value == password) {
+                        emitter.onSuccess(username)
                         return
                     }
-                    emitter.onSuccess(username)
-                    val u = FirebaseUser(username, password)
-                    snapshot.ref.child(username).setValue(u.toMap())
-                    snapshot.ref.removeEventListener(this)
                 }
+                emitter.onError(Throwable("Invalid log in information"))
+            }
 
-                override fun onCancelled(error: DatabaseError?) {
-                    emitter.onError(Throwable("Network error, please try again later"))
-                }
-            })
+            override fun onCancelled(p0: DatabaseError?) {
+                emitter.onError(Throwable("Network error, please try again later"))
+            }
         }
+        val reference = databaseRef.child(USERS)
+        eventListeners.add(listener)
+        eventReferences.add(reference)
+        reference.addListenerForSingleValueEvent(listener)
     }
 
     override fun signIn(username: String, password: String): Single<String> {
-        return Single.create { emitter ->
-            databaseRef.child("$USERS/$username").addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    if (snapshot?.value != null) {
-                        if (snapshot.child(PASSWORD).value == password) {
-                            emitter.onSuccess(username)
-                            return
-                        }
-                    }
-                    emitter.onError(Throwable("Invalid log in information"))
-                    snapshot?.ref?.removeEventListener(this)
-                }
-
-                override fun onCancelled(p0: DatabaseError?) {
-                    emitter.onError(Throwable("Network error, please try again later"))
-                }
-            })
-        }
+        return Single.create { emitter -> firebaseSignIn(emitter, username, password) }
     }
 }

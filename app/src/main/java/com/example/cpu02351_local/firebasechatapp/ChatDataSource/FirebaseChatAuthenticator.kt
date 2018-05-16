@@ -24,9 +24,10 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
                     emitter.onSuccess(username)
                     val u = FirebaseUser(username, password)
                     snapshot.ref.child(username).setValue(u.toMap())
+                    snapshot.ref.removeEventListener(this)
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(error: DatabaseError?) {
                     emitter.onError(Throwable("Network error, please try again later"))
                 }
             })
@@ -44,6 +45,7 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
                         }
                     }
                     emitter.onError(Throwable("Invalid log in information"))
+                    snapshot?.ref?.removeEventListener(this)
                 }
 
                 override fun onCancelled(p0: DatabaseError?) {

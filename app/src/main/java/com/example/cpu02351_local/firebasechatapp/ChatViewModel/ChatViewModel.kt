@@ -39,6 +39,7 @@ class ChatViewModel(private val mChatDataSource: ChatDataSource,
         mChatDataSource.unregisterConversationObserver(this)
         mChatDataSource.unregisterMessageObserver(this)
         mChatDataSource.unregisterUserDetailObserver(this)
+        mChatDataSource.dispose()
     }
 
     fun register(obs: ConversationViewObserver) {

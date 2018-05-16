@@ -13,7 +13,6 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.C
 import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchBinding
-import io.reactivex.Single
 
 class AppLaunchActivity :
         AuthenticationCallback,
@@ -36,10 +35,12 @@ class AppLaunchActivity :
         }
     }
 
-    override fun onCallbackResult(result: Single<String>) {
-        result.subscribe(
-                { approvedUserId -> performLogInFor(approvedUserId) },
-                { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show() })
+    override fun onAuthenticationSuccess(approvedUser: String) {
+        performLogInFor(approvedUser)
+    }
+
+    override fun onAuthenticationError(errorMessage: String) {
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show()
     }
 
     private fun performLogInFor(username: String) {

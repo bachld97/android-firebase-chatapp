@@ -1,41 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ChatView.LogIn.AppLaunchActivity"
-    android:background="#BCF0F0F0"
-    android:orientation="vertical">
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.AuthenticateViewModel"/>
+    </data>
 
-    <EditText
-        android:id="@+id/usernameField"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="text" />
+        android:layout_height="match_parent"
+        android:background="#BCF0F0F0"
+        android:orientation="vertical"
+        tools:context=".ChatView.LogIn.AppLaunchActivity">
 
-    <EditText
-        android:id="@+id/passwordField"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="textPassword" />
+        <EditText
+            android:text="@={viewModel.username}"
+            android:id="@+id/usernameField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="text" />
 
-    <Button
-        android:padding="8dp"
-        android:layout_gravity="center_horizontal"
-        android:id="@+id/btn_log_in"
-        android:text="Log in"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <EditText
+            android:text="@={viewModel.password}"
+            android:id="@+id/passwordField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword" />
 
-    <Button
-        android:padding="8dp"
-        android:textColor="#FAFAFA"
-        android:layout_gravity="center_horizontal"
-        android:background="@color/colorPrimary"
-        android:id="@+id/btn_sign_up"
-        android:text="Create account"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        <Button
+            android:onClick="@{() -> viewModel.signIn()}"
+            android:id="@+id/btn_log_in"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="8dp"
+            android:text="Log in" />
 
-</LinearLayout>
+        <Button
+            android:onClick="@{() -> viewModel.createAccount()}"
+            android:id="@+id/btn_sign_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@color/colorPrimary"
+            android:padding="8dp"
+            android:text="Create account"
+            android:textColor="#FAFAFA" />
+
+    </LinearLayout>
+
+</layout>

@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication
 
-import io.reactivex.Single
+import io.reactivex.SingleObserver
+import io.reactivex.disposables.Disposable
 
 class AuthenticateViewModel(
         private val authenticator: ChatAuthenticator,
@@ -9,18 +10,36 @@ class AuthenticateViewModel(
     var username =""
     var password =""
 
+    private val authenticateResultHandle = object : SingleObserver<String> {
+        private lateinit var disposable: Disposable
+        override fun onSuccess(t: String) {
+            callback.onAuthenticationSuccess(t)
+            if (!disposable.isDisposed) disposable.dispose()
+        }
+
+        override fun onSubscribe(d: Disposable) {
+            disposable = d
+        }
+
+        override fun onError(e: Throwable) {
+            callback.onAuthenticationError(e.message ?: "Sorry, something wrong happened")
+            if (!disposable.isDisposed) disposable.dispose()
+        }
+
+    }
+
     fun signIn() {
         val encryptedPass = PasswordEncryptor.encrypt(password)
-        callback.onCallbackResult(authenticator.signIn(username, encryptedPass))
+        authenticator.signIn(username, encryptedPass).subscribe(authenticateResultHandle)
     }
 
     fun createAccount() {
         if (username.isEmpty() || password.isEmpty()) {
-            callback.onCallbackResult(Single.error(Throwable("Username and password cannot be blank")))
+            callback.onAuthenticationError("Username and password cannot be empty")
             return
         }
 
         val encryptedPass = PasswordEncryptor.encrypt(password)
-        callback.onCallbackResult(authenticator.signUp(username, encryptedPass))
+        authenticator.signUp(username, encryptedPass).subscribe(authenticateResultHandle)
     }
 }

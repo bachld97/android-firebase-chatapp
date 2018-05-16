@@ -6,9 +6,9 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.*
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import com.example.cpu02351_local.firebasechatapp.addIfNotContains
-import com.example.cpu02351_local.firebasechatapp.addOrUpdateAll
-import com.example.cpu02351_local.firebasechatapp.removeIfContains
+import com.example.cpu02351_local.firebasechatapp.Utils.addIfNotContains
+import com.example.cpu02351_local.firebasechatapp.Utils.addOrUpdateAll
+import com.example.cpu02351_local.firebasechatapp.Utils.removeIfContains
 
 class ChatViewModel(private val mChatDataSource: ChatDataSource,
                     private val loggedInUserId: String) :

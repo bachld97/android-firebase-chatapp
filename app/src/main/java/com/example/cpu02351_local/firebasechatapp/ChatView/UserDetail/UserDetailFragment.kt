@@ -12,12 +12,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import com.example.cpu02351_local.firebasechatapp.LogInScreen.AppLaunchActivity
+import com.example.cpu02351_local.firebasechatapp.loginscreen.AuthenticationActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.UserDetailViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import com.example.cpu02351_local.firebasechatapp.GlideDataBinder
-import com.example.cpu02351_local.firebasechatapp.LogInHelper
+import com.example.cpu02351_local.firebasechatapp.Utils.GlideDataBinder
+import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 
 
@@ -54,7 +54,7 @@ class UserDetailFragment :
         }
 
         v.findViewById<View>(R.id.log_out).setOnClickListener {
-            val intent = Intent(context, AppLaunchActivity::class.java)
+            val intent = Intent(context, AuthenticationActivity::class.java)
             LogInHelper.logOut(activity?.applicationContext!!)
             context?.startActivity(intent)
             activity?.finish()

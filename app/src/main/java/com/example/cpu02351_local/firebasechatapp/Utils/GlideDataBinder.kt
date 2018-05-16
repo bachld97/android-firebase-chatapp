@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp
+package com.example.cpu02351_local.firebasechatapp.Utils
 
 import android.databinding.BindingAdapter
 import android.net.Uri

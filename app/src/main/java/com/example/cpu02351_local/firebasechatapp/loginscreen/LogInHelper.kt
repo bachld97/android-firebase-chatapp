@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp
+package com.example.cpu02351_local.firebasechatapp.loginscreen
 
 import android.content.Context
 
@@ -37,14 +37,14 @@ class LogInHelper {
 
         @JvmStatic
         fun logIn(context: Context, username: String) {
-            setLoggedIn(context,true)
-            setLoggedInUser(context,username)
+            setLoggedIn(context, true)
+            setLoggedInUser(context, username)
         }
 
         @JvmStatic
         fun logOut(context:Context) {
-            setLoggedIn(context,false)
-            setLoggedInUser(context,"")
+            setLoggedIn(context, false)
+            setLoggedInUser(context, "")
         }
     }
 }

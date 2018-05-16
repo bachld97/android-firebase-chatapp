@@ -1,9 +1,9 @@
-package com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication
+package com.example.cpu02351_local.firebasechatapp.loginscreen
 
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
-class AuthenticateViewModel(
+class AuthenticationViewModel(
         private val authenticator: ChatAuthenticator,
         private val callback: AuthenticationCallback?) {
 

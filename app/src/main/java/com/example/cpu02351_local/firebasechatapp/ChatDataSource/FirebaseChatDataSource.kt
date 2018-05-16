@@ -14,8 +14,8 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import com.example.cpu02351_local.firebasechatapp.addIfNotContains
-import com.example.cpu02351_local.firebasechatapp.addOrUpdate
+import com.example.cpu02351_local.firebasechatapp.Utils.addIfNotContains
+import com.example.cpu02351_local.firebasechatapp.Utils.addOrUpdate
 import com.google.firebase.database.*
 
 class FirebaseChatDataSource : ChatDataSource() {

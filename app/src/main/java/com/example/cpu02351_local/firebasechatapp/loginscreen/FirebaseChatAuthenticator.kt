@@ -1,9 +1,9 @@
-package com.example.cpu02351_local.firebasechatapp.ChatDataSource
+package com.example.cpu02351_local.firebasechatapp.loginscreen
 
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.PASSWORD
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.ChatAuthenticator
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference

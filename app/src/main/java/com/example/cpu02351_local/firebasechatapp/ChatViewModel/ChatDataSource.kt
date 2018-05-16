@@ -6,8 +6,8 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.Con
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import com.example.cpu02351_local.firebasechatapp.addIfNotContains
-import com.example.cpu02351_local.firebasechatapp.removeIfContains
+import com.example.cpu02351_local.firebasechatapp.Utils.addIfNotContains
+import com.example.cpu02351_local.firebasechatapp.Utils.removeIfContains
 
 abstract class ChatDataSource {
     protected val mConversationObservers: ArrayList<ConversationDataObserver> = ArrayList()

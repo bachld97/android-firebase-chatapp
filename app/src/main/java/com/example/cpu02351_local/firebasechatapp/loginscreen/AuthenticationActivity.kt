@@ -1,20 +1,15 @@
-package com.example.cpu02351_local.firebasechatapp.LogInScreen
+package com.example.cpu02351_local.firebasechatapp.loginscreen
 
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatAuthenticator
 import com.example.cpu02351_local.firebasechatapp.ChatView.MainActivity
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.AuthenticateViewModel
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.AuthenticationCallback
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.ChatAuthenticator
-import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchBinding
 
-class AppLaunchActivity :
+class AuthenticationActivity :
         AuthenticationCallback,
         AppCompatActivity() {
 
@@ -26,7 +21,7 @@ class AppLaunchActivity :
     private var isLoggedIn = false
     private var mLoggedInUser = ""
     private val mAuthenticator: ChatAuthenticator = FirebaseChatAuthenticator()
-    private val mViewModel = AuthenticateViewModel(mAuthenticator, this)
+    private val mViewModel = AuthenticationViewModel(mAuthenticator, this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

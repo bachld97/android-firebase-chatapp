@@ -1,6 +1,5 @@
 package com.example.cpu02351_local.firebasechatapp.ChatView.MessageList
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -10,7 +9,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDat
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
-import com.example.cpu02351_local.firebasechatapp.LogInHelper
+import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*

@@ -1,6 +1,8 @@
 package com.example.cpu02351_local.firebasechatapp.ChatView.LogIn
 
+import android.app.Activity
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
@@ -12,7 +14,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.A
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.ChatAuthenticator
 import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
-import kotlinx.android.synthetic.main.activity_app_launch.*
+import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchBinding
 
 class AppLaunchActivity :
         AuthenticationCallback,
@@ -20,8 +22,6 @@ class AppLaunchActivity :
 
     private var isLoggedIn = false
     private var mLoggedInUser = ""
-    private lateinit var logInButton: Button
-    private lateinit var signUpButton: Button
     private val mAuthenticator: ChatAuthenticator = FirebaseChatAuthenticator()
     private val mViewModel = AuthenticateViewModel(mAuthenticator, this)
 
@@ -32,20 +32,9 @@ class AppLaunchActivity :
         if (isLoggedIn && mLoggedInUser.isNotEmpty()) {
             logIn()
         } else {
-            setContentView(R.layout.activity_app_launch)
-            logInButton = findViewById(R.id.btn_log_in)
-            logInButton.setOnClickListener { _ ->
-                val username = usernameField.text.toString()
-                val rawPass = passwordField.text.toString()
-                mViewModel.signIn(username, rawPass)
-            }
-
-            signUpButton = findViewById(R.id.btn_sign_up)
-            signUpButton.setOnClickListener { _ ->
-                val username = usernameField.text.toString()
-                val rawPass = passwordField.text.toString()
-                mViewModel.createAccount(username, rawPass)
-            }
+            val binding = DataBindingUtil.setContentView<ActivityAppLaunchBinding>(this, R.layout.activity_app_launch)
+            binding.viewModel = mViewModel
+            binding.executePendingBindings()
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.loginscreen
 
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.PASSWORD
@@ -27,10 +28,18 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
     }
 
     override fun signUp(username: String, password: String): Single<String> {
-        return Single.create { emitter -> firebaseSignUp(emitter, username, password) }
+        val reference = databaseRef.child(USERS)
+        lateinit var listener: ValueEventListener
+        return Single.create<String> {
+            emitter -> listener = firebaseSignUp(emitter, reference, username, password)
+        }.doFinally {
+            Log.d("DEBUGGING", "Disposed!")
+            reference.removeEventListener(listener)
+        }
     }
 
-    fun firebaseSignUp(emitter: SingleEmitter<String>, username: String, password: String) {
+    fun firebaseSignUp(emitter: SingleEmitter<String>, reference: DatabaseReference,
+                       username: String, password: String) : ValueEventListener {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
                 if (snapshot!!.hasChild(username)) {
@@ -46,10 +55,8 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
                 emitter.onError(Throwable("Network error, please try again later"))
             }
         }
-        val reference = databaseRef.child(USERS)
-        eventListeners.add(listener)
-        eventReferences.add(reference)
         reference.addListenerForSingleValueEvent(listener)
+        return listener
     }
 
     fun firebaseSignIn(emitter: SingleEmitter<String>, username: String, password: String) {

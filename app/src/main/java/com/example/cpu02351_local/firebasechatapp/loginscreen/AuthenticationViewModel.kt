@@ -39,7 +39,8 @@ class AuthenticationViewModel(
         }
 
         val encryptedPass = PasswordEncryptor.encrypt(password)
-        authenticator.signUp(username, encryptedPass).subscribe(authenticateResultHandle)
+        authenticator.signUp(username, encryptedPass)
+                .subscribe(authenticateResultHandle)
     }
 
     fun dispose() {

@@ -15,6 +15,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication.C
 import com.example.cpu02351_local.firebasechatapp.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchBinding
+import io.reactivex.Single
 
 class AppLaunchActivity :
         AuthenticationCallback,
@@ -38,18 +39,16 @@ class AppLaunchActivity :
         }
     }
 
-    override fun onCallbackResult(isSuccessful: Boolean, userId: String) {
-        if (isSuccessful) {
-            mLoggedInUser = userId
-            saveLogInInformation(userId)
-            logIn()
-        } else {
-            Toast.makeText(this, "Something wrong, this error message is useless", Toast.LENGTH_SHORT).show()
-        }
+    override fun onCallbackResult(result: Single<String>) {
+        result.subscribe(
+                { approvedUserId -> performLogInFor(approvedUserId) },
+                { error -> Toast.makeText(this, error.message, Toast.LENGTH_SHORT).show() })
     }
 
-    private fun saveLogInInformation(username: String) {
+    private fun performLogInFor(username: String) {
+        mLoggedInUser = username
         LogInHelper.logIn(applicationContext, username)
+        logIn()
     }
 
     private fun logIn() {

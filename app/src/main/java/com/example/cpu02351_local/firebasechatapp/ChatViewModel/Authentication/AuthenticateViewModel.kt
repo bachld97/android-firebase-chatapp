@@ -1,5 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.ChatViewModel.Authentication
 
+import io.reactivex.Single
+
 class AuthenticateViewModel(
         private val authenticator: ChatAuthenticator,
         private val callback: AuthenticationCallback) : AuthenticationObserver {
@@ -7,8 +9,8 @@ class AuthenticateViewModel(
     var username =""
     var password =""
 
-    override fun onAuthenticationResult(result: Boolean, userId: String) {
-        callback.onCallbackResult(result, userId)
+    override fun onAuthenticationResult(result: Single<String>) {
+        callback.onCallbackResult(result)
     }
 
     fun signIn() {
@@ -17,6 +19,11 @@ class AuthenticateViewModel(
     }
 
     fun createAccount() {
+        if (username.isEmpty() || password.isEmpty()) {
+            callback.onCallbackResult(Single.error(Throwable("Username and password cannot be blank")))
+            return
+        }
+
         val encryptedPass = PasswordEncryptor.encrypt(password)
         authenticator.signUp(username, encryptedPass, this)
     }

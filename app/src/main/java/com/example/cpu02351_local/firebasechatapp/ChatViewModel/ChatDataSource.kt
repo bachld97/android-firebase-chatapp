@@ -4,10 +4,12 @@ import com.example.cpu02351_local.firebasechatapp.ChatViewModel.DataObserver.Use
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.ContactDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.ConversationDataObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageDataObserver
+import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.Utils.addIfNotContains
 import com.example.cpu02351_local.firebasechatapp.Utils.removeIfContains
+import java.util.*
 
 abstract class ChatDataSource {
     protected val mConversationObservers: ArrayList<ConversationDataObserver> = ArrayList()
@@ -53,12 +55,9 @@ abstract class ChatDataSource {
     abstract fun loadConversations(userId: String)
     abstract fun loadMessages(conversationId: String)
     abstract fun loadContacts(userId: String)
-
     abstract fun addConversation(users: Array<User>, conversationId: String)
     abstract fun addMessage(currentConversation: String, message: Message)
     abstract fun addContact(currentUser: String, contactId: String)
-
-
     abstract fun notifyDataChanged()
     abstract fun saveAvatar(userId: String, filePath: Any)
 }

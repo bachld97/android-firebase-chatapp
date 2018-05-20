@@ -31,5 +31,6 @@ class FirebaseHelper {
         fun getAvatarReference(userId: String) =
             getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$userId")
 
+        fun getFirebaseReference() = getFirebaseInstance().reference!!
     }
 }

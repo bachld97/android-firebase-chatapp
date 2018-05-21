@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.ConversationList
+package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -8,31 +8,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.ConversationViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.R
 
 class ConversationListFragment :
-        ConversationViewObserver,
+        ConversationObserver,
         Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(mViewModel: ChatViewModel): ConversationListFragment {
-            val tem = ConversationListFragment()
-            tem.mViewModel = mViewModel
-            return tem
+        fun newInstance(userId: String): ConversationListFragment {
+            val temp = ConversationListFragment()
+            temp.init(userId)
+            return temp
         }
     }
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: ConversationListAdapter
-    private lateinit var mViewModel: ChatViewModel
+    private var mConversationLoader: ConversationLoader = FirebaseConversationLoader()
+    private lateinit var mConversationViewModel: ConversationViewModel
 
-    override fun onConversationsLoaded(conversations: List<Conversation>) {
-        val c = conversations.sortedWith(Comparator { c1, c2 ->
-            c2.createdTime.compareTo(c1.createdTime)
-        })
-        mAdapter.updateList(c)
+    private fun init(userId: String) {
+        mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
+    }
+
+    override fun onConversationsLoaded(result: List<Conversation>) {
+        mAdapter.updateList(result)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,13 +45,15 @@ class ConversationListFragment :
         return root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     override fun onStart() {
         super.onStart()
-        mViewModel.register(this)
     }
 
     override fun onStop() {
         super.onStop()
-        mViewModel.unregister(this)
     }
 }

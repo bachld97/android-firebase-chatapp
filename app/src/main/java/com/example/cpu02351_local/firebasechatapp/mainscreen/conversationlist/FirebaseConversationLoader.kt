@@ -43,7 +43,7 @@ class FirebaseConversationLoader : ConversationLoader {
                                     }
 
                                     override fun onSubscribe(d: Disposable) {
-                                        disposable= d
+                                        disposable = d
                                     }
 
                                     override fun onError(e: Throwable) {

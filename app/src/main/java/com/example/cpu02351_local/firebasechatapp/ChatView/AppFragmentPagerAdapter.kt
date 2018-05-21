@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import com.example.cpu02351_local.firebasechatapp.ChatView.ContactList.ContactListFragment
-import com.example.cpu02351_local.firebasechatapp.ChatView.ConversationList.ConversationListFragment
+import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.ConversationListFragment
 import com.example.cpu02351_local.firebasechatapp.ChatView.UserDetail.UserDetailFragment
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 

@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.ConversationList
+package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 
 import android.content.Intent
 import android.support.v7.util.DiffUtil

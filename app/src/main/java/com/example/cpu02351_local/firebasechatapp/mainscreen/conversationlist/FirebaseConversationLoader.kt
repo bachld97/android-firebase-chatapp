@@ -1,23 +1,29 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 
 import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DaggerFirebaseReferenceComponent
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseConversation
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.CONVERSATIONS
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.DELIM
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
+import javax.inject.Inject
 
 class FirebaseConversationLoader : ConversationLoader {
 
-    private val databaseRef = FirebaseHelper.getFirebaseReference()
+    @Inject lateinit var databaseRef: DatabaseReference
+
+    init {
+        DaggerFirebaseReferenceComponent.create().injectInto(this)
+    }
 
     override fun loadConversations(userId: String): Observable<List<Conversation>> {
         val reference = databaseRef.child("$USERS/$userId")
@@ -39,6 +45,7 @@ class FirebaseConversationLoader : ConversationLoader {
 
                                     override fun onSuccess(t: Conversation) {
                                         resArray.add(t)
+                                        emitter.onNext(resArray)
                                         if (!disposable.isDisposed) disposable.dispose()
                                     }
 
@@ -47,13 +54,10 @@ class FirebaseConversationLoader : ConversationLoader {
                                     }
 
                                     override fun onError(e: Throwable) {
-                                        if (!disposable.isDisposed) disposable.dispose()
                                         emitter.onError(Throwable("Error loading conversation with id $id"))
                                     }
                                 })
                             }
-
-                    emitter.onNext(resArray)
                 }
 
                 override fun onCancelled(p0: DatabaseError?) {

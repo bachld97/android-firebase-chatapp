@@ -1,8 +1,14 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
+import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.FirebaseConversationLoader
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import dagger.Component
+import dagger.Module
+import dagger.Provides
 
+@Module
 class FirebaseHelper {
     companion object {
         const val AVA_URL = "ava_url"
@@ -31,6 +37,11 @@ class FirebaseHelper {
         fun getAvatarReference(userId: String) =
             getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$userId")
 
-        fun getFirebaseReference() = getFirebaseInstance().reference!!
     }
+    @Provides fun getFirebaseReference(): DatabaseReference = getFirebaseInstance().reference!!
+}
+
+@Component(modules = [(FirebaseHelper::class)])
+interface FirebaseReferenceComponent {
+    fun injectInto(loader: FirebaseConversationLoader)
 }

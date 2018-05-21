@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         mViewPager = findViewById(R.id.viewPager)
         mTabLayout = findViewById(R.id.tabLayout)
         mViewModel = ChatViewModel(mChatModel, getLoggedInUser())
-        mAdapter = AppFragmentPagerAdapter(supportFragmentManager, mViewModel)
+        mAdapter = AppFragmentPagerAdapter(supportFragmentManager, mLoggedInUser)
         mViewPager.adapter = mAdapter
         mTabLayout.setupWithViewPager(mViewPager)
      }

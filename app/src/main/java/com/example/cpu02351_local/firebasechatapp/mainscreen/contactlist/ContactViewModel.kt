@@ -2,7 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
 import android.content.Context
 import android.content.Intent
-import com.example.cpu02351_local.firebasechatapp.ChatView.MessageList.MessageListActivity
+import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import io.reactivex.Observer

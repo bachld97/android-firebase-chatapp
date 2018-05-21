@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.MessageList
+package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Color
 import android.support.v7.widget.RecyclerView
@@ -28,6 +28,12 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
         mMessages.clear()
         mMessages.addAll(result.reversed())
         notifyItemRangeInserted(0, mMessages.size - oldSize)
+    }
+
+    fun addMessage(message: Message) {
+        mMessages.add(message)
+        notifyDataSetChanged()
+        // notifyItemInserted(mMessages.size - 1)
     }
 
     class MessageViewHolder(private val binding: ItemMessageListBinding) : RecyclerView.ViewHolder(binding.root) {

@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.MessageList
+package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -15,41 +15,35 @@ import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 
 class MessageListActivity :
-        MessageViewObserver,
+        MessageView,
         AppCompatActivity() {
 
     private lateinit var mConversationId : String
-    private val mChatModel = FirebaseChatDataSource()
-    private lateinit var mChatViewModel: ChatViewModel
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: MessageListAdapter
     private lateinit var mLoggedInUser: String
+    private val mMessageLoader: MessageLoader = FirebaseMessageLoader()
+    private lateinit var mMessageViewModel: MessageViewModel
+
 
     companion object {
         const val CONVERSATION_ID = "conversation_id"
     }
 
-    override fun onMessagesLoaded(messages: List<Message>) {
-        Log.d("DEBUGGING", "Messages: ${messages.size}")
-        val m = messages.sortedWith(kotlin.Comparator { m1, m2 ->
-            m1.atTime.compareTo(m2.atTime)
-        })
-        mAdapter.updateList(m)
+    override fun onNewMessage(message: Message) {
+        mAdapter.addMessage(message)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message_list)
-
         mLoggedInUser = LogInHelper.getLoggedInUser(applicationContext)
-
-        mChatViewModel = ChatViewModel(mChatModel, getLoggedInUser())
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
         mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser)
         mRecyclerView.adapter = mAdapter
         mConversationId = intent.getStringExtra(CONVERSATION_ID)
-
+        mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
         registerOnClick()
     }
 
@@ -60,7 +54,7 @@ class MessageListActivity :
                 m.byUser = getLoggedInUser()
                 m.content = mess.text.toString()
                 m.atTime = System.currentTimeMillis()
-                mChatViewModel.sendMessage(mConversationId, m, intent.getStringExtra("byUsers"))
+                // mChatViewModel.sendMessage(mConversationId, m, intent.getStringExtra("byUsers"))
                 mess.text.clear()
             }
         }
@@ -70,16 +64,8 @@ class MessageListActivity :
         return mLoggedInUser
     }
 
-    override fun onStart() {
-        super.onStart()
-        mChatViewModel.init()
-        mChatViewModel.register(this)
-        mChatViewModel.loadMessages(mConversationId)
-    }
-
     override fun onStop() {
         super.onStop()
-        mChatViewModel.unregister(this)
-        mChatViewModel.dispose()
+        mMessageViewModel.dispose()
     }
 }

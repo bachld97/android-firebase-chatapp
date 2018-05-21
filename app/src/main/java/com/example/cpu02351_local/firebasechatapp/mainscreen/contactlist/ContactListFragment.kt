@@ -1,6 +1,5 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
-import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -9,9 +8,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.ChatView.MessageList.MessageListActivity
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.R
 import java.util.*

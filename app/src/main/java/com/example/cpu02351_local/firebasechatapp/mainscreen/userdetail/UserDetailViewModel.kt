@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail
 
 import android.net.Uri
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import io.reactivex.CompletableObserver
 import io.reactivex.SingleObserver
@@ -26,6 +27,7 @@ class UserDetailViewModel(private val userDetailLoader: UserDetailLoader,
     }
 
     private fun loadUserDetail() {
+        Log.d("DEBUGGING", "Run man :)")
         val obs = userDetailLoader.loadUserDetail(userId)
         dispose()
         obs.subscribe(object : SingleObserver<User> {
@@ -63,7 +65,6 @@ class UserDetailViewModel(private val userDetailLoader: UserDetailLoader,
             override fun onError(e: Throwable) {
                 userDetailView.onUpdateAvatarFailed()
             }
-
         })
     }
 }

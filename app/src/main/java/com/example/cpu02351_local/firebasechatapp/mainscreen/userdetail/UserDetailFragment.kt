@@ -122,13 +122,13 @@ class UserDetailFragment :
             super.onActivityResult(requestCode, resultCode, data)
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         init()
     }
 
-    override fun onStop() {
-        super.onStop()
+    override fun onDestroy() {
+        super.onDestroy()
         dispose()
     }
 }

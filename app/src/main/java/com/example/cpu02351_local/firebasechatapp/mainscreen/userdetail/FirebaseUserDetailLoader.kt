@@ -9,7 +9,10 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.UploadTask
 import io.reactivex.Completable
 import io.reactivex.Single
@@ -56,11 +59,13 @@ class FirebaseUserDetailLoader : UserDetailLoader {
                 } else {
                     return@Continuation ref.downloadUrl
                 }
-            }).addOnSuccessListener {task ->
+            }).addOnSuccessListener { task ->
                 if (task.isSuccessful) {
                     updateAvatarUrl(userId, task.result.toString())
-                    emitter.onComplete()
                 }
+                emitter.onComplete()
+            }.addOnCanceledListener {
+                emitter.onError(Throwable())
             }
         }
     }

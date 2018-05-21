@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.UserDetail
+package com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail
 
 import android.Manifest
 import android.app.Activity.RESULT_OK

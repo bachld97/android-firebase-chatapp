@@ -5,7 +5,7 @@ import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
-import com.example.cpu02351_local.firebasechatapp.ChatView.MainActivity
+import com.example.cpu02351_local.firebasechatapp.mainscreen.MainActivity
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchBinding
 

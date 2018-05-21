@@ -82,10 +82,10 @@ class FirebaseConversationLoader : ConversationLoader {
                 }
 
                 override fun onCancelled(p0: DatabaseError?) {
-                    emitter.onError(Throwable("Cannot fetch user"))
+                    emitter.onError(Throwable("Cannot fetch conversation information"))
                 }
             }
-            reference.addValueEventListener(listener)
+            reference.addListenerForSingleValueEvent(listener)
         }
         return obs.doFinally { reference.removeEventListener(listener)}
     }

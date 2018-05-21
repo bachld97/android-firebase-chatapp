@@ -1,10 +1,11 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView
+package com.example.cpu02351_local.firebasechatapp.mainscreen
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
+import com.example.cpu02351_local.firebasechatapp.ChatView.AppFragmentPagerAdapter
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatDataSource
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
 import com.example.cpu02351_local.firebasechatapp.R

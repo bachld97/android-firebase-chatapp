@@ -20,6 +20,14 @@ class Conversation(val id: String, users: Array<User> = arrayOf()) {
              users.sort()
             return users.joinToString(ID_DELIM).trim(ID_DELIM[0])
         }
+
+        fun uniqueId(userIds: Array<String>) : String {
+           if (userIds.size > 2) {
+               return UUID.randomUUID().toString()
+           }
+            userIds.sort()
+            return userIds.joinToString(ID_DELIM).trim(ID_DELIM[0])
+        }
     }
 
     override fun equals(other: Any?): Boolean {

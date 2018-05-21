@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ChatView.MainActivity">
+        <activity android:name=".mainscreen.MainActivity">
         </activity>
         <activity android:name=".ChatView.MessageList.MessageListActivity" />
         <activity android:name=".loginscreen.AuthenticationActivity"

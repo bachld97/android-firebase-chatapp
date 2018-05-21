@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
+import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.FirebaseContactLoader
 import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.FirebaseConversationLoader
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
@@ -43,5 +44,6 @@ class FirebaseHelper {
 
 @Component(modules = [(FirebaseHelper::class)])
 interface FirebaseReferenceComponent {
+    fun injectInto(loader: FirebaseContactLoader)
     fun injectInto(loader: FirebaseConversationLoader)
 }

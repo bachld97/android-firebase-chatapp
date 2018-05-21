@@ -1,19 +1,20 @@
-package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
+package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
 import android.content.Context
 import android.content.Intent
 import com.example.cpu02351_local.firebasechatapp.ChatView.MessageList.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
-class ConversationViewModel(private val conversationLoader: ConversationLoader,
-                            private val conversationView: ConversationView,
-                            private val userId: String) {
+class ContactViewModel(private val contactLoader: ContactLoader,
+                       private val contactView: ContactView,
+                       private val userId: String) {
     private var mDisposable: Disposable? = null
 
     init {
-        loadConversations()
+        loadContacts()
     }
 
     fun dispose() {
@@ -22,11 +23,10 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
         }
     }
 
-    private fun loadConversations() {
-        val obs = conversationLoader.loadConversations(userId)
+    private fun loadContacts() {
+        val obs = contactLoader.loadContacts(userId)
         dispose()
-        obs.subscribe(object : Observer<List<Conversation>> {
-
+        obs.subscribe(object : Observer<List<User>> {
             override fun onComplete() {
                 dispose()
             }
@@ -35,23 +35,21 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                 mDisposable = d
             }
 
-            override fun onNext(t: List<Conversation>) {
-                conversationView.onConversationsLoaded(t)
+            override fun onNext(t: List<User>) {
+                contactView.onContactsLoaded(t)
             }
 
             override fun onError(e: Throwable) {
                 // Do nothing for now
             }
+
         })
     }
 
-    fun onConversationClicked(context: Context, conversationId: String) {
-        startConversation(context, conversationId)
-    }
-
-    private fun startConversation(context: Context, conversationId: String) {
+    fun onContactClicked(context: Context, user: User) {
         val intent = Intent(context, MessageListActivity::class.java)
-        intent.putExtra(MessageListActivity.CONVERSATION_ID, conversationId)
+        val userIds = arrayOf(userId, user.id)
+        intent.putExtra(MessageListActivity.CONVERSATION_ID, Conversation.uniqueId(userIds))
         context.startActivity(intent)
     }
 }

@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView.ContactList
+package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,42 +11,53 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatView.MessageList.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.ContactViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.R
 import java.util.*
 
 class ContactListFragment :
-        ContactViewObserver,
+        ContactView,
         Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance(mViewModel: ChatViewModel): ContactListFragment {
+        fun newInstance(userId: String): ContactListFragment {
             val res = ContactListFragment()
-            res.mViewModel = mViewModel
+            res.userId = userId
+            res.init()
             return res
         }
     }
 
+    private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: ContactListAdapter
-    private lateinit var mViewModel: ChatViewModel
+    private var mContactLoader: ContactLoader = FirebaseContactLoader()
+    private lateinit var mContactViewModel: ContactViewModel
     private lateinit var mCreateGroupChat: FloatingActionButton
 
-    override fun onContactsLoaded(contacts: List<User>) {
-        mAdapter.updateContacts(contacts.sortedWith(kotlin.Comparator { c1, c2 ->  c1.name.compareTo(c2.name, true)}))
+    private fun init() {
+        mContactViewModel = ContactViewModel(mContactLoader, this, userId)
+    }
+
+    private fun dispose() {
+        mContactViewModel.dispose()
+    }
+
+    override fun onContactsLoaded(res: List<User>) {
+        mAdapter.updateContacts(res.sortedWith(kotlin.Comparator { c1, c2 ->  c1.name.compareTo(c2.name, true)}))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_contact_list, container, false)
         mRecyclerView = v.findViewById(R.id.recyclerView)
-        mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mViewModel)
+        mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.adapter = mAdapter
-        mCreateGroupChat = v.findViewById(R.id.createGroupChat)
 
+        /*
+        mCreateGroupChat = v.findViewById(R.id.createGroupChat)
         mCreateGroupChat.setOnClickListener {
             val users = arrayOf(
                         User(currentUser()),
@@ -57,20 +68,12 @@ class ContactListFragment :
             intent.putExtra("byUsers", users.joinToString(Conversation.ID_DELIM))
             context?.startActivity(intent)
         }
+        */
         return v
-    }
-
-    override fun onStart() {
-        super.onStart()
-        mViewModel.register(this)
-    }
-
-    private fun currentUser(): String {
-        return "user1"
     }
 
     override fun onStop() {
         super.onStop()
-        mViewModel.unregister(this)
+        dispose()
     }
 }

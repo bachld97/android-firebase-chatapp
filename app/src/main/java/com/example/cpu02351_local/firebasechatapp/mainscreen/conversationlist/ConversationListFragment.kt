@@ -19,17 +19,24 @@ class ConversationListFragment :
         @JvmStatic
         fun newInstance(userId: String): ConversationListFragment {
             val temp = ConversationListFragment()
-            temp.init(userId)
+            temp.userId = userId
+            temp.init()
             return temp
         }
     }
+
+    private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: ConversationListAdapter
     private var mConversationLoader: ConversationLoader = FirebaseConversationLoader()
     private lateinit var mConversationViewModel: ConversationViewModel
 
-    private fun init(userId: String) {
+    private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
+    }
+
+    private fun dispose() {
+        mConversationViewModel.dispose()
     }
 
     override fun onConversationsLoaded(result: List<Conversation>) {
@@ -40,13 +47,13 @@ class ConversationListFragment :
         val root = inflater.inflate(R.layout.fragment_conversation_list, container, false)
         mRecyclerView = root.findViewById(R.id.conversationListContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView)
+        mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
         mRecyclerView.adapter = mAdapter
         return root
     }
 
     override fun onStop() {
         super.onStop()
-        mConversationViewModel.dispose()
+        dispose()
     }
 }

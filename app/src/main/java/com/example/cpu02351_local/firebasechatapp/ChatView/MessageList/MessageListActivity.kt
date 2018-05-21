@@ -25,6 +25,10 @@ class MessageListActivity :
     private lateinit var mAdapter: MessageListAdapter
     private lateinit var mLoggedInUser: String
 
+    companion object {
+        const val CONVERSATION_ID = "conversation_id"
+    }
+
     override fun onMessagesLoaded(messages: List<Message>) {
         Log.d("DEBUGGING", "Messages: ${messages.size}")
         val m = messages.sortedWith(kotlin.Comparator { m1, m2 ->
@@ -44,7 +48,7 @@ class MessageListActivity :
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
         mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser)
         mRecyclerView.adapter = mAdapter
-        mConversationId = intent.getStringExtra("conversationId")
+        mConversationId = intent.getStringExtra(CONVERSATION_ID)
 
         registerOnClick()
     }

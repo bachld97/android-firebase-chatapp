@@ -22,5 +22,4 @@ class AppFragmentPagerAdapter(fm: FragmentManager, userId: String) : FragmentPag
 
     override fun getCount(): Int = fragments.size
 
-
 }

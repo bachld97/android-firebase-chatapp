@@ -9,18 +9,19 @@ import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.ChatView.MessageList.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationListBinding
+import java.util.*
 
 
-class ConversationListAdapter(private val mConversations: ArrayList<Conversation>, private val mRecyclerView: RecyclerView)
+class ConversationListAdapter(private val mConversations: ArrayList<Conversation>,
+                              private val mRecyclerView: RecyclerView,
+                              private val mViewModel: ConversationViewModel)
     : RecyclerView.Adapter<ConversationListAdapter.ConversationViewHolder>() {
 
     private val mItemAction: View.OnClickListener? = View.OnClickListener { v ->
         val pos = mRecyclerView.getChildAdapterPosition(v)
         if (pos != RecyclerView.NO_POSITION) {
             val context = mRecyclerView.context
-            val intent = Intent(context, MessageListActivity::class.java)
-            intent.putExtra("conversationId", mConversations[pos].id)
-            context.startActivity(intent)
+            mViewModel.onConversationClicked(context, mConversations[pos].id)
         }
     }
 
@@ -43,6 +44,10 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
     }
 
     fun updateList(newList: List<Conversation>) {
+        Collections.sort(newList, kotlin.Comparator { con1, con2 ->
+            return@Comparator con1.createdTime.compareTo(con2.createdTime)
+        })
+
         val oldList = ArrayList<Conversation>(mConversations)
         val diffResult = DiffUtil.calculateDiff(ConversationDiffCallback(oldList, newList), true)
 

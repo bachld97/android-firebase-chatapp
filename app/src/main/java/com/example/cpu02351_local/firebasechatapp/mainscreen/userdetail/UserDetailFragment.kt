@@ -4,17 +4,18 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.loginscreen.AuthenticationActivity
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.UserDetailViewObserver
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
 import com.example.cpu02351_local.firebasechatapp.Utils.GlideDataBinder
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
@@ -22,10 +23,12 @@ import com.example.cpu02351_local.firebasechatapp.R
 
 
 class UserDetailFragment :
-        UserDetailViewObserver,
+        UserDetailView,
         Fragment() {
 
-    private lateinit var mViewModel: ChatViewModel
+    private var mUserDetailLoader: UserDetailLoader = FirebaseUserDetailLoader()
+    private lateinit var userId: String
+    private lateinit var mUserDetailViewModel: UserDetailViewModel
     private lateinit var mAvatar: ImageView
 
     companion object {
@@ -34,15 +37,27 @@ class UserDetailFragment :
         const val STORAGE_PERM = 114
 
         @JvmStatic
-        fun newInstance(mViewModel: ChatViewModel): UserDetailFragment {
+        fun newInstance(userId: String): UserDetailFragment {
             val res = UserDetailFragment()
-            res.mViewModel = mViewModel
+            res.userId = userId
             return res
         }
     }
 
-    override fun onUserDetailLoaded(user: User) {
-        GlideDataBinder.setImageUrl(mAvatar, user.avaUrl)
+    private fun init() {
+        mUserDetailViewModel = UserDetailViewModel(mUserDetailLoader, this, userId)
+    }
+
+    private fun dispose() {
+        mUserDetailViewModel.dispose()
+    }
+
+    override fun onUpdateAvatarFailed() {
+        Toast.makeText(context, "Failed to change profile picture", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onUserDetailLoaded(userDetail: User) {
+        GlideDataBinder.setImageUrl(mAvatar, userDetail.avaUrl)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -100,8 +115,7 @@ class UserDetailFragment :
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             val filePath = data?.data
             if (filePath != null) {
-                GlideDataBinder.setImageUrl(mAvatar, filePath)
-                mViewModel.saveImage(filePath)
+                mUserDetailViewModel.changeAvatar(filePath)
             }
         }
         else
@@ -110,11 +124,11 @@ class UserDetailFragment :
 
     override fun onStart() {
         super.onStart()
-        mViewModel.register(this)
+        init()
     }
 
     override fun onStop() {
-        mViewModel.unregister(this)
         super.onStop()
+        dispose()
     }
 }

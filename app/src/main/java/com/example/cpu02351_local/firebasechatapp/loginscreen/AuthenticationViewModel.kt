@@ -5,7 +5,7 @@ import io.reactivex.disposables.Disposable
 
 class AuthenticationViewModel(
         private val authenticator: ChatAuthenticator,
-        private val callback: AuthenticationCallback?) {
+        private val authenticationView: AuthenticationView?) {
 
     var username =""
     var password =""
@@ -13,7 +13,7 @@ class AuthenticationViewModel(
     private val authenticateResultHandle = object : SingleObserver<String> {
         private lateinit var disposable: Disposable
         override fun onSuccess(t: String) {
-            callback?.onAuthenticationSuccess(t)
+            authenticationView?.onAuthenticationSuccess(t)
             if (!disposable.isDisposed) disposable.dispose()
         }
 
@@ -22,8 +22,7 @@ class AuthenticationViewModel(
         }
 
         override fun onError(e: Throwable) {
-            callback?.onAuthenticationError(e.message ?: "Sorry, something wrong happened")
-            if (!disposable.isDisposed) disposable.dispose()
+            authenticationView?.onAuthenticationError(e.message ?: "Sorry, something wrong happened")
         }
     }
 
@@ -34,7 +33,7 @@ class AuthenticationViewModel(
 
     fun createAccount() {
         if (username.isEmpty() || password.isEmpty()) {
-            callback?.onAuthenticationError("Username and password cannot be empty")
+            authenticationView?.onAuthenticationError("Username and password cannot be empty")
             return
         }
 

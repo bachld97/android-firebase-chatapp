@@ -62,20 +62,17 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
     fun firebaseSignIn(emitter: SingleEmitter<String>, username: String, password: String) {
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot?) {
-                if (snapshot?.value != null) {
-                    if (snapshot.child(PASSWORD).value == password) {
+                if (snapshot?.value != null && snapshot.child(PASSWORD).value == password) {
                         emitter.onSuccess(username)
-                        return
-                    }
-                }
-                emitter.onError(Throwable("Invalid log in information"))
+                } else
+                    emitter.onError(Throwable("Invalid log in information"))
             }
 
             override fun onCancelled(p0: DatabaseError?) {
                 emitter.onError(Throwable("Network error, please try again later"))
             }
         }
-        val reference = databaseRef.child(USERS)
+        val reference = databaseRef.child("$USERS/$username")
         eventListeners.add(listener)
         eventReferences.add(reference)
         reference.addListenerForSingleValueEvent(listener)

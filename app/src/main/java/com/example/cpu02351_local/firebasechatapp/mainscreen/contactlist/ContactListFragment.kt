@@ -25,7 +25,6 @@ class ContactListFragment :
         fun newInstance(userId: String): ContactListFragment {
             val res = ContactListFragment()
             res.userId = userId
-            res.init()
             return res
         }
     }
@@ -39,6 +38,9 @@ class ContactListFragment :
 
     private fun init() {
         mContactViewModel = ContactViewModel(mContactLoader, this, userId)
+        mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
+        mRecyclerView.layoutManager = LinearLayoutManager(context)
+        mRecyclerView.adapter = mAdapter
     }
 
     private fun dispose() {
@@ -52,12 +54,10 @@ class ContactListFragment :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val v = inflater.inflate(R.layout.fragment_contact_list, container, false)
         mRecyclerView = v.findViewById(R.id.recyclerView)
-        mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
-        mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mRecyclerView.adapter = mAdapter
 
-        /*
         mCreateGroupChat = v.findViewById(R.id.createGroupChat)
+        mCreateGroupChat.visibility = View.INVISIBLE
+        /*
         mCreateGroupChat.setOnClickListener {
             val users = arrayOf(
                         User(currentUser()),
@@ -70,6 +70,11 @@ class ContactListFragment :
         }
         */
         return v
+    }
+
+    override fun onStart() {
+        super.onStart()
+        init()
     }
 
     override fun onStop() {

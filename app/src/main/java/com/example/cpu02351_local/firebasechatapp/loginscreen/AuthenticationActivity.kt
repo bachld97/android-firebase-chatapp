@@ -10,7 +10,7 @@ import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityAppLaunchBinding
 
 class AuthenticationActivity :
-        AuthenticationCallback,
+        AuthenticationView,
         AppCompatActivity() {
 
     override fun onStop() {

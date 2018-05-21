@@ -20,7 +20,6 @@ class ConversationListFragment :
         fun newInstance(userId: String): ConversationListFragment {
             val temp = ConversationListFragment()
             temp.userId = userId
-            temp.init()
             return temp
         }
     }
@@ -33,6 +32,8 @@ class ConversationListFragment :
 
     private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
+        mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
+        mRecyclerView.adapter = mAdapter
     }
 
     private fun dispose() {
@@ -47,9 +48,12 @@ class ConversationListFragment :
         val root = inflater.inflate(R.layout.fragment_conversation_list, container, false)
         mRecyclerView = root.findViewById(R.id.conversationListContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
-        mRecyclerView.adapter = mAdapter
         return root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        init()
     }
 
     override fun onStop() {

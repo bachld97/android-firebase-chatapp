@@ -2,6 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.ChatDataSource
 
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.FirebaseContactLoader
 import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.FirebaseConversationLoader
+import com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail.FirebaseUserDetailLoader
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
@@ -26,6 +27,7 @@ class FirebaseHelper {
         const val TYPE = "type"
         const val CONTENT = "content"
         const val PASSWORD = "password"
+        const val AVA = "ava"
 
         private const val STORAGE_BASE_URL = "gs://fir-chat-47b52.appspot.com"
         @JvmStatic
@@ -36,7 +38,7 @@ class FirebaseHelper {
 
         @JvmStatic
         fun getAvatarReference(userId: String) =
-            getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$userId")
+            getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$AVA/$userId")
 
     }
     @Provides fun getFirebaseReference(): DatabaseReference = getFirebaseInstance().reference!!
@@ -46,4 +48,5 @@ class FirebaseHelper {
 interface FirebaseReferenceComponent {
     fun injectInto(loader: FirebaseContactLoader)
     fun injectInto(loader: FirebaseConversationLoader)
+    fun injectInto(loader: FirebaseUserDetailLoader)
 }

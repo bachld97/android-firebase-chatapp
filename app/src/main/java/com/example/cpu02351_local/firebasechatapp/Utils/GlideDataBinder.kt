@@ -5,11 +5,9 @@ import android.net.Uri
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.Key
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import java.io.File
-import java.net.URL
 
 
 class GlideDataBinder {
@@ -30,16 +28,15 @@ class GlideDataBinder {
                     .into(imageView)
         }
 
-        fun setImageOffline(imageView: ImageView, url: Uri) {
+        fun setImageOffline(imageView: ImageView, pictureUri: Uri) {
             val context = imageView.context
             val options = RequestOptions()
             options.centerCrop()
             options.sizeMultiplier(0.3f)
-            Glide.with(context).load(File(url.path))
-                    .thumbnail(0.25f)
+            Glide.with(context).load("file://${pictureUri.path}")
                     .apply(options)
                     .into(imageView)
-            Log.d("DEBUGGING", url.path)
+            Log.d("DEBUGGING", pictureUri.path)
         }
     }
 }

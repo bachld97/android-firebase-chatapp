@@ -31,9 +31,10 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
     }
 
     fun addMessage(message: Message) {
-        mMessages.add(message)
-        notifyDataSetChanged()
-        // notifyItemInserted(mMessages.size - 1)
+        if (!mMessages.contains(message)) {
+            mMessages.add(message)
+            notifyItemInserted(mMessages.size - 1)
+        }
     }
 
     class MessageViewHolder(private val binding: ItemMessageListBinding) : RecyclerView.ViewHolder(binding.root) {

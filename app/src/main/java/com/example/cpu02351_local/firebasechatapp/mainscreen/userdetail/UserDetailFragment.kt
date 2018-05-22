@@ -115,6 +115,7 @@ class UserDetailFragment :
         if (requestCode == PICK_IMAGE && resultCode == RESULT_OK) {
             val filePath = data?.data
             if (filePath != null) {
+                GlideDataBinder.setImageOffline(mAvatar, filePath)
                 mUserDetailViewModel.changeAvatar(filePath)
             }
         }

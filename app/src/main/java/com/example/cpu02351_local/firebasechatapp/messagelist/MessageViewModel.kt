@@ -32,7 +32,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
             override fun onNext(t: Message) {
                 messageView.onNewMessage(t)
-                dispose()
             }
 
             override fun onError(e: Throwable) {

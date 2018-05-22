@@ -63,7 +63,6 @@ class FirebaseUserDetailLoader : UserDetailLoader {
                 if (task.isSuccessful) {
                     updateAvatarUrl(userId, task.result.toString())
                 }
-                emitter.onComplete()
             }.addOnCanceledListener {
                 emitter.onError(Throwable())
             }

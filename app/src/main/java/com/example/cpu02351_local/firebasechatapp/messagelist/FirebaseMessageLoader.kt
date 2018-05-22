@@ -6,10 +6,7 @@ import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.CONVERSATIONS
 import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.MESSAGE
 import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import javax.inject.Inject
@@ -26,7 +23,8 @@ class FirebaseMessageLoader: MessageLoader {
     override fun loadMessages(conversationId: String): Observable<Message> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
         lateinit var listener: ChildEventListener
-        val obs = Observable.create<Message> { emitter ->  
+        val obs = Observable.create<Message> { emitter ->
+            // Subsequent loads
             listener = object : ChildEventListener {
                 override fun onCancelled(p0: DatabaseError?) {
                     // Do nothing here?
@@ -45,16 +43,20 @@ class FirebaseMessageLoader: MessageLoader {
                 }
 
                 override fun onChildAdded(snapshot: DataSnapshot?, previousChildName: String?) {
-                    Log.d("DEBUGGING", "onChildAdded")
                     val message = FirebaseMessage()
                     message.fromMap(snapshot?.key as String, snapshot.value)
                     emitter.onNext(message.toMessage())
                 }
             }
-            reference.addChildEventListener(listener)
+
+            reference.apply {
+                addChildEventListener(listener)
+            }
         }
 
-        return obs.doFinally { reference.removeEventListener(listener) }
+        return obs.doFinally { reference.apply {
+            removeEventListener(listener)
+        } }
     }
 
     override fun addMessage(conversationId: String, message: Message): Completable {

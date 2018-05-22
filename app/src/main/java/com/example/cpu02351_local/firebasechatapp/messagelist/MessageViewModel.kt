@@ -42,9 +42,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         })
     }
 
-    fun sendMessage(conId: String, message: Message, byUsers: String?) {
-        val list = (byUsers?.split(Conversation.ID_DELIM)
-                ?: conId.split(Conversation.ID_DELIM))
+    fun sendMessage(conId: String, message: Message, byUsers: String) {
+        val list = byUsers.split(Conversation.ID_DELIM)
         val com = messageLoader.addMessage(conId, message, list)
         com.subscribe(object : CompletableObserver {
             override fun onComplete() {

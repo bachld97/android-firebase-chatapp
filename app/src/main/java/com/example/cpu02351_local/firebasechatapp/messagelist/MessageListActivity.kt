@@ -1,5 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -25,6 +27,14 @@ class MessageListActivity :
     companion object {
         const val BY_USERS_STRING = "by_users_string"
         const val CONVERSATION_ID = "conversation_id"
+
+        @JvmStatic
+        fun newInstance(context: Context, conId: String, byUsers: String? = null) : Intent {
+            val intent = Intent(context, MessageListActivity::class.java)
+            intent.putExtra(CONVERSATION_ID, conId)
+            intent.putExtra(BY_USERS_STRING, byUsers ?: "")
+            return intent
+        }
     }
 
     override fun onNewMessage(message: Message) {

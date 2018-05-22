@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.Message
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
@@ -49,8 +50,7 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
     }
 
     private fun startConversation(context: Context, conversationId: String) {
-        val intent = Intent(context, MessageListActivity::class.java)
-        intent.putExtra(MessageListActivity.CONVERSATION_ID, conversationId)
+        val intent = MessageListActivity.newInstance(context, conversationId)
         context.startActivity(intent)
     }
 }

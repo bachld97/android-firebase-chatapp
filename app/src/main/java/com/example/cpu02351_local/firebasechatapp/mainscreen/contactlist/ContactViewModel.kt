@@ -43,9 +43,9 @@ class ContactViewModel(private val contactLoader: ContactLoader,
     }
 
     fun onContactClicked(context: Context, user: User) {
-        val intent = Intent(context, MessageListActivity::class.java)
         val userIds = arrayOf(userId, user.id)
-        intent.putExtra(MessageListActivity.CONVERSATION_ID, Conversation.uniqueId(userIds))
+        val conId = Conversation.uniqueId(userIds)
+        val intent = MessageListActivity.newInstance(context, conId, conId)
         context.startActivity(intent)
     }
 }

@@ -6,6 +6,5 @@ import io.reactivex.ObservableEmitter
 import io.reactivex.Single
 
 interface ConversationLoader {
-    fun loadConversations(userId: String): Observable<List<Conversation>>
-    fun loadConversation(conversationId: String): Single<Conversation>
+    fun loadConversations(userId: String): Single<List<Conversation>>
 }

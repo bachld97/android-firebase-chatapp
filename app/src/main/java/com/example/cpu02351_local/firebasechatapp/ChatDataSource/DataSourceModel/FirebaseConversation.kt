@@ -23,6 +23,11 @@ class FirebaseConversation : FirebaseObject() {
         }
     }
 
+    fun toConversationFromMap(id: String, value: Any?) : Conversation {
+        this.fromMap(id, value)
+        return this.toConversation()
+    }
+
     override fun fromMap(id: String, value: Any?) {
         this.id = id
         val valueMap = try {

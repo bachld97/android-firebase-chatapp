@@ -2,6 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.content.Context
 import android.content.Intent
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 
@@ -43,32 +45,29 @@ class MessageListActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_message_list)
+        mConversationId = intent.getStringExtra(CONVERSATION_ID)
+        val binding = DataBindingUtil.setContentView<ActivityMessageListBinding>(this, R.layout.activity_message_list)
+        mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
+        binding.viewModel = mMessageViewModel
+        binding.executePendingBindings()
         mLoggedInUser = LogInHelper.getLoggedInUser(applicationContext)
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
         mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser)
         mRecyclerView.adapter = mAdapter
-        mConversationId = intent.getStringExtra(CONVERSATION_ID)
-        mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
-        registerOnClick()
-    }
-
-    private fun registerOnClick() {
-        sendMes.setOnClickListener {
-            if (mess.text.isNotEmpty()) {
-                val m = Message(UUID.randomUUID().toString())
-                m.byUser = getLoggedInUser()
-                m.content = mess.text.toString()
-                m.atTime = System.currentTimeMillis()
-                mMessageViewModel.sendMessage(mConversationId, m, intent.getStringExtra(BY_USERS_STRING))
-                mess.text.clear()
-            }
-        }
     }
 
     override fun onError() {
         // Do nothing
+    }
+
+    override fun addMessage() {
+        val m = Message(UUID.randomUUID().toString())
+        m.byUser = getLoggedInUser()
+        m.content = mess.text.toString()
+        m.atTime = System.currentTimeMillis()
+        mMessageViewModel.sendMessage(mConversationId, m, intent.getStringExtra(BY_USERS_STRING))
+        mess.text.clear()
     }
 
     private fun getLoggedInUser(): String {

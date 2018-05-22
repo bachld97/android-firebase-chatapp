@@ -1,7 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
 import android.content.Context
-import android.content.Intent
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity

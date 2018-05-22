@@ -1,34 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".messagelist.MessageListActivity"
-    android:orientation="vertical">
+<layout>
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.cpu02351_local.firebasechatapp.messagelist.MessageViewModel"/>
+    </data>
 
-    <android.support.v7.widget.RecyclerView
-        android:layout_weight="1"
-        android:id="@+id/conversationContainer"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dp"/>
+        android:layout_height="match_parent"
+        tools:context=".messagelist.MessageListActivity"
+        android:orientation="vertical">
 
-    <RelativeLayout
-        android:layout_weight="0"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:layout_toStartOf="@id/sendMes"
-            android:id="@+id/mess"
+        <android.support.v7.widget.RecyclerView
+            android:layout_weight="1"
+            android:id="@+id/conversationContainer"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="0dp"/>
 
-        <Button
-            android:layout_alignParentEnd="true"
-            android:id="@+id/sendMes"
-            android:text="Send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-    </RelativeLayout>
-</LinearLayout>
+        <RelativeLayout
+            android:layout_weight="0"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:text="@={viewModel.messageText}"
+                android:layout_toStartOf="@id/sendMes"
+                android:id="@+id/mess"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:onClick="@{() -> viewModel.sendNewMessage()}"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/sendMes"
+                android:text="Send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</layout>
+

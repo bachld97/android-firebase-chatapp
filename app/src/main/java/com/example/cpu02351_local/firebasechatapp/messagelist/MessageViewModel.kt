@@ -9,6 +9,8 @@ import io.reactivex.disposables.Disposable
 class MessageViewModel(private val messageLoader: MessageLoader,
                        private val messageView: MessageView,
                        private val conversationId: String) {
+    var messageText =""
+
     private var mDisposable: Disposable? = null
     init {
         loadMessages()
@@ -60,4 +62,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
         })
     }
+
+    fun sendNewMessage() {
+        messageView.addMessage()
+    }
+
 }

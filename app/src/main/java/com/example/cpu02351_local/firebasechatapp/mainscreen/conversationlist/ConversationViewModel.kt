@@ -3,9 +3,8 @@ package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 import android.content.Context
 import android.content.Intent
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import io.reactivex.Observer
-import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
 class ConversationViewModel(private val conversationLoader: ConversationLoader,
@@ -26,8 +25,12 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
     private fun loadConversations() {
         val obs = conversationLoader.loadConversations(userId)
         dispose()
-        obs.subscribe(object : SingleObserver<List<Conversation>> {
-            override fun onSuccess(t: List<Conversation>) {
+        obs.subscribe(object : Observer<List<Conversation>> {
+            override fun onComplete() {
+                // Do nothing
+            }
+
+            override fun onNext(t: List<Conversation>) {
                 conversationView.onConversationsLoaded(t)
             }
 

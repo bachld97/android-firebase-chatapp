@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.Utils
+package com.example.cpu02351_local.firebasechatapp.utils
 
 import android.databinding.BindingAdapter
 import android.net.Uri
@@ -7,7 +7,6 @@ import android.widget.ImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import java.io.File
 
 
 class GlideDataBinder {

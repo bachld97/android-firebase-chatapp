@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatViewModel.model
+package com.example.cpu02351_local.firebasechatapp.model
 
 import java.util.*
 

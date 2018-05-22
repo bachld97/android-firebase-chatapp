@@ -1,17 +1,23 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DaggerFirebaseReferenceComponent
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseMessage
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.CONVERSATIONS
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.MESSAGE
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseConversation
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseMessage
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.BY_USERS
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.CONVERSATIONS
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_MOD
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.MESSAGE
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
+import com.example.cpu02351_local.firebasechatapp.model.Message
+import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
 import com.google.firebase.database.*
 import io.reactivex.Completable
 import io.reactivex.Observable
 import javax.inject.Inject
 
-class FirebaseMessageLoader: MessageLoader {
+class FirebaseMessageLoader : MessageLoader {
 
     @Inject
     lateinit var databaseRef: DatabaseReference
@@ -54,9 +60,65 @@ class FirebaseMessageLoader: MessageLoader {
         return obs.doFinally { reference.removeEventListener(listener) }
     }
 
-    override fun addMessage(conversationId: String, message: Message): Completable {
+    override fun addMessage(conversationId: String, message: Message, byUsers: List<String>): Completable {
         // Check if conversation exist
-        val conversationRef = databaseRef.child("$CONVERSATIONS/$conversationId")
-        TODO()
+        return Completable.create {
+            val conversationRef = databaseRef.child(CONVERSATIONS)
+            conversationRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot?) {
+                    if (snapshot?.children?.map { it -> it.key }?.contains(conversationId) != true) {
+                        addConversation(conversationId, byUsers, message.atTime.toString())
+                    }
+
+                    databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/${message.id}")
+                            .setValue(FirebaseMessage.from(message).toMap())
+                    databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
+                            .setValue(message.atTime.toString())
+                    it.onComplete()
+                }
+
+                override fun onCancelled(p0: DatabaseError?) {
+                    it.onError(Throwable("Cannot send message"))
+                }
+            })
+        }
+    }
+
+    private fun addConversation(conversationId: String, byUsers: List<String>, lastMod: String) {
+        val con = FirebaseConversation()
+        val map = HashMap<String, String>()
+        Log.d("DEBUGGING", byUsers.toString())
+        map[LAST_MOD] = lastMod
+        map[BY_USERS] = byUsers.joinToString(DELIM)
+        con.fromMap(conversationId, map)
+        databaseRef.child("$CONVERSATIONS/$conversationId")
+                .updateChildren(con.toMap(), { error, _ ->
+                    if (error == null) {
+                        addConversationToUsers(byUsers, conversationId)
+                    }
+                })
+    }
+
+    private fun addConversationToUsers(byUsers: List<String>, conversationId: String) {
+        byUsers.forEach { userId ->
+            databaseRef.child("$USERS/$userId")
+                    .runTransaction(object : Transaction.Handler {
+                        override fun doTransaction(mutableData: MutableData?): Transaction.Result {
+                            val u = FirebaseUser()
+                            u.fromMap(conversationId, mutableData?.value)
+                            val temp = ArrayList<String>()
+                            temp.addAll(u.conversationIds.split(DELIM))
+                            temp.remove(conversationId)
+                            temp.add(0, conversationId)
+                            u.conversationIds = temp.joinToString(DELIM).trim()
+                            mutableData?.value = u.toMap()
+                            return Transaction.success(mutableData)
+                        }
+
+                        override fun onComplete(p0: DatabaseError?, p1: Boolean, p2: DataSnapshot?) {
+                            // Do nothing for now
+                        }
+                    })
+        }
     }
 }

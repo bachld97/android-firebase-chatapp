@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatView
+package com.example.cpu02351_local.firebasechatapp.mainscreen
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager

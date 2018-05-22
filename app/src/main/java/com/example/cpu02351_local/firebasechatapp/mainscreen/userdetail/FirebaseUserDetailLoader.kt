@@ -1,12 +1,12 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail
 
 import android.net.Uri
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DaggerFirebaseReferenceComponent
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.AVA_URL
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.AVA_URL
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
+import com.example.cpu02351_local.firebasechatapp.model.User
+import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
 import com.google.android.gms.tasks.Continuation
 import com.google.android.gms.tasks.Task
 import com.google.firebase.database.DataSnapshot

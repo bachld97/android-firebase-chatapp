@@ -2,7 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail
 
 import android.net.Uri
 import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
+import com.example.cpu02351_local.firebasechatapp.model.User
 import io.reactivex.CompletableObserver
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable

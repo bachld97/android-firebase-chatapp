@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatViewModel.model
+package com.example.cpu02351_local.firebasechatapp.model
 
 data class User(val id: String, var name: String = "",
                 var conversations: String = "", var avaUrl: String = ""): Comparable<User> {

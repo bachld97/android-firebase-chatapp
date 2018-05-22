@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.Utils
+package com.example.cpu02351_local.firebasechatapp.utils
 
 
 fun <E> java.util.ArrayList<E>.addOrUpdateAll(list: List<E>) {

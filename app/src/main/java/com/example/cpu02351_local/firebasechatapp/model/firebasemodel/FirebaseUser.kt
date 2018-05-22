@@ -1,7 +1,7 @@
-package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
+package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.model.User
 
 @Suppress("UNCHECKED_CAST")
 class FirebaseUser(
@@ -11,6 +11,11 @@ class FirebaseUser(
         var name: String = id,
         private var contacts: String = "",
         var avaUrl: String ="") : FirebaseObject() {
+
+    fun toUserFromMap(id: String, value: Any?) : User {
+        this.fromMap(id, value)
+        return this.toUser()
+    }
 
     override fun fromMap(id: String, value: Any?) {
         this.id = id

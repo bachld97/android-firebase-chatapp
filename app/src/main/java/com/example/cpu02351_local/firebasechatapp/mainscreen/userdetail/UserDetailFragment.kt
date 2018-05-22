@@ -4,20 +4,18 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.loginscreen.AuthenticationActivity
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import com.example.cpu02351_local.firebasechatapp.Utils.GlideDataBinder
+import com.example.cpu02351_local.firebasechatapp.model.User
+import com.example.cpu02351_local.firebasechatapp.utils.GlideDataBinder
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 

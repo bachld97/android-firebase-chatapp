@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
+package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
 abstract class FirebaseObject {
     abstract fun toMap() : Map<String, Any>

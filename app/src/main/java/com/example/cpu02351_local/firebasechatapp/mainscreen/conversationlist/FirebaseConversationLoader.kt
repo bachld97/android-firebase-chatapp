@@ -1,16 +1,14 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DaggerFirebaseReferenceComponent
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseConversation
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.CONVERSATIONS
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.DELIM
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseConversation
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.CONVERSATIONS
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
-import io.reactivex.Single
+import io.reactivex.Observable
 import javax.inject.Inject
 
 class FirebaseConversationLoader : ConversationLoader {
@@ -21,10 +19,10 @@ class FirebaseConversationLoader : ConversationLoader {
         DaggerFirebaseReferenceComponent.create().injectInto(this)
     }
 
-    override fun loadConversations(userId: String): Single<List<Conversation>> {
+    override fun loadConversations(userId: String): Observable<List<Conversation>> {
         val reference = databaseRef.child(CONVERSATIONS)
         lateinit var listener: ValueEventListener
-        val obs = Single.create<List<Conversation>> { emitter ->
+        val obs = Observable.create<List<Conversation>> { emitter ->
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
@@ -32,7 +30,7 @@ class FirebaseConversationLoader : ConversationLoader {
                             ?.filter { it.participantIds.contains(userId) }
 
                     if (res != null) {
-                        emitter.onSuccess(res)
+                        emitter.onNext(res)
                     } else {
                         emitter.onError(Throwable("Cannot load conversations"))
                     }

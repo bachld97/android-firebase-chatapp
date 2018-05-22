@@ -4,11 +4,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseChatDataSource
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ChatViewModel
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.ViewObserver.MessageViewObserver
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import kotlinx.android.synthetic.main.activity_message_list.*
@@ -27,6 +23,7 @@ class MessageListActivity :
 
 
     companion object {
+        const val BY_USERS_STRING = "by_users_string"
         const val CONVERSATION_ID = "conversation_id"
     }
 
@@ -54,10 +51,14 @@ class MessageListActivity :
                 m.byUser = getLoggedInUser()
                 m.content = mess.text.toString()
                 m.atTime = System.currentTimeMillis()
-                // mChatViewModel.sendMessage(mConversationId, m, intent.getStringExtra("byUsers"))
+                mMessageViewModel.sendMessage(mConversationId, m, intent.getStringExtra(BY_USERS_STRING))
                 mess.text.clear()
             }
         }
+    }
+
+    override fun onError() {
+        // Do nothing
     }
 
     private fun getLoggedInUser(): String {

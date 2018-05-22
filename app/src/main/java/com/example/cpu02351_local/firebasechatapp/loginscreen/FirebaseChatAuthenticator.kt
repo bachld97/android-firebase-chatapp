@@ -1,10 +1,10 @@
 package com.example.cpu02351_local.firebasechatapp.loginscreen
 
 import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel.FirebaseUser
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.PASSWORD
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.USERS
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.PASSWORD
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference

@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.ChatDataSource
+package com.example.cpu02351_local.firebasechatapp.utils
 
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.FirebaseContactLoader
 import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.FirebaseConversationLoader

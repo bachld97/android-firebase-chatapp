@@ -1,9 +1,9 @@
-package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
+package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
 import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper.Companion.DELIM
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
 
 class FirebaseConversation : FirebaseObject() {
 

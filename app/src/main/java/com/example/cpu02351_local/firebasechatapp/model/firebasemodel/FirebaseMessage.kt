@@ -1,7 +1,7 @@
-package com.example.cpu02351_local.firebasechatapp.ChatDataSource.DataSourceModel
+package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
-import com.example.cpu02351_local.firebasechatapp.ChatDataSource.FirebaseHelper
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
+import com.example.cpu02351_local.firebasechatapp.model.Message
 
 class FirebaseMessage : FirebaseObject() {
     private lateinit var id: String

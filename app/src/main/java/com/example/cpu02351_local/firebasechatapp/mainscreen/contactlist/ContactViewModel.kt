@@ -2,10 +2,10 @@ package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
 import android.content.Context
 import android.content.Intent
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.User
-import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
 class ContactViewModel(private val contactLoader: ContactLoader,
@@ -26,17 +26,13 @@ class ContactViewModel(private val contactLoader: ContactLoader,
     private fun loadContacts() {
         val obs = contactLoader.loadContacts(userId)
         dispose()
-        obs.subscribe(object : Observer<List<User>> {
-            override fun onComplete() {
-                dispose()
+        obs.subscribe(object : SingleObserver<List<User>> {
+            override fun onSuccess(t: List<User>) {
+                contactView.onContactsLoaded(t)
             }
 
             override fun onSubscribe(d: Disposable) {
                 mDisposable = d
-            }
-
-            override fun onNext(t: List<User>) {
-                contactView.onContactsLoaded(t)
             }
 
             override fun onError(e: Throwable) {

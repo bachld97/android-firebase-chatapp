@@ -4,7 +4,7 @@ import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemMessageListBinding
 
 class MessageListAdapter(private val mMessages: ArrayList<Message>, private val loggedInUser: String)
@@ -32,8 +32,8 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
 
     fun addMessage(message: Message) {
         if (!mMessages.contains(message)) {
-            mMessages.add(message)
-            notifyItemInserted(mMessages.size - 1)
+            mMessages.add(0, message)
+            notifyItemInserted(0)
         }
     }
 

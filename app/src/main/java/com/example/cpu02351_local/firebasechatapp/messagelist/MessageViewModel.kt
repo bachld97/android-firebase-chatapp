@@ -1,6 +1,8 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
-import com.example.cpu02351_local.firebasechatapp.ChatViewModel.model.Message
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.Message
+import io.reactivex.CompletableObserver
 import io.reactivex.Observer
 import io.reactivex.disposables.Disposable
 
@@ -37,6 +39,26 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             override fun onError(e: Throwable) {
                 // Do nothing
             }
+        })
+    }
+
+    fun sendMessage(conId: String, message: Message, byUsers: String?) {
+        val list = (byUsers?.split(Conversation.ID_DELIM)
+                ?: conId.split(Conversation.ID_DELIM))
+        val com = messageLoader.addMessage(conId, message, list)
+        com.subscribe(object : CompletableObserver {
+            override fun onComplete() {
+                messageView.onNewMessage(message)
+            }
+
+            override fun onSubscribe(d: Disposable) {
+                mDisposable = d
+            }
+
+            override fun onError(e: Throwable) {
+                messageView.onError()
+            }
+
         })
     }
 }

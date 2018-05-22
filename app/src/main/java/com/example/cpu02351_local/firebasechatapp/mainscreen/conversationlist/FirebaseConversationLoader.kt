@@ -31,6 +31,7 @@ class FirebaseConversationLoader : ConversationLoader {
         val obs = io.reactivex.Observable.create<List<Conversation>> { emitter ->
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
+
                     val conIds = snapshot?.child(CONVERSATIONS)
                             ?.getValue(String::class.java)?.split(DELIM)
                     if (conIds == null) {
@@ -63,10 +64,10 @@ class FirebaseConversationLoader : ConversationLoader {
                 override fun onCancelled(p0: DatabaseError?) {
                     emitter.onError(Throwable("New data cannot be fetched due to some errors"))
                 }
-
             }
             reference.addValueEventListener(listener)
         }
+
         return obs.doFinally { reference.removeEventListener(listener) }
     }
 

@@ -38,9 +38,11 @@ class UserDetailFragment :
 
         @JvmStatic
         fun newInstance(userId: String): UserDetailFragment {
-            val res = UserDetailFragment()
-            res.userId = userId
-            return res
+            val temp = UserDetailFragment()
+            val args = Bundle()
+            args.putString("userId", userId)
+            temp.arguments = args
+            return temp
         }
     }
 
@@ -109,6 +111,11 @@ class UserDetailFragment :
         }
         else
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun setArguments(args: Bundle?) {
+        super.setArguments(args)
+        userId = args?.get("userId") as String
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

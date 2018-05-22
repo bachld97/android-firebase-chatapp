@@ -19,9 +19,11 @@ class ContactListFragment :
     companion object {
         @JvmStatic
         fun newInstance(userId: String): ContactListFragment {
-            val res = ContactListFragment()
-            res.userId = userId
-            return res
+            val temp = ContactListFragment()
+            val args = Bundle()
+            args.putString("userId", userId)
+            temp.arguments = args
+            return temp
         }
     }
 
@@ -66,6 +68,11 @@ class ContactListFragment :
         }
         */
         return v
+    }
+
+    override fun setArguments(args: Bundle?) {
+        super.setArguments(args)
+        userId = args?.get("userId") as String
     }
 
     override fun onStart() {

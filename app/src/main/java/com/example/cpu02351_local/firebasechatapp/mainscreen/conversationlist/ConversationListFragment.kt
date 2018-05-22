@@ -19,7 +19,9 @@ class ConversationListFragment :
         @JvmStatic
         fun newInstance(userId: String): ConversationListFragment {
             val temp = ConversationListFragment()
-            temp.userId = userId
+            val args = Bundle()
+            args.putString("userId", userId)
+            temp.arguments = args
             return temp
         }
     }
@@ -34,6 +36,11 @@ class ConversationListFragment :
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
         mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
         mRecyclerView.adapter = mAdapter
+    }
+
+    override fun setArguments(args: Bundle?) {
+        super.setArguments(args)
+        userId = args?.get("userId") as String
     }
 
     private fun dispose() {

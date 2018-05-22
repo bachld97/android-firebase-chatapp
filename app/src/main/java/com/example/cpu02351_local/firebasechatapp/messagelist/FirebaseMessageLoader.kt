@@ -48,18 +48,15 @@ class FirebaseMessageLoader: MessageLoader {
                     emitter.onNext(message.toMessage())
                 }
             }
-
-            reference.apply {
-                addChildEventListener(listener)
-            }
+            reference.addChildEventListener(listener)
         }
 
-        return obs.doFinally { reference.apply {
-            removeEventListener(listener)
-        } }
+        return obs.doFinally { reference.removeEventListener(listener) }
     }
 
     override fun addMessage(conversationId: String, message: Message): Completable {
+        // Check if conversation exist
+        val conversationRef = databaseRef.child("$CONVERSATIONS/$conversationId")
         TODO()
     }
 }

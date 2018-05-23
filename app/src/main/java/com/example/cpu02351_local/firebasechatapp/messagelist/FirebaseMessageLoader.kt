@@ -70,8 +70,10 @@ class FirebaseMessageLoader : MessageLoader {
                         addConversation(conversationId, byUsers, message.atTime.toString())
                     }
 
-                    databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/${message.id}")
+                    conversationRef.child("$conversationId/$MESSAGE").push()
                             .setValue(FirebaseMessage.from(message).toMap())
+                    // databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/$newMessId")
+                    //        .setValue(FirebaseMessage.from(message).toMap())
                     databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
                             .setValue(message.atTime.toString())
                     it.onComplete()

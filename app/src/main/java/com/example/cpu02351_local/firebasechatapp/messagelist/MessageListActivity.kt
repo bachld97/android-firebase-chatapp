@@ -14,9 +14,11 @@ import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageLis
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.HashMap
 
 class MessageListActivity :
         MessageView,
@@ -28,6 +30,7 @@ class MessageListActivity :
     private lateinit var mConversationId : String
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: MessageListAdapter
+    private lateinit var mByUsers: String
     private lateinit var mLoggedInUser: String
     private val mMessageLoader: MessageLoader = FirebaseMessageLoader()
     private lateinit var mMessageViewModel: MessageViewModel
@@ -53,6 +56,8 @@ class MessageListActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mConversationId = intent.getStringExtra(CONVERSATION_ID)
+        mByUsers = intent.getStringExtra(BY_USERS_STRING)
+
         val binding = DataBindingUtil.setContentView<ActivityMessageListBinding>(this, R.layout.activity_message_list)
         mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
         binding.viewModel = mMessageViewModel
@@ -73,6 +78,18 @@ class MessageListActivity :
                 .contextModule(ContextModule(this))
                 .build()
                 .injectInto(this)
+
+        // loadAvas()
+    }
+
+    private fun loadAvas() {
+        localUserDatabase.loadByIds(mByUsers.split(DELIM)).subscribe { res ->
+            val avaMap = HashMap<String, String>()
+            res.forEach {
+                avaMap[it.id] = it.avaUrl
+            }
+            mAdapter.updateAvaMap(avaMap)
+        }
     }
 
     override fun onError() {

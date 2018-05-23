@@ -49,7 +49,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         val com = messageLoader.addMessage(conId, message, list)
         com.subscribe(object : CompletableObserver {
             override fun onComplete() {
-                messageView.onNewMessage(message)
+                // messageView.onNewMessage(message)
             }
 
             override fun onSubscribe(d: Disposable) {

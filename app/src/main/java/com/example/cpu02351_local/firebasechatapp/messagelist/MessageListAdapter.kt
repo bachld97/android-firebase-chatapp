@@ -6,21 +6,49 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemMessageListBinding
+import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageBinding
+import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageFromOtherBinding
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.BaseMessageViewHolder
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolder
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolderOther
 
 class MessageListAdapter(private val mMessages: ArrayList<Message>, private val loggedInUser: String)
-    : RecyclerView.Adapter<MessageListAdapter.MessageViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
+    : RecyclerView.Adapter<BaseMessageViewHolder>() {
+
+    companion object {
+        const val MY_TEXT = 0
+        const val OTHER_TEXT = 1
+    }
+
+    private var avaMap: HashMap<String, String>? = null
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMessageViewHolder {
         val layoutInflater= LayoutInflater.from(parent.context)
-        val binding = ItemMessageListBinding.inflate(layoutInflater, parent, false)
-        return MessageViewHolder(binding)
+
+        return when (viewType) {
+            MY_TEXT -> TextMessageHolder(ItemTextMessageBinding.inflate(layoutInflater, parent, false))
+            OTHER_TEXT -> TextMessageHolderOther(ItemTextMessageFromOtherBinding.inflate(layoutInflater, parent, false))
+            else -> throw IllegalStateException()
+        }
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (mMessages[position].byUser == loggedInUser)
+            MY_TEXT
+        else
+            OTHER_TEXT
     }
 
     override fun getItemCount(): Int {
        return mMessages.size
     }
 
-    override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
-        holder.bind(mMessages[position], loggedInUser)
+    override fun onBindViewHolder(holder: BaseMessageViewHolder, position: Int) {
+        holder.bind(mMessages[position], shouldShowAva(position))
+    }
+
+    private fun shouldShowAva(pos: Int): Boolean {
+        return pos == 0 || mMessages[pos - 1].byUser != mMessages[pos].byUser
     }
 
     fun updateList(result: List<Message>) {
@@ -37,15 +65,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
         }
     }
 
-    class MessageViewHolder(private val binding: ItemMessageListBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bind(message: Message, loggedInUser: String) {
-            binding.message = message
-            binding.executePendingBindings()
-
-            // Mock feature - other users
-            if (message.byUser != loggedInUser) {
-                binding.root.setBackgroundColor(Color.MAGENTA)
-            }
-        }
+    fun updateAvaMap(avaMap: HashMap<String, String>) {
+        this.avaMap = avaMap
     }
 }

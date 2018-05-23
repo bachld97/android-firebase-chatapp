@@ -3,9 +3,9 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="chatBackground">#81F2F0</color>
-    <color name="chatMe">#7AA4FF</color>
+    <color name="chatBackground">#e8eff4</color>
+    <color name="chatMe">#bae2f9</color>
     <color name="chatOther">#FAFAFA</color>
-    <color name="textTime">#8A8AFA</color>
-    <color name="textOtherName">#CA7040</color>
+    <color name="textTime">#9295a3</color>
+    <color name="textOtherName">#FA4f40</color>
 </resources>

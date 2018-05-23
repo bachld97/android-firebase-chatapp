@@ -28,8 +28,8 @@
             android:layout_height="48dp" />
 
         <LinearLayout
-            android:layout_marginEnd="54dp"
-            android:layout_marginStart="54dp"
+            android:layout_marginEnd="@dimen/chatMargin"
+            android:layout_marginStart="@dimen/chatMargin"
             android:padding="8dp"
             android:background="@drawable/rounded_rect"
             android:backgroundTint="@color/chatOther"
@@ -39,6 +39,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:textSize="14sp"
                 android:visibility="@{avaViewModel.showAva ? View.VISIBLE : View.GONE}"
                 android:textColor="@color/textOtherName"
                 android:text="@{message.byUser}"
@@ -46,6 +47,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:textSize="14sp"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
                 android:text="@{message.content}"
@@ -53,6 +55,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView
+                android:textSize="13sp"
                 android:visibility="@{avaViewModel.showTime ? View.VISIBLE : View.GONE}"
                 android:textColor="@color/textTime"
                 android:text="@{message.getTime()}"

@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail
 
 import android.net.Uri
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.AVA_URL
@@ -50,21 +51,12 @@ class FirebaseUserDetailLoader : UserDetailLoader {
     override fun changeAvatar(userId: String, filePath: Uri): Completable {
         return Completable.create { emitter ->
             val ref = FirebaseHelper.getAvatarReference(userId)
-            val uploadTask = ref.putFile(filePath)
-            uploadTask.continueWith(Continuation<UploadTask.TaskSnapshot, Task<Uri>> { task ->
-                if (!task.isSuccessful) {
-                    // Failed up upload data?
-                    emitter.onError(task.exception!!)
-                    throw task.exception!!
-                } else {
-                    return@Continuation ref.downloadUrl
-                }
-            }).addOnSuccessListener { task ->
-                if (task.isSuccessful) {
-                    updateAvatarUrl(userId, task.result.toString())
-                }
-            }.addOnCanceledListener {
-                emitter.onError(Throwable())
+            ref.putFile(filePath)
+            ref.downloadUrl.addOnSuccessListener {
+                updateAvatarUrl(userId, it.toString())
+                emitter.onComplete()
+            }.addOnFailureListener {
+                emitter.onError(it)
             }
         }
     }

@@ -5,6 +5,6 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 
 interface MessageLoader {
-    fun loadMessages(conversationId: String): Observable<Message>
+    fun loadMessages(conversationId: String, limit: Int): Observable<Message>
     fun addMessage(conversationId: String, message: Message, byUsers: List<String>): Completable
 }

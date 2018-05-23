@@ -72,7 +72,14 @@ class MessageListActivity :
         mLoggedInUser = LogInHelper.getLoggedInUser(applicationContext)
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
-        mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser)
+
+        val endlessLoader = object : EndlessLoader {
+            override fun loadMore() {
+                mMessageViewModel.loadMessages()
+            }
+        }
+
+        mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser, mRecyclerView, endlessLoader)
         mRecyclerView.adapter = mAdapter
 
         DaggerRoomLocalUserDatabaseComponent
@@ -82,6 +89,7 @@ class MessageListActivity :
                 .injectInto(this)
 
         loadAvas()
+
     }
 
     private fun loadAvas() {
@@ -93,7 +101,6 @@ class MessageListActivity :
                         avaMap[it.id] = it.avaUrl
                     }
                     mAdapter.updateAvaMap(avaMap)
-                    Log.d("DEBUGGING2", avaMap.toString())
                 }
     }
 

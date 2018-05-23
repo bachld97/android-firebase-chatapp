@@ -26,8 +26,10 @@ class FirebaseMessageLoader : MessageLoader {
         DaggerFirebaseReferenceComponent.create().injectInto(this)
     }
 
-    override fun loadMessages(conversationId: String): Observable<Message> {
+    override fun loadMessages(conversationId: String, limit: Int): Observable<Message> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
+                .orderByKey()
+                .limitToLast(limit)
         lateinit var listener: ChildEventListener
         val obs = Observable.create<Message> { emitter ->
             // Subsequent loads

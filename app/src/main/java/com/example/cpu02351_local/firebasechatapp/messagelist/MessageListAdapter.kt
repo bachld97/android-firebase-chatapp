@@ -1,9 +1,11 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageFromOtherBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.BaseMessageViewHolder
@@ -11,7 +13,10 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMes
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolderOther
 import com.example.cpu02351_local.firebasechatapp.model.Message
 
-class MessageListAdapter(private val mMessages: ArrayList<Message>, private val loggedInUser: String)
+class MessageListAdapter(private val mMessages: ArrayList<Message>,
+                         private val loggedInUser: String,
+                         private val mRecyclerView: RecyclerView,
+                         private val endlessLoader: EndlessLoader)
     : RecyclerView.Adapter<BaseMessageViewHolder>() {
 
     companion object {
@@ -19,6 +24,29 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
         const val OTHER_TEXT = 1
     }
 
+    private var isScrolling = false
+    private var isLoading = false
+    private val loadThreshold = 2
+
+    init {
+        mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val lastItemPos = (mRecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+
+                Log.d("LAST_ITEM", lastItemPos.toString())
+                if (!isLoading && isScrolling && mMessages.size - lastItemPos <= loadThreshold) {
+                    isLoading = true
+                    endlessLoader.loadMore()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                isScrolling = (newState == SCROLL_STATE_TOUCH_SCROLL)
+            }
+        })
+    }
     private var avaMap: HashMap<String, String>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMessageViewHolder {
@@ -29,6 +57,10 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
             OTHER_TEXT -> TextMessageHolderOther(ItemTextMessageFromOtherBinding.inflate(layoutInflater, parent, false))
             else -> throw IllegalStateException()
         }
+    }
+
+    fun clear() {
+        mMessages.clear()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -61,7 +93,11 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
         if (!mMessages.contains(message)) {
             mMessages.add(0, message)
             notifyItemInserted(0)
-            notifyDataSetChanged()
+        } else {
+            isLoading = false
+            mMessages.removeAt(mMessages.size - 1)
+            mMessages.add(0, message)
+            notifyItemMoved(mMessages.size - 1, 0)
         }
     }
 

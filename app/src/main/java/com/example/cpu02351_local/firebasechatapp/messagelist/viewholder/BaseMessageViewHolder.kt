@@ -5,5 +5,5 @@ import android.view.View
 import com.example.cpu02351_local.firebasechatapp.model.Message
 
 abstract class BaseMessageViewHolder(v: View): RecyclerView.ViewHolder(v) {
-     abstract fun bind(message: Message, showAva: Boolean, avaUrl: String)
+     abstract fun bind(message: Message, showAva: Boolean, showTime: Boolean, avaUrl: String)
 }

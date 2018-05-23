@@ -8,6 +8,7 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import io.reactivex.SingleObserver
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
 class ContactViewModel(private val contactLoader: ContactLoader,
@@ -36,6 +37,7 @@ class ContactViewModel(private val contactLoader: ContactLoader,
         obs.subscribe(object : SingleObserver<List<User>> {
             override fun onSuccess(t: List<User>) {
                 localUserDatabase?.saveAll(t)
+                        ?.observeOn(AndroidSchedulers.mainThread())
                         ?.subscribe {
                             Log.d("DEBUGGING", "save finish")
                         }

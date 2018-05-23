@@ -6,4 +6,6 @@
     <color name="chatBackground">#81F2F0</color>
     <color name="chatMe">#7AA4FF</color>
     <color name="chatOther">#FAFAFA</color>
+    <color name="textTime">#8A8AFA</color>
+    <color name="textOtherName">#CA7040</color>
 </resources>

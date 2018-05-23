@@ -75,11 +75,17 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
     }
 
     override fun onBindViewHolder(holder: BaseMessageViewHolder, position: Int) {
-        holder.bind(mMessages[position], shouldShowAva(position), avaMap?.get(mMessages[position].byUser) ?: "")
+        holder.bind(mMessages[position], shouldShowAva(position),
+                shouldShowTime(position),
+                avaMap?.get(mMessages[position].byUser) ?: "")
     }
 
     private fun shouldShowAva(pos: Int): Boolean {
         return pos == mMessages.size - 1 || mMessages[pos + 1].byUser != mMessages[pos].byUser
+    }
+
+    private fun shouldShowTime(pos: Int): Boolean {
+        return pos == 0 || mMessages[pos - 1].byUser != mMessages[pos].byUser
     }
 
     fun updateList(result: List<Message>) {

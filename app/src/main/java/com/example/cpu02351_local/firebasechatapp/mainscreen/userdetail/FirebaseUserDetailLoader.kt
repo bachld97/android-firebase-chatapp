@@ -52,6 +52,7 @@ class FirebaseUserDetailLoader : UserDetailLoader {
         return Completable.create { emitter ->
             val ref = FirebaseHelper.getAvatarReference(userId)
             ref.putFile(filePath)
+
             ref.downloadUrl.addOnSuccessListener {
                 updateAvatarUrl(userId, it.toString())
                 emitter.onComplete()

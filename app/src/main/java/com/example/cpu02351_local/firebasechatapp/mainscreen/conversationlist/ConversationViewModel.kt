@@ -45,12 +45,13 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
         })
     }
 
-    fun onConversationClicked(context: Context, conversationId: String) {
-        startConversation(context, conversationId)
+    fun onConversationClicked(context: Context, conversation: Conversation) {
+        startConversation(context, conversation)
     }
 
-    private fun startConversation(context: Context, conversationId: String) {
-        val intent = MessageListActivity.newInstance(context, conversationId)
+    private fun startConversation(context: Context, conversation: Conversation) {
+        val intent = MessageListActivity.newInstance(
+                context, conversation.id, conversation.participantIds.joinToString(Conversation.ID_DELIM))
         context.startActivity(intent)
     }
 }

@@ -6,14 +6,15 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.AvatarVi
 import com.example.cpu02351_local.firebasechatapp.model.Message
 
 class TextMessageHolderOther(private val binding: ItemTextMessageFromOtherBinding): BaseMessageViewHolder(binding.root) {
-    override fun bind(message: Message, showAva: Boolean, avaUrl: String) {
+    override fun bind(message: Message, showAva: Boolean, showTime: Boolean, avaUrl: String) {
         Log.d("DEBUGGING", avaUrl)
 
         binding.message = message
 
         if (binding.avaViewModel == null) {
-            binding.avaViewModel = AvatarViewModel(showAva, avaUrl)
+            binding.avaViewModel = AvatarViewModel(showAva, avaUrl, showTime)
         } else {
+            binding.avaViewModel!!.showTime = showTime
             binding.avaViewModel!!.showAva = showAva
             binding.avaViewModel!!.avaUrl = avaUrl
         }

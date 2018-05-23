@@ -1,5 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.model
 
+import android.text.format.DateFormat
+
 class Message(val id: String) {
 
     var byUser: String? = null // Default = getCurrent  User
@@ -19,4 +21,7 @@ class Message(val id: String) {
     }
 
     fun getType() : String = "text"
+    fun getTime(): String {
+        return DateFormat.format("HH:mm", atTime).toString()
+    }
 }

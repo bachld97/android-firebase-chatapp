@@ -19,7 +19,7 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
         val pos = mRecyclerView.getChildAdapterPosition(v)
         if (pos != RecyclerView.NO_POSITION) {
             val context = mRecyclerView.context
-            mViewModel.onConversationClicked(context, mConversations[pos].id)
+            mViewModel.onConversationClicked(context, mConversations[pos])
         }
     }
 

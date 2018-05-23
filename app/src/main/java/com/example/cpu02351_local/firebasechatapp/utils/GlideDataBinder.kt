@@ -20,7 +20,7 @@ class GlideDataBinder {
             options.centerCrop()
             options.diskCacheStrategy(DiskCacheStrategy.NONE)
             options.skipMemoryCache(true)
-            options.sizeMultiplier(0.3f)
+            options.sizeMultiplier(0.5f)
             Glide.with(context).load(url)
                     .thumbnail(0.25f)
                     .apply(options)
@@ -32,10 +32,10 @@ class GlideDataBinder {
         fun setMessageImageUrl(imageView: ImageView, url: String) {
             val context = imageView.context
             val options = RequestOptions()
-            options.centerCrop()
-            options.sizeMultiplier(0.2f)
+            options.optionalCircleCrop()
+            options.sizeMultiplier(0.3f)
             Glide.with(context).load(url)
-                    .thumbnail(0.15f)
+                    .thumbnail(0.2f)
                     .apply(options)
                     .into(imageView)
         }

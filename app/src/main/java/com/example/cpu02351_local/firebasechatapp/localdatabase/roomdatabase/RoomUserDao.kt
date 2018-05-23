@@ -1,0 +1,11 @@
+package com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase
+
+import android.arch.persistence.room.Dao
+import android.arch.persistence.room.Query
+import com.example.cpu02351_local.firebasechatapp.model.User
+
+@Dao
+interface RoomUserDao {
+    @Query("SELECT * FROM User WHERE id IN (:userIds)")
+    fun getById(userIds: List<String>): List<User>
+}

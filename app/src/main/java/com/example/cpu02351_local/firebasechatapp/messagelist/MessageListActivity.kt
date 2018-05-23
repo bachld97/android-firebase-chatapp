@@ -11,12 +11,19 @@ import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
+import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
+import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
+import javax.inject.Inject
 
 class MessageListActivity :
         MessageView,
         AppCompatActivity() {
+
+    @Inject
+    lateinit var localUserDatabase: RoomLocalUserDatabase
 
     private lateinit var mConversationId : String
     private lateinit var mRecyclerView: RecyclerView
@@ -50,11 +57,22 @@ class MessageListActivity :
         mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
         binding.viewModel = mMessageViewModel
         binding.executePendingBindings()
+
+        init()
+    }
+
+    private fun init() {
         mLoggedInUser = LogInHelper.getLoggedInUser(applicationContext)
         mRecyclerView = findViewById(R.id.conversationContainer)
         mRecyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, true)
         mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser)
         mRecyclerView.adapter = mAdapter
+
+        DaggerRoomLocalUserDatabaseComponent
+                .builder()
+                .contextModule(ContextModule(this))
+                .build()
+                .injectInto(this)
     }
 
     override fun onError() {

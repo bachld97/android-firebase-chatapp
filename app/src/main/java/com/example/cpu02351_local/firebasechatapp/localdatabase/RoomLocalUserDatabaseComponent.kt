@@ -1,0 +1,14 @@
+package com.example.cpu02351_local.firebasechatapp.localdatabase
+
+import com.example.cpu02351_local.firebasechatapp.mainscreen.MainActivity
+import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
+import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
+import dagger.Component
+import javax.inject.Singleton
+
+@Singleton
+@Component(modules = [ContextModule::class])
+interface RoomLocalUserDatabaseComponent {
+    fun injectInto(dest: MessageListActivity)
+    fun injectInto(dest: MainActivity)
+}

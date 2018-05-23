@@ -1,16 +1,15 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
-import android.graphics.Color
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.model.Message
-import com.example.cpu02351_local.firebasechatapp.databinding.ItemMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageFromOtherBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.BaseMessageViewHolder
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolder
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolderOther
+import com.example.cpu02351_local.firebasechatapp.model.Message
 
 class MessageListAdapter(private val mMessages: ArrayList<Message>, private val loggedInUser: String)
     : RecyclerView.Adapter<BaseMessageViewHolder>() {
@@ -44,11 +43,11 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
     }
 
     override fun onBindViewHolder(holder: BaseMessageViewHolder, position: Int) {
-        holder.bind(mMessages[position], shouldShowAva(position))
+        holder.bind(mMessages[position], shouldShowAva(position), avaMap?.get(mMessages[position].byUser) ?: "")
     }
 
     private fun shouldShowAva(pos: Int): Boolean {
-        return pos == 0 || mMessages[pos - 1].byUser != mMessages[pos].byUser
+        return pos == mMessages.size - 1 || mMessages[pos + 1].byUser != mMessages[pos].byUser
     }
 
     fun updateList(result: List<Message>) {
@@ -62,10 +61,12 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>, private val 
         if (!mMessages.contains(message)) {
             mMessages.add(0, message)
             notifyItemInserted(0)
+            notifyDataSetChanged()
         }
     }
 
     fun updateAvaMap(avaMap: HashMap<String, String>) {
+        Log.d("DEBUGGING", avaMap.toString())
         this.avaMap = avaMap
     }
 }

@@ -16,7 +16,7 @@
         android:layout_margin="8dp">
 
         <ImageView
-            app:imageUrl="@{user.avaUrl}"
+            app:smallImageUrl="@{user.avaUrl}"
             android:layout_weight="0"
             android:layout_width="48dp"
             android:layout_height="48dp" />

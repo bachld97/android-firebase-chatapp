@@ -7,14 +7,16 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import com.example.cpu02351_local.firebasechatapp.model.Message
-import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
-import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 import javax.inject.Inject
@@ -27,7 +29,7 @@ class MessageListActivity :
     @Inject
     lateinit var localUserDatabase: RoomLocalUserDatabase
 
-    private lateinit var mConversationId : String
+    private lateinit var mConversationId: String
     private lateinit var mRecyclerView: RecyclerView
     private lateinit var mAdapter: MessageListAdapter
     private lateinit var mByUsers: String
@@ -41,7 +43,7 @@ class MessageListActivity :
         const val CONVERSATION_ID = "conversation_id"
 
         @JvmStatic
-        fun newInstance(context: Context, conId: String, byUsers: String? = null) : Intent {
+        fun newInstance(context: Context, conId: String, byUsers: String? = null): Intent {
             val intent = Intent(context, MessageListActivity::class.java)
             intent.putExtra(CONVERSATION_ID, conId)
             intent.putExtra(BY_USERS_STRING, byUsers ?: "")
@@ -79,17 +81,20 @@ class MessageListActivity :
                 .build()
                 .injectInto(this)
 
-        // loadAvas()
+        loadAvas()
     }
 
     private fun loadAvas() {
-        localUserDatabase.loadByIds(mByUsers.split(DELIM)).subscribe { res ->
-            val avaMap = HashMap<String, String>()
-            res.forEach {
-                avaMap[it.id] = it.avaUrl
-            }
-            mAdapter.updateAvaMap(avaMap)
-        }
+        localUserDatabase.loadByIds(mByUsers.split(Conversation.ID_DELIM))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { res ->
+                    val avaMap = HashMap<String, String>()
+                    res.forEach {
+                        avaMap[it.id] = it.avaUrl
+                    }
+                    mAdapter.updateAvaMap(avaMap)
+                    Log.d("DEBUGGING2", avaMap.toString())
+                }
     }
 
     override fun onError() {

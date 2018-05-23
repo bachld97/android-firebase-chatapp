@@ -29,7 +29,6 @@ class FirebaseContactLoader : ContactLoader {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
                             ?.map { it -> FirebaseUser().toUserFromMap(it.key, it.value) }
-                            ?.filter { it.id != userId }
                     if (res != null) {
                         emitter.onSuccess(res)
                     } else {

@@ -10,7 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
+import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import java.util.*
+import javax.inject.Inject
 
 class ContactListFragment :
         ContactView,
@@ -34,11 +39,22 @@ class ContactListFragment :
     private lateinit var mContactViewModel: ContactViewModel
     private lateinit var mCreateGroupChat: FloatingActionButton
 
+    @Inject
+    lateinit var roomLocalUserDatabase: RoomLocalUserDatabase
+
     private fun init() {
         mContactViewModel = ContactViewModel(mContactLoader, this, userId)
         mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.adapter = mAdapter
+
+        DaggerRoomLocalUserDatabaseComponent
+                .builder()
+                .contextModule(ContextModule(this.context!!))
+                .build()
+                .injectInto(this)
+
+        mContactViewModel.setLocalUserDatabase(roomLocalUserDatabase)
     }
 
     private fun dispose() {

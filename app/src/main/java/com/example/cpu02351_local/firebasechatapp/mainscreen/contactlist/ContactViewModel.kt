@@ -1,6 +1,9 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalUserDatabase
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
@@ -11,9 +14,14 @@ class ContactViewModel(private val contactLoader: ContactLoader,
                        private val contactView: ContactView,
                        private val userId: String) {
     private var mDisposable: Disposable? = null
+    private var localUserDatabase: LocalUserDatabase? = null
 
     init {
         loadContacts()
+    }
+
+    fun setLocalUserDatabase(localUserDatabase: LocalUserDatabase) {
+       this.localUserDatabase = localUserDatabase
     }
 
     fun dispose() {
@@ -27,7 +35,11 @@ class ContactViewModel(private val contactLoader: ContactLoader,
         dispose()
         obs.subscribe(object : SingleObserver<List<User>> {
             override fun onSuccess(t: List<User>) {
-                contactView.onContactsLoaded(t)
+                localUserDatabase?.saveAll(t)
+                        ?.subscribe {
+                            Log.d("DEBUGGING", "save finish")
+                        }
+                contactView.onContactsLoaded(t.filter { it.id != userId})
             }
 
             override fun onSubscribe(d: Disposable) {

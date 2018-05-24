@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Singleton
 class RoomLocalUserDatabase @Inject constructor(appContext: Context) : LocalUserDatabase {
 
-
     private val userDatabase = RoomUserDatabase.instance(appContext)
 
     override fun loadByIds(ids: List<String>): Single<List<User>> {

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationListBinding
+import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.viewmodel.DisplayViewModel
 import java.util.*
 
 
@@ -58,7 +59,14 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
         : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(conversation: Conversation) {
+            if (binding.viewModel == null) {
+                binding.viewModel = DisplayViewModel()
+            } else {
+
+
+            }
             binding.conversation = conversation
+            binding.invalidateAll()
             binding.executePendingBindings()
         }
     }

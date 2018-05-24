@@ -4,6 +4,7 @@ import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseCo
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.CONVERSATIONS
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.MESSAGE
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -26,7 +27,10 @@ class FirebaseConversationLoader : ConversationLoader {
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
-                            ?.map { it -> FirebaseConversation().toConversationFromMap(it.key, it.value) }
+                            ?.map { it ->
+                                FirebaseConversation().parseLastMess(snapshot.child("${it.key}/$MESSAGE").children.last())
+                                                .toConversationFromMap(it.key, it.value)
+                            }
                             ?.filter { it.participantIds.contains(userId) }
 
                     if (res != null) {

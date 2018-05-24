@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
@@ -17,7 +16,6 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 import javax.inject.Inject
@@ -98,10 +96,12 @@ class MessageListActivity :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { res ->
                     val avaMap = HashMap<String, String>()
+                    val nameMap = HashMap<String, String>()
                     res.forEach {
                         avaMap[it.id] = it.avaUrl
+                        nameMap[it.id] = it.name
                     }
-                    mAdapter.updateAvaMap(avaMap)
+                    mAdapter.updateInfoMaps(avaMap, nameMap)
                 }
     }
 

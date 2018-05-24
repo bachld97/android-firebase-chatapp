@@ -10,7 +10,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#BCF0F0F0"
+        android:background="@color/chatBackground"
         android:orientation="vertical"
         tools:context=".loginscreen.AuthenticationActivity">
 

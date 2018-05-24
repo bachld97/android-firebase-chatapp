@@ -8,4 +8,6 @@
     <color name="chatOther">#FAFAFA</color>
     <color name="textTime">#9295a3</color>
     <color name="textOtherName">#FA4f40</color>
+    <color name="textPrimary">#050505</color>
+    <color name="divider">#9295a3</color>
 </resources>

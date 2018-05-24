@@ -1,21 +1,20 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.viewholder
 
-import android.support.v7.widget.RecyclerView
-import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageBinding
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.AvatarViewModel
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.InfoDisplayViewModel
 import com.example.cpu02351_local.firebasechatapp.model.Message
 
 class TextMessageHolder(private val binding: ItemTextMessageBinding): BaseMessageViewHolder(binding.root){
-    override fun bind(message: Message, showAva: Boolean, showTime: Boolean, avaUrl: String) {
+    override fun bind(message: Message, showAva: Boolean, showTime: Boolean, avaUrl: String, displayName: String) {
         binding.message = message
 
-        if (binding.avaViewModel == null) {
-            binding.avaViewModel = AvatarViewModel(showAva, avaUrl, showTime)
+        if (binding.infoViewModel == null) {
+            binding.infoViewModel = InfoDisplayViewModel(showAva, avaUrl, showTime, displayName)
         } else {
-            binding.avaViewModel!!.showAva = showAva
-            binding.avaViewModel!!.showTime = showTime
-            binding.avaViewModel!!.avaUrl = avaUrl
+            binding.infoViewModel!!.showAva = showAva
+            binding.infoViewModel!!.showTime = showTime
+            binding.infoViewModel!!.avaUrl = avaUrl
+            binding.infoViewModel!!.displayName = displayName
         }
         binding.invalidateAll()
         binding.executePendingBindings()

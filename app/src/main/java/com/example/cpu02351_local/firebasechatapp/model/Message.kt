@@ -24,4 +24,8 @@ class Message(val id: String) {
     fun getTime(): String {
         return DateFormat.format("HH:mm", atTime).toString()
     }
+
+    fun display(): String {
+        return content
+    }
 }

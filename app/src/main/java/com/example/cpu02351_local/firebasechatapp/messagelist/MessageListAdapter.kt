@@ -48,6 +48,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
         })
     }
     private var avaMap: HashMap<String, String>? = null
+    private var nameMap: HashMap<String, String>? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMessageViewHolder {
         val layoutInflater= LayoutInflater.from(parent.context)
@@ -77,7 +78,8 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
     override fun onBindViewHolder(holder: BaseMessageViewHolder, position: Int) {
         holder.bind(mMessages[position], shouldShowAva(position),
                 shouldShowTime(position),
-                avaMap?.get(mMessages[position].byUser) ?: "")
+                avaMap?.get(mMessages[position].byUser) ?: "",
+                nameMap?.get(mMessages[position].byUser) ?: mMessages[position].byUser!!)
     }
 
     private fun shouldShowAva(pos: Int): Boolean {
@@ -100,15 +102,19 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
             mMessages.add(0, message)
             notifyItemInserted(0)
         } else {
-            isLoading = false
+            if (isLoading) {
+                isLoading = false
+                notifyDataSetChanged()
+            }
             mMessages.removeAt(mMessages.size - 1)
             mMessages.add(0, message)
             notifyItemMoved(mMessages.size - 1, 0)
         }
     }
 
-    fun updateAvaMap(avaMap: HashMap<String, String>) {
+    fun updateInfoMaps(avaMap: HashMap<String, String>, nameMap: HashMap<String, String>) {
         Log.d("DEBUGGING", avaMap.toString())
         this.avaMap = avaMap
+        this.nameMap = nameMap
     }
 }

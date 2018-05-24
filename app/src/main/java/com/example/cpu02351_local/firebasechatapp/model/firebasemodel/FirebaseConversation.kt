@@ -1,15 +1,20 @@
+@file:Suppress("UNCHECKED_CAST")
+
 package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.google.firebase.database.DataSnapshot
 
 class FirebaseConversation : FirebaseObject() {
 
     private lateinit var id: String
     private var lastModified = -1L
     private var userIds = ArrayList<String>()
+
+    var lastMessage: FirebaseMessage? = null
 
     companion object {
         @JvmStatic
@@ -31,16 +36,24 @@ class FirebaseConversation : FirebaseObject() {
     override fun fromMap(id: String, value: Any?) {
         this.id = id
         val valueMap = try {
-             value as HashMap<String, String>
+             value as HashMap<String, Any>
         } catch (e: TypeCastException) {
             Log.d("BUG_FOUND", "FirebaseConversation: Cannot load map")
             null
         }
         if (valueMap != null) {
-            lastModified = valueMap[FirebaseHelper.LAST_MOD]?.toLong() ?: -1L
+            lastModified = (valueMap[FirebaseHelper.LAST_MOD] as String? ?: "-1").toLong()
             userIds.clear()
             userIds.addAll((valueMap[FirebaseHelper.BY_USERS] as String).split(DELIM))
+
         }
+    }
+
+    fun parseLastMess(last: DataSnapshot): FirebaseConversation {
+        val mess = FirebaseMessage()
+        mess.fromMap(last.key, last.value)
+        this.lastMessage = mess
+        return this
     }
 
     override fun toMap(): Map<String, Any> {
@@ -54,6 +67,7 @@ class FirebaseConversation : FirebaseObject() {
         val res = Conversation(id)
         res.participantIds = userIds
         res.createdTime = lastModified
+        res.lastMessage = lastMessage?.toMessage()
         return res
     }
 }

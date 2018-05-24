@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.utils.ConversationListDivider
 
 class ConversationListFragment :
         ConversationView,
@@ -53,6 +54,7 @@ class ConversationListFragment :
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.fragment_conversation_list, container, false)
         mRecyclerView = root.findViewById(R.id.conversationListContainer)
+        mRecyclerView.addItemDecoration(ConversationListDivider(context!!))
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         return root
     }

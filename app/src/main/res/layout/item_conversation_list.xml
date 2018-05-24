@@ -3,12 +3,14 @@
 
     <data>
         <variable
+            name="viewModel"
+            type="com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.viewmodel.DisplayViewModel"/>
+        <variable
             name="conversation"
             type="com.example.cpu02351_local.firebasechatapp.model.Conversation"/>
     </data>
 
     <LinearLayout
-        android:background="#C0C0C0"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_margin="4dp"
@@ -22,7 +24,7 @@
             android:layout_height="24dp" />
 
         <TextView
-            android:text="@{Integer.toString(conversation.participantIds.size)}"
+            android:text="@{conversation.lastMessage.display()}"
             android:layout_width="match_parent"
             android:layout_height="24dp" />
 

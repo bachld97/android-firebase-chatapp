@@ -33,8 +33,9 @@ class Conversation(val id: String, users: Array<User> = arrayOf()) {
     }
 
     fun getTime() : String {
+        createdTime = lastMessage?.atTime ?: createdTime
         val interval = System.currentTimeMillis() - createdTime
-        val minutes = interval / 100 / 60 / 60
+        val minutes = interval / (1000 * 60)
         val hours = minutes / 60
         val days= hours / 24
 

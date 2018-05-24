@@ -12,7 +12,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                        private val conversationId: String) {
     var messageText =""
 
-    private val messageLimit = 10
+    private val messageLimit = 30
     var currentNumMessage = 0
 
     private var mDisposable: Disposable? = null
@@ -52,6 +52,10 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     fun sendMessage(conId: String, message: Message, byUsers: String) {
+        if (messageText.trim().isEmpty()) {
+            return
+        }
+
         val list = byUsers.split(Conversation.ID_DELIM)
         val com = messageLoader.addMessage(conId, message, list)
         com.subscribe(object : CompletableObserver {

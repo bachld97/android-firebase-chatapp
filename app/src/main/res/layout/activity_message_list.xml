@@ -1,44 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="viewModel"
             type="com.example.cpu02351_local.firebasechatapp.messagelist.MessageViewModel"/>
     </data>
 
-    <LinearLayout
-        android:orientation="vertical"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        >
 
-        <android.support.v7.widget.RecyclerView
-            android:layout_weight="1"
-            android:background="@color/chatBackground"
-            android:id="@+id/conversationContainer"
+        <android.support.v7.widget.Toolbar
+            android:fitsSystemWindows="true"
+            android:id="@+id/my_toolbar"
             android:layout_width="match_parent"
-            android:layout_height="0dp"/>
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/toolbar"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-        <RelativeLayout
-            android:layout_weight="0"
+        <LinearLayout
+            android:layout_marginTop="?attr/actionBarSize"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
-            <EditText
-                android:text="@={viewModel.messageText}"
-                android:layout_toStartOf="@id/sendMes"
-                android:id="@+id/mess"
+            <android.support.v7.widget.RecyclerView
+                android:layout_weight="1"
+                android:background="@color/chatBackground"
+                android:id="@+id/conversationContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="0dp"/>
 
-            <Button
-                android:onClick="@{() -> viewModel.sendNewMessage()}"
-                android:layout_alignParentEnd="true"
-                android:id="@+id/sendMes"
-                android:text="Send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </RelativeLayout>
-    </LinearLayout>
+            <RelativeLayout
+                android:padding="8dp"
+                android:background="@color/chatSend"
+                android:layout_weight="0"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:layout_centerVertical="true"
+                    android:gravity="center_vertical"
+                    android:textSize="@dimen/textLarge"
+                    android:background="@null"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="12dp"
+                    android:hint="@string/message_hint"
+                    android:textColorHint="@color/textSecondary"
+                    android:textColor="@color/textPrimary"
+                    android:text="@={viewModel.messageText}"
+                    android:layout_toStartOf="@id/sendMes"
+                    android:id="@+id/mess"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text" />
+
+
+                <ImageView
+                    android:background="?android:attr/selectableItemBackground"
+                    android:layout_marginEnd="4dp"
+                    android:id="@+id/sendMes"
+                    android:src="@drawable/ic_send"
+                    android:tint="@color/buttonSend"
+                    android:onClick="@{() -> viewModel.sendNewMessage()}"
+                    android:layout_alignParentEnd="true"
+                    android:padding="4dp"
+                    android:layout_width="@dimen/buttonSendMessage"
+                    android:layout_height="@dimen/buttonSendMessage" />
+                <!--
+                <Button
+                    android:src="@drawable/ic_send"
+                    android:foregroundTint="@color/buttonSend"
+                    android:onClick="@{() -> viewModel.sendNewMessage()}"
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/sendMes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                    -->
+            </RelativeLayout>
+        </LinearLayout>
+
+
+    </android.support.design.widget.CoordinatorLayout>
 
 </layout>
 

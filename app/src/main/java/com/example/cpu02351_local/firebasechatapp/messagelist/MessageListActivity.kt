@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
+import android.view.MenuItem
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
@@ -63,8 +65,23 @@ class MessageListActivity :
         mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
         binding.viewModel = mMessageViewModel
         binding.executePendingBindings()
+        val toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        toolbar.alpha = 0.2f
+        setSupportActionBar(toolbar)
+        supportActionBar?.apply {
+            setDisplayShowTitleEnabled(false)
+            setDisplayHomeAsUpEnabled(true)
+        }
 
         init()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        if (item?.itemId == android.R.id.home) {
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun init() {

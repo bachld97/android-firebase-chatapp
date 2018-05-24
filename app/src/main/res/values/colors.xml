@@ -11,4 +11,7 @@
     <color name="textPrimary">#050505</color>
     <color name="textSecondary">#9295a3</color>
     <color name="divider">#9295a3</color>
+    <color name="buttonSend">#0a51b5</color>
+    <color name="chatSend">#FAFAFA</color>
+    <color name="toolbar">#0040a0</color>
 </resources>

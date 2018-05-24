@@ -87,11 +87,11 @@ class MessageListActivity :
                 .build()
                 .injectInto(this)
 
-        loadAvas()
+        loadUsers()
 
     }
 
-    private fun loadAvas() {
+    private fun loadUsers() {
         localUserDatabase.loadByIds(mByUsers.split(Conversation.ID_DELIM))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { res ->

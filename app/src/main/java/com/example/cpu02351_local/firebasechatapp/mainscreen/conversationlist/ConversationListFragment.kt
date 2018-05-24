@@ -9,7 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
+import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.model.User
+import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import com.example.cpu02351_local.firebasechatapp.utils.ConversationListDivider
+import io.reactivex.android.schedulers.AndroidSchedulers
+import javax.inject.Inject
 
 class ConversationListFragment :
         ConversationView,
@@ -32,10 +38,31 @@ class ConversationListFragment :
     private var mConversationLoader: ConversationLoader = FirebaseConversationLoader()
     private lateinit var mConversationViewModel: ConversationViewModel
 
+    @Inject lateinit var localUserDatabase: RoomLocalUserDatabase
+
     private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
         mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
         mRecyclerView.adapter = mAdapter
+
+        DaggerRoomLocalUserDatabaseComponent
+                .builder()
+                .contextModule(ContextModule(context!!))
+                .build()
+                .injectInto(this)
+        loadUsers()
+    }
+
+    private fun loadUsers() {
+        localUserDatabase.loadAll()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { res ->
+                    val userMap = HashMap<String, User>()
+                    res.forEach {
+                        userMap[it.id] = it
+                    }
+                    mAdapter.updateUserInfo(userMap)
+                }
     }
 
     override fun setArguments(args: Bundle?) {

@@ -100,7 +100,9 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
     fun addMessage(message: Message) {
         if (!mMessages.contains(message)) {
             mMessages.add(0, message)
+            notifyItemChanged(0 )
             notifyItemInserted(0)
+            mRecyclerView.smoothScrollToPosition(0)
         } else {
             if (isLoading) {
                 isLoading = false

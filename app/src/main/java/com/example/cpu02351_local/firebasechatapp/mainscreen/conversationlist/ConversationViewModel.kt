@@ -10,7 +10,7 @@ import io.reactivex.disposables.Disposable
 
 class ConversationViewModel(private val conversationLoader: ConversationLoader,
                             private val conversationView: ConversationView,
-                            private val userId: String) {
+                            val userId: String) {
     private var mDisposable: Disposable? = null
 
     init {

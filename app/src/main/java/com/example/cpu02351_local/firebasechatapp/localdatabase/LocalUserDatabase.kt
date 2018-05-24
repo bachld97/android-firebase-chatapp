@@ -8,5 +8,6 @@ import io.reactivex.Single
 
 interface LocalUserDatabase {
     fun loadByIds(ids : List<String>): Single<List<User>>
+    fun loadAll(): Single<List<User>>
     fun saveAll(users: List<User>): Completable
 }

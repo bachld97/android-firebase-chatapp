@@ -20,9 +20,7 @@ class GlideDataBinder {
             options.centerCrop()
             options.diskCacheStrategy(DiskCacheStrategy.NONE)
             options.skipMemoryCache(true)
-            options.sizeMultiplier(0.5f)
             Glide.with(context).load(url)
-                    .thumbnail(0.25f)
                     .apply(options)
                     .into(imageView)
         }
@@ -33,9 +31,8 @@ class GlideDataBinder {
             val context = imageView.context
             val options = RequestOptions()
             options.optionalCircleCrop()
-            options.sizeMultiplier(0.3f)
+            options.sizeMultiplier(0.5f)
             Glide.with(context).load(url)
-                    .thumbnail(0.2f)
                     .apply(options)
                     .into(imageView)
         }

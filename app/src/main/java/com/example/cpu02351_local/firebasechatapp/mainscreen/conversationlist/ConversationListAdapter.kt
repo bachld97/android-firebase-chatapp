@@ -8,13 +8,17 @@ import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationListBinding
 import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.viewmodel.DisplayViewModel
+import com.example.cpu02351_local.firebasechatapp.model.User
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class ConversationListAdapter(private val mConversations: ArrayList<Conversation>,
                               private val mRecyclerView: RecyclerView,
                               private val mViewModel: ConversationViewModel)
     : RecyclerView.Adapter<ConversationListAdapter.ConversationViewHolder>() {
+
+    private var userMap: HashMap<String, User>? = null
 
     private val mItemAction: View.OnClickListener? = View.OnClickListener { v ->
         val pos = mRecyclerView.getChildAdapterPosition(v)
@@ -39,12 +43,13 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
     }
 
     override fun onBindViewHolder(holder: ConversationViewHolder, position: Int) {
-        holder.bind(mConversations[position])
+        val con = mConversations[position]
+        holder.bind(con, userMap, con.participantIds, mViewModel.userId)
     }
 
     fun updateList(newList: List<Conversation>) {
         Collections.sort(newList, kotlin.Comparator { con1, con2 ->
-            return@Comparator con1.createdTime.compareTo(con2.createdTime)
+            return@Comparator con2.createdTime.compareTo(con1.createdTime)
         })
 
         val oldList = ArrayList<Conversation>(mConversations)
@@ -55,15 +60,21 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
         diffResult.dispatchUpdatesTo(this)
     }
 
+    fun updateUserInfo(userMap: HashMap<String, User>) {
+        this.userMap = userMap
+    }
+
     class ConversationViewHolder(private val binding: ItemConversationListBinding)
         : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(conversation: Conversation) {
+        fun bind(conversation: Conversation, users: HashMap<String, User>?,
+                 participants: List<String>, currentUser: String) {
             if (binding.viewModel == null) {
-                binding.viewModel = DisplayViewModel()
+                binding.viewModel = DisplayViewModel(users, participants, currentUser)
             } else {
-
-
+                binding.viewModel!!.users = users
+                binding.viewModel!!.participants = participants
+                binding.viewModel!!.currentUser = currentUser
             }
             binding.conversation = conversation
             binding.invalidateAll()

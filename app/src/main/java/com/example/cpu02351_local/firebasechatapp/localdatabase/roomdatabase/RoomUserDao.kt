@@ -13,4 +13,7 @@ interface RoomUserDao {
 
     @Insert(onConflict = REPLACE)
     fun insertAll(users: Array<RoomUser>)
+
+    @Query("SELECT * FROM User")
+    fun getAll(): Single<List<RoomUser>>
 }

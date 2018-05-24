@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="avaMargin">54dp</dimen>
+    <dimen name="avaMargin">62dp</dimen>
     <dimen name="avaThumbnail">48dp</dimen>
     <dimen name="textStandard">14sp</dimen>
     <dimen name="textSmall">13sp</dimen>

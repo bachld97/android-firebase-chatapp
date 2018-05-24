@@ -55,4 +55,9 @@ class FirebaseMessage : FirebaseObject() {
         res[FirebaseHelper.CONTENT] = content
         return res
     }
+
+    fun toMessageFromMap(key: String, value: Any?): Message {
+        this.fromMap(key, value)
+        return this.toMessage()
+    }
 }

@@ -26,7 +26,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
 
     private var isScrolling = false
     private var isLoading = false
-    private val loadThreshold = 2
+    private val loadThreshold = 3
 
     init {
         mRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -98,25 +98,23 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
     }
 
     fun addMessage(message: Message) {
-        if (!mMessages.contains(message)) {
-            mMessages.add(0, message)
-            notifyItemChanged(0 )
-            notifyItemInserted(0)
-            mRecyclerView.smoothScrollToPosition(0)
-        } else {
-            if (isLoading) {
-                isLoading = false
-                notifyDataSetChanged()
-            }
-            mMessages.removeAt(mMessages.size - 1)
-            mMessages.add(0, message)
-            notifyItemMoved(mMessages.size - 1, 0)
-        }
+        mMessages.add(0, message)
+        notifyItemChanged(0 )
+        notifyItemInserted(0)
+        mRecyclerView.smoothScrollToPosition(0)
     }
 
     fun updateInfoMaps(avaMap: HashMap<String, String>, nameMap: HashMap<String, String>) {
         Log.d("DEBUGGING", avaMap.toString())
         this.avaMap = avaMap
         this.nameMap = nameMap
+    }
+
+    fun addLoadMoreMessages(moreMessages: List<Message>) {
+        val oldSize = mMessages.size - 1
+        mMessages.addAll(moreMessages.reversed())
+        // notifyDataSetChanged()
+        notifyItemRangeInserted(oldSize + 1, moreMessages.size)
+        isLoading = false
     }
 }

@@ -1,6 +1,5 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
-import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import io.reactivex.CompletableObserver
@@ -12,8 +11,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                        private val conversationId: String) {
     var messageText =""
 
-    private val messageLimit = 30
-    var currentNumMessage = 0
+    private val messageLimit = 15
 
     private var mDisposable: Disposable? = null
     init {
@@ -26,11 +24,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         }
     }
 
-    fun loadMessages() {
+    var lastKey: String? = null
+
+    private fun loadMessages() {
         val obs = messageLoader
-                .loadMessages(conversationId, currentNumMessage + messageLimit)
-        currentNumMessage += messageLimit
-        Log.d("LIMIT", "$currentNumMessage $messageLimit")
+                .loadMessages(conversationId, messageLimit)
         dispose()
         obs.subscribe(object : Observer<Message> {
             override fun onComplete() {
@@ -42,6 +40,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
 
             override fun onNext(t: Message) {
+                if (lastKey == null) {
+                    lastKey = t.id
+                }
                 messageView.onNewMessage(t)
             }
 
@@ -78,4 +79,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         messageView.addMessage()
     }
 
+    fun loadMore() {
+        messageLoader.loadMore(conversationId, lastKey, messageLimit)
+                .subscribe({ res ->
+                        messageView.onLoadMoreResult(res)
+                        lastKey = res.first().id
+                }, { messageView.onError() })
+    }
 }

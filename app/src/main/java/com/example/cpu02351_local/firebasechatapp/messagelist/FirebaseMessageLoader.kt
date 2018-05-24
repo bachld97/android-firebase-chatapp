@@ -15,6 +15,7 @@ import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceC
 import com.google.firebase.database.*
 import io.reactivex.Completable
 import io.reactivex.Observable
+import io.reactivex.Single
 import javax.inject.Inject
 
 class FirebaseMessageLoader : MessageLoader {
@@ -24,6 +25,34 @@ class FirebaseMessageLoader : MessageLoader {
 
     init {
         DaggerFirebaseReferenceComponent.create().injectInto(this)
+    }
+
+    override fun loadMore(conversationId: String, lastKey: String?, messageLimit: Int): Single<List<Message>> {
+        val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
+                .endAt(lastKey)
+                .orderByKey()
+                .limitToLast(messageLimit)
+        lateinit var listener: ValueEventListener
+        val single = Single.create<List<Message>> { emitter ->
+            listener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot?) {
+                    val res = snapshot?.children
+                            ?.filter { it.key != lastKey }
+                            ?.map { FirebaseMessage().toMessageFromMap(it.key, it.value) }
+
+                    if (res != null && res.isNotEmpty()) {
+                        emitter.onSuccess(res)
+                    }
+                }
+
+                override fun onCancelled(p0: DatabaseError?) {
+                    emitter.onError(Throwable("Cannot load more message"))
+                }
+            }
+
+            reference.addListenerForSingleValueEvent(listener)
+        }
+        return single.doFinally { reference.removeEventListener(listener) }
     }
 
     override fun loadMessages(conversationId: String, limit: Int): Observable<Message> {

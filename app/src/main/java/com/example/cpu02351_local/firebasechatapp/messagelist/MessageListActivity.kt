@@ -52,6 +52,16 @@ class MessageListActivity :
         }
     }
 
+
+    override fun onLoadMoreResult(moreMessages: List<Message>) {
+        mAdapter.addLoadMoreMessages(moreMessages)
+    }
+
+    override fun onMessageSent(message: Message) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
     override fun onNewMessage(message: Message) {
         mAdapter.addMessage(message)
     }
@@ -91,7 +101,7 @@ class MessageListActivity :
 
         val endlessLoader = object : EndlessLoader {
             override fun loadMore() {
-                mMessageViewModel.loadMessages()
+                mMessageViewModel.loadMore()
             }
         }
 

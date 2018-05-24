@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
@@ -18,6 +19,7 @@ import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.GlideDataBinder
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.databinding.FragmentUserDetailBinding
 
 
 class UserDetailFragment :
@@ -28,6 +30,8 @@ class UserDetailFragment :
     private lateinit var userId: String
     private lateinit var mUserDetailViewModel: UserDetailViewModel
     private lateinit var mAvatar: ImageView
+
+    private lateinit var mBinding: FragmentUserDetailBinding
 
     companion object {
 
@@ -57,12 +61,13 @@ class UserDetailFragment :
     }
 
     override fun onUserDetailLoaded(userDetail: User) {
-        GlideDataBinder.setImageUrl(mAvatar, userDetail.avaUrl)
+        mBinding.currentUser = userDetail
+        mBinding.executePendingBindings()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragmnent_user_deatil, container, false)
-
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_detail, container, false)
+        val v = mBinding.root
         mAvatar = v.findViewById(R.id.avatar)
         mAvatar.setOnClickListener {
             chooseNewAva()

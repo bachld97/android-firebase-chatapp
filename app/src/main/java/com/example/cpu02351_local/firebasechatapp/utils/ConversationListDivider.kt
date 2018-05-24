@@ -32,7 +32,9 @@ class ConversationListDivider(context: Context) : RecyclerView.ItemDecoration() 
         divider.draw(c)
     }
 
+    /*
     override fun getItemOffsets(outRect: Rect?, view: View?, parent: RecyclerView?, state: RecyclerView.State?) {
         outRect?.set(0, 0, 0, divider.intrinsicHeight)
     }
+    */
 }

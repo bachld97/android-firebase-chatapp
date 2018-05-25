@@ -48,6 +48,7 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
     }
 
     fun updateList(newList: List<Conversation>) {
+        hasResultFromServer = true
         Collections.sort(newList, kotlin.Comparator { con1, con2 ->
             return@Comparator con2.createdTime.compareTo(con1.createdTime)
         })
@@ -62,6 +63,16 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
 
     fun updateUserInfo(userMap: HashMap<String, User>) {
         this.userMap = userMap
+        notifyDataSetChanged()
+    }
+
+    private var hasResultFromServer = false
+    fun updateFromLocal(result: List<Conversation>) {
+        if (!hasResultFromServer) {
+            mConversations.clear()
+            mConversations.addAll(result)
+            notifyItemRangeInserted(0, mConversations.size)
+        }
     }
 
     class ConversationViewHolder(private val binding: ItemConversationListBinding)

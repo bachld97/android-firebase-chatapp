@@ -1,10 +1,11 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.viewmodel
 
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.User
 
 class DisplayViewModel(var users: HashMap<String, User>?,
                 var participants: List<String>, var currentUser: String) {
-    fun getAvaUrl(lastMessageSenderId : String) : String {
+    fun getAvaUrl(lastMessageSenderId : String?) : String {
         var res = ""
         if (participants.size == 2) {
             res = participants.filter { it != currentUser }
@@ -27,11 +28,14 @@ class DisplayViewModel(var users: HashMap<String, User>?,
 
     fun getDisplaySender(): Boolean = participants.size > 2
 
-    fun getSenderName(userId: String): String {
+    fun getSenderName(userId: String?): String {
+        if (userId == null) {
+            return ""
+        }
         return users?.get(userId)?.name ?: userId
     }
 
-    private fun getSenderAvaUrl(userId: String) : String {
+    private fun getSenderAvaUrl(userId: String?) : String {
         return users?.get(userId)?.avaUrl ?: ""
     }
 }

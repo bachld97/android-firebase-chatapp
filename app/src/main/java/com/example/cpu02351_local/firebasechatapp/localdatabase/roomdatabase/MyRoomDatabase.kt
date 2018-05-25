@@ -5,17 +5,19 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = [(RoomUser::class)], version = 1)
-abstract class RoomUserDatabase : RoomDatabase() {
+@Database(entities = [RoomUser::class, RoomMessage::class, RoomConversation::class], version = 1)
+abstract class MyRoomDatabase : RoomDatabase() {
     abstract fun RoomUserDao(): RoomUserDao
+    abstract fun RoomConversationDao(): RoomConversationDao
+    abstract fun RoomMessageDao(): RoomMessageDao
 
     companion object {
-        private var INSTANCE: RoomUserDatabase? = null
-        fun instance(appContext: Context): RoomUserDatabase {
+        private var INSTANCE: MyRoomDatabase? = null
+        fun instance(appContext: Context): MyRoomDatabase {
             if (INSTANCE == null) {
-                synchronized(RoomUserDatabase::class) {
+                synchronized(MyRoomDatabase::class) {
                     INSTANCE = Room.databaseBuilder(appContext,
-                            RoomUserDatabase::class.java, "user.db")
+                            MyRoomDatabase::class.java, "chat.db")
                             .build()
                 }
             }

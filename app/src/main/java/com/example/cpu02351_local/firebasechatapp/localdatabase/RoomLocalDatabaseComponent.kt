@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(modules = [ContextModule::class])
-interface RoomLocalUserDatabaseComponent {
+interface RoomLocalDatabaseComponent {
     fun injectInto(dest: MessageListActivity)
     fun injectInto(dest: ConversationListFragment)
     fun injectInto(dest: ContactListFragment)

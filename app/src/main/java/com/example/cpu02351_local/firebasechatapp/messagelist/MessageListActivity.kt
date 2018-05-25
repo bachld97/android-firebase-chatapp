@@ -11,8 +11,8 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
-import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
-import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
+import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
@@ -28,7 +28,7 @@ class MessageListActivity :
         AppCompatActivity() {
 
     @Inject
-    lateinit var localUserDatabase: RoomLocalUserDatabase
+    lateinit var localDatabase: RoomLocalDatabase
 
     private lateinit var mConversationId: String
     private lateinit var mRecyclerView: RecyclerView
@@ -108,7 +108,7 @@ class MessageListActivity :
         mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser, mRecyclerView, endlessLoader)
         mRecyclerView.adapter = mAdapter
 
-        DaggerRoomLocalUserDatabaseComponent
+        DaggerRoomLocalDatabaseComponent
                 .builder()
                 .contextModule(ContextModule(this))
                 .build()
@@ -119,7 +119,7 @@ class MessageListActivity :
     }
 
     private fun loadUsers() {
-        localUserDatabase.loadByIds(mByUsers.split(Conversation.ID_DELIM))
+        localDatabase.loadUserByIds(mByUsers.split(Conversation.ID_DELIM))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { res ->
                     val avaMap = HashMap<String, String>()

@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mLoggedInUser = intent.getStringExtra("loggedInUser")
         mViewPager = findViewById(R.id.viewPager)
+        mViewPager.offscreenPageLimit  = 2
         mTabLayout = findViewById(R.id.tabLayout)
         mAdapter = AppFragmentPagerAdapter(supportFragmentManager, mLoggedInUser)
         mViewPager.adapter = mAdapter

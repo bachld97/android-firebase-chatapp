@@ -4,13 +4,14 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.R
-import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
-import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
+import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import com.example.cpu02351_local.firebasechatapp.utils.ConversationListDivider
@@ -38,23 +39,25 @@ class ConversationListFragment :
     private var mConversationLoader: ConversationLoader = FirebaseConversationLoader()
     private lateinit var mConversationViewModel: ConversationViewModel
 
-    @Inject lateinit var localUserDatabase: RoomLocalUserDatabase
+    @Inject lateinit var localDatabase: RoomLocalDatabase
 
     private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
         mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
         mRecyclerView.adapter = mAdapter
 
-        DaggerRoomLocalUserDatabaseComponent
+        DaggerRoomLocalDatabaseComponent
                 .builder()
                 .contextModule(ContextModule(context!!))
                 .build()
                 .injectInto(this)
         loadUsers()
+
+        mConversationViewModel.setLocalDatabase(localDatabase)
     }
 
     private fun loadUsers() {
-        localUserDatabase.loadAll()
+        localDatabase.loadUserAll()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { res ->
                     val userMap = HashMap<String, User>()
@@ -74,7 +77,16 @@ class ConversationListFragment :
         mConversationViewModel.dispose()
     }
 
+    override fun onLocalConversationsLoaded(result: List<Conversation>) {
+        result.forEach {
+            Log.d("LOCAL_LOAD", "${it.id} ${it.participantIds.joinToString("@@@")}")
+        }
+        mAdapter.updateFromLocal(result)
+    }
     override fun onConversationsLoaded(result: List<Conversation>) {
+        result.forEach {
+            Log.d("REMOTE_LOAD", "${it.id} ${it.participantIds.joinToString("@@@")}")
+        }
         mAdapter.updateList(result)
     }
 
@@ -83,13 +95,15 @@ class ConversationListFragment :
         mRecyclerView = root.findViewById(R.id.conversationListContainer)
         mRecyclerView.addItemDecoration(ConversationListDivider(context!!))
         mRecyclerView.layoutManager = LinearLayoutManager(context)
+        init()
         return root
     }
 
     override fun onStart() {
         super.onStart()
-        init()
+        mConversationViewModel.resume()
     }
+
 
     override fun onStop() {
         super.onStop()

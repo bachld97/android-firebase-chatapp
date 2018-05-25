@@ -10,9 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.R
-import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalUserDatabaseComponent
-import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalUserDatabase
-import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalUserDatabase
+import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
+import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import java.util.*
 import javax.inject.Inject
@@ -40,7 +39,7 @@ class ContactListFragment :
     private lateinit var mCreateGroupChat: FloatingActionButton
 
     @Inject
-    lateinit var roomLocalUserDatabase: RoomLocalUserDatabase
+    lateinit var localDatabase: RoomLocalDatabase
 
     private fun init() {
         mContactViewModel = ContactViewModel(mContactLoader, this, userId)
@@ -48,13 +47,13 @@ class ContactListFragment :
         mRecyclerView.layoutManager = LinearLayoutManager(context)
         mRecyclerView.adapter = mAdapter
 
-        DaggerRoomLocalUserDatabaseComponent
+        DaggerRoomLocalDatabaseComponent
                 .builder()
                 .contextModule(ContextModule(this.context!!))
                 .build()
                 .injectInto(this)
 
-        mContactViewModel.setLocalUserDatabase(roomLocalUserDatabase)
+        mContactViewModel.setLocalUserDatabase(localDatabase)
     }
 
     private fun dispose() {
@@ -83,17 +82,13 @@ class ContactListFragment :
             context?.startActivity(intent)
         }
         */
+        init()
         return v
     }
 
     override fun setArguments(args: Bundle?) {
         super.setArguments(args)
         userId = args?.get("userId") as String
-    }
-
-    override fun onStart() {
-        super.onStart()
-        init()
     }
 
     override fun onStop() {

@@ -9,4 +9,7 @@ interface MessageLoader {
     fun loadMessages(conversationId: String, limit: Int): Observable<Message>
     fun addMessage(conversationId: String, message: Message, byUsers: List<String>): Completable
     fun loadMore(conversationId: String, lastKey: String?, messageLimit: Int): Single<List<Message>>
+
+    fun loadInitialMessages(conversationId: String, limit: Int): Single<List<Message>>
+    fun observeNextMessages(conversationId: String, lastKey: String?): Observable<Message>
 }

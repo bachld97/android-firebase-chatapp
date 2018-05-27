@@ -1,7 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.localdatabase
 
 import android.content.Context
-import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.RoomUser
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.MyRoomDatabase
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.RoomConversation
@@ -24,11 +23,22 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
     private val messageDao = room.RoomMessageDao()
 
     override fun loadConversationAll(): Single<List<Conversation>> {
-        val single = conversationDao.getAll()
+        return conversationDao.getAll()
                 .subscribeOn(Schedulers.io())
                 .map { loadLastMessage(it) }
-        return single
     }
+
+    override fun loadMessages(conversationId: String): Single<List<Message>> {
+        return messageDao.getAllInConversation(conversationId)
+                .subscribeOn(Schedulers.io())
+                .map { it.toListMessage() }
+    }
+
+    override fun saveMessageAll(messages: List<Message>, conversationId: String): Completable {
+        return Completable.fromAction { messageDao.insertAll(messages.toListRoomMessage(conversationId).toTypedArray()) }
+                .subscribeOn(Schedulers.io())
+    }
+
 
     private fun loadLastMessage(list: List<RoomConversation>): List<Conversation> {
         return list.map { it.toConversation(loadMessage(it.lastMessId))}
@@ -41,7 +51,7 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
     override fun saveConversationAll(conversations: List<Conversation>): Completable {
         return Completable.fromAction { conversationDao.insertAll(conversations.toListRoomConversation().toTypedArray()) }
                 .andThen { conversations.filter { it.lastMessage != null}
-                        .forEach { messageDao.insertAll(arrayOf(RoomMessage.from(it.lastMessage!!))) }
+                        .forEach { messageDao.insertAll(arrayOf(RoomMessage.from(it.lastMessage!!, it.id))) }
                 }
                 .subscribeOn(Schedulers.io())
     }
@@ -61,9 +71,12 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
         return Completable.fromAction { userDao.insertAll(users.toListRoomUser().toTypedArray()) }
                 .subscribeOn(Schedulers.io())
     }
-
 }
 
+
+private fun List<RoomMessage>.toListMessage(): List<Message> {
+    return this.map { it.toMessage() }
+}
 private fun List<RoomUser>.toListUser(): List<User> {
     return this.map { it.toUser() }
 }
@@ -71,7 +84,9 @@ private fun List<RoomUser>.toListUser(): List<User> {
 private fun List<User>.toListRoomUser(): List<RoomUser> {
     return this.map { RoomUser.from(it) }
 }
-
 private fun List<Conversation>.toListRoomConversation(): List<RoomConversation> {
     return this.map { RoomConversation.from(it) }
+}
+private fun List<Message>.toListRoomMessage(conversationId: String): List<RoomMessage> {
+    return this.map {RoomMessage.from(it, conversationId)}
 }

@@ -8,10 +8,11 @@ import com.example.cpu02351_local.firebasechatapp.model.Message
 
 @Entity(tableName = "Message")
 data class RoomMessage(@PrimaryKey var id: String,
+                       var conversationId: String,
                        var byUser: String,
                        var atTime: Long,
                        var content: String) {
-    constructor() : this("","",-1,"")
+    constructor() : this("","", "",-1,"")
 
     @Ignore
     fun toMessage(): Message {
@@ -25,8 +26,8 @@ data class RoomMessage(@PrimaryKey var id: String,
     companion object {
         @JvmStatic
         @Ignore
-        fun from(mess: Message): RoomMessage {
-            return RoomMessage(mess.id, mess.byUser ?: "", mess.atTime, mess.content)
+        fun from(mess: Message, conversationId: String): RoomMessage {
+            return RoomMessage(mess.id, conversationId, mess.byUser ?: "", mess.atTime, mess.content)
         }
     }
 }

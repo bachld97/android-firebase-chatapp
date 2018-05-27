@@ -1,1 +1,46 @@
 [Fatal Error] :9:9: Attribute name "android:id" associated with an element type "android.support.v4.view.ViewPager" must be followed by the ' = ' character.
+[0000558eea222570] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
+qt5ct: using qt5ct plugin
+qt5ct: D-Bus global menu: no
+qt5ct: D-Bus system tray: no
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+QXcbConnection: XCB error: 3 (BadWindow), sequence: 1534, resource id: 4194827, major code: 40 (TranslateCoords), minor code: 0
+[00007f9a9c000c40] main input error: ES_OUT_SET_(GROUP_)PCR  is called too late (pts_delay increased to 300 ms)
+[00007f9aa0c05da0] main decoder error: buffer deadlock prevented
+[00007f9a9c000c40] main input error: ES_OUT_SET_(GROUP_)PCR  is called too late (pts_delay increased to 879 ms)
+[00007f9a9c000c40] main input error: ES_OUT_SET_(GROUP_)PCR  is called too late (pts_delay increased to 938 ms)
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+[00007f9a846182f0] main decoder error: Timestamp conversion failed (delay 300000, buffering 60000, bound 9000000)
+[00007f9a846182f0] main decoder error: Could not convert timestamp 4557557550 for FFmpeg
+[00007f9a846182f0] main decoder error: buffer deadlock prevented
+[00007f9a846182f0] main decoder error: Timestamp conversion failed for 12340001: no reference clock
+[00007f9a846182f0] main decoder error: Could not convert timestamp 0 for FFmpeg
+[00007f9a846182f0] main decoder error: buffer deadlock prevented
+QObject::~QObject: Timers cannot be stopped from another thread
+[000055ad10de8570] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
+qt5ct: using qt5ct plugin
+qt5ct: D-Bus global menu: no
+qt5ct: D-Bus system tray: no
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+[mpeg2video @ 0x7f6f28001700] get_buffer() failed
+[mpeg2video @ 0x7f6f28001700] thread_get_buffer() failed
+[mpeg2video @ 0x7f6f28001700] get_buffer() failed (-12 (nil))
+QObject::~QObject: Timers cannot be stopped from another thread
+[00005643ed8b1570] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
+qt5ct: using qt5ct plugin
+qt5ct: D-Bus global menu: no
+qt5ct: D-Bus system tray: no
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+[00007f60c8c0feb0] main decoder error: buffer deadlock prevented
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+[00007f60e8c0cfb0] main decoder error: buffer deadlock prevented
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+[00007f60e8c0ff80] main decoder error: buffer deadlock prevented
+QObject::~QObject: Timers cannot be stopped from another thread
+[0000562d51a1d570] main libvlc: Running vlc with the default interface. Use 'cvlc' to use vlc without interface.
+qt5ct: using qt5ct plugin
+qt5ct: D-Bus global menu: no
+qt5ct: D-Bus system tray: no
+Failed to open VDPAU backend libvdpau_va_gl.so: cannot open shared object file: No such file or directory
+[00007fbdd8c0feb0] main decoder error: buffer deadlock prevented
+QObject::~QObject: Timers cannot be stopped from another thread

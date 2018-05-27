@@ -1,9 +1,12 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import io.reactivex.CompletableObserver
 import io.reactivex.Observer
+import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -24,11 +27,38 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         }
     }
 
-    var lastKey: String? = null
+    var mLastKey: String? = null
 
     private fun loadMessages() {
+        val single = messageLoader.loadInitialMessages(conversationId, messageLimit)
+        dispose()
+        single.subscribe(object : SingleObserver<List<Message>> {
+            override fun onSuccess(t: List<Message>) {
+                if (mLocalDisposable != null && !mLocalDisposable!!.isDisposed) {
+                    mLocalDisposable!!.dispose()
+                }
+                messageView.onNetworkLoadInitial(t)
+
+                mLocalDatabase?.saveMessageAll(t, conversationId)
+                        ?.subscribe { Log.d("DEBUGGING", "Message saved for conversation $conversationId") }
+
+                mLastKey = t.first().id
+                observeNextMessage(t.last().id)
+            }
+
+            override fun onSubscribe(d: Disposable) {
+                mDisposable = d
+            }
+
+            override fun onError(e: Throwable) {
+                observeNextMessage(null)
+            }
+        })
+    }
+
+    fun observeNextMessage(lastKey: String?) {
         val obs = messageLoader
-                .loadMessages(conversationId, messageLimit)
+                .observeNextMessages(conversationId, lastKey)
         dispose()
         obs.subscribe(object : Observer<Message> {
             override fun onComplete() {
@@ -40,9 +70,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
 
             override fun onNext(t: Message) {
-                if (lastKey == null) {
-                    lastKey = t.id
-                }
                 messageView.onNewMessage(t)
             }
 
@@ -80,10 +107,31 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     fun loadMore() {
-        messageLoader.loadMore(conversationId, lastKey, messageLimit)
+        messageLoader.loadMore(conversationId, mLastKey, messageLimit)
                 .subscribe({ res ->
                         messageView.onLoadMoreResult(res)
-                        lastKey = res.first().id
+                        mLastKey = res.first().id
                 }, { messageView.onError() })
     }
+
+    private var mLocalDisposable: Disposable? = null
+    private var mLocalDatabase: LocalDatabase? = null
+    fun setLocalDatabase(localDatabase: LocalDatabase) {
+        mLocalDatabase = localDatabase
+        localDatabase.loadMessages(conversationId)
+                .subscribe(object : SingleObserver<List<Message>> {
+                    override fun onSuccess(t: List<Message>) {
+                        messageView.onLocalLoadInitial(t)
+                    }
+
+                    override fun onSubscribe(d: Disposable) {
+                        mLocalDisposable = d
+                    }
+
+                    override fun onError(e: Throwable) {
+                        // Do nothing
+                    }
+                })
+    }
+
 }

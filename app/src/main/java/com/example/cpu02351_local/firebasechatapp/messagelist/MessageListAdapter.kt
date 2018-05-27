@@ -34,8 +34,8 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
                 super.onScrolled(recyclerView, dx, dy)
                 val lastItemPos = (mRecyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
 
-                Log.d("LAST_ITEM", lastItemPos.toString())
-                if (!isLoading && isScrolling && mMessages.size - lastItemPos <= loadThreshold) {
+                if (hasResultFromServer && !isLoading &&
+                        isScrolling && mMessages.size - lastItemPos <= loadThreshold) {
                     isLoading = true
                     endlessLoader.loadMore()
                 }
@@ -58,10 +58,6 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
             OTHER_TEXT -> TextMessageHolderOther(ItemTextMessageFromOtherBinding.inflate(layoutInflater, parent, false))
             else -> throw IllegalStateException()
         }
-    }
-
-    fun clear() {
-        mMessages.clear()
     }
 
     override fun getItemViewType(position: Int): Int {
@@ -90,18 +86,37 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
         return pos == 0 || mMessages[pos - 1].byUser != mMessages[pos].byUser
     }
 
-    fun updateList(result: List<Message>) {
-        val oldSize = mMessages.size
-        mMessages.clear()
-        mMessages.addAll(result.reversed())
-        notifyItemRangeInserted(0, mMessages.size - oldSize)
+    private var hasResultFromServer = false
+    fun updateFromLocal(result: List<Message>) {
+        if (!hasResultFromServer) {
+            synchronized(mMessages) {
+                mMessages.clear()
+                mMessages.addAll(result)
+                notifyItemRangeInserted(0, mMessages.size)
+            }
+        }
+    }
+
+    fun updateFromNetwork(result: List<Message>) {
+        hasResultFromServer = true
+        synchronized(mMessages) {
+            // val old = mMessages.subList(0, commonPoint)
+            mMessages.clear()
+            // mMessages.addAll(old)
+            mMessages.addAll(result.reversed())
+            // notifyItemRangeRemoved(0, commonPoint)
+            notifyItemRangeInserted(0, result.size)
+            notifyDataSetChanged()
+        }
     }
 
     fun addMessage(message: Message) {
-        mMessages.add(0, message)
-        notifyItemChanged(0 )
-        notifyItemInserted(0)
-        mRecyclerView.smoothScrollToPosition(0)
+        if (mMessages[0].id != message.id) {
+            mMessages.add(0, message)
+            notifyItemChanged(0)
+            notifyItemInserted(0)
+            mRecyclerView.smoothScrollToPosition(0)
+        }
     }
 
     fun updateInfoMaps(avaMap: HashMap<String, String>, nameMap: HashMap<String, String>) {
@@ -113,7 +128,6 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
     fun addLoadMoreMessages(moreMessages: List<Message>) {
         val oldSize = mMessages.size - 1
         mMessages.addAll(moreMessages.reversed())
-        // notifyDataSetChanged()
         notifyItemRangeInserted(oldSize + 1, moreMessages.size)
         isLoading = false
     }

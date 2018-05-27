@@ -52,6 +52,14 @@ class MessageListActivity :
         }
     }
 
+    override fun onLocalLoadInitial(messages: List<Message>) {
+        mAdapter.updateFromLocal(messages)
+    }
+
+    override fun onNetworkLoadInitial(messages: List<Message>) {
+        mAdapter.updateFromNetwork(messages)
+    }
+
 
     override fun onLoadMoreResult(moreMessages: List<Message>) {
         mAdapter.addLoadMoreMessages(moreMessages)
@@ -70,7 +78,6 @@ class MessageListActivity :
         super.onCreate(savedInstanceState)
         mConversationId = intent.getStringExtra(CONVERSATION_ID)
         mByUsers = intent.getStringExtra(BY_USERS_STRING)
-
         val binding = DataBindingUtil.setContentView<ActivityMessageListBinding>(this, R.layout.activity_message_list)
         mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
         binding.viewModel = mMessageViewModel
@@ -82,7 +89,6 @@ class MessageListActivity :
             setDisplayShowTitleEnabled(false)
             setDisplayHomeAsUpEnabled(true)
         }
-
         init()
     }
 
@@ -113,9 +119,8 @@ class MessageListActivity :
                 .contextModule(ContextModule(this))
                 .build()
                 .injectInto(this)
-
+        mMessageViewModel.setLocalDatabase(localDatabase)
         loadUsers()
-
     }
 
     private fun loadUsers() {
@@ -137,6 +142,7 @@ class MessageListActivity :
     }
 
     override fun addMessage() {
+        // TODO: Rework the ID
         val m = Message(UUID.randomUUID().toString())
         m.byUser = getLoggedInUser()
         m.content = mess.text.toString()

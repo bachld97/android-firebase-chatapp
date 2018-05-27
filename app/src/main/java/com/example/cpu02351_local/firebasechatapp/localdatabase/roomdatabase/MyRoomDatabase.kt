@@ -5,7 +5,7 @@ import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 
-@Database(entities = [RoomUser::class, RoomMessage::class, RoomConversation::class], version = 1)
+@Database(entities = [RoomUser::class, RoomMessage::class, RoomConversation::class], version = 2)
 abstract class MyRoomDatabase : RoomDatabase() {
     abstract fun RoomUserDao(): RoomUserDao
     abstract fun RoomConversationDao(): RoomConversationDao

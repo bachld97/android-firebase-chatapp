@@ -27,6 +27,70 @@ class FirebaseMessageLoader : MessageLoader {
         DaggerFirebaseReferenceComponent.create().injectInto(this)
     }
 
+    override fun loadInitialMessages(conversationId: String, limit: Int): Single<List<Message>> {
+        val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
+                .orderByKey()
+                .limitToLast(limit)
+        lateinit var listener : ValueEventListener
+        val s = Single.create<List<Message>> { emitter ->
+            listener = object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot?) {
+                    val res = snapshot?.children
+                            ?.map { FirebaseMessage().toMessageFromMap(it.key, it.value) }
+                    if (res == null || res.isEmpty()) {
+                        emitter.onError(Throwable("No message yet"))
+                    } else {
+                        emitter.onSuccess(res)
+                    }
+                }
+
+                override fun onCancelled(p0: DatabaseError?) {
+                    // Do nothing
+                }
+
+            }
+            reference.addListenerForSingleValueEvent(listener)
+        }
+
+        return s.doFinally { reference.removeEventListener(listener) }
+    }
+
+    override fun observeNextMessages(conversationId: String, lastKey: String?): Observable<Message> {
+        val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
+                .startAt(lastKey)
+                .orderByKey()
+        lateinit var listener: ChildEventListener
+        val obs = Observable.create<Message> { emitter ->
+            // Subsequent loads
+            listener = object : ChildEventListener {
+                override fun onCancelled(p0: DatabaseError?) {
+                    // Do nothing here?
+                }
+
+                override fun onChildMoved(p0: DataSnapshot?, p1: String?) {
+                    // Do nothing here
+                }
+
+                override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
+                    // Do nothing here
+                }
+
+                override fun onChildRemoved(p0: DataSnapshot?) {
+                    // Do nothing here
+                }
+
+                override fun onChildAdded(snapshot: DataSnapshot?, previousChildName: String?) {
+                    val message = FirebaseMessage()
+                    message.fromMap(snapshot?.key as String, snapshot.value)
+                    emitter.onNext(message.toMessage())
+                }
+            }
+            reference.addChildEventListener(listener)
+        }
+
+        return obs.doFinally { reference.removeEventListener(listener) }
+    }
+
     override fun loadMore(conversationId: String, lastKey: String?, messageLimit: Int): Single<List<Message>> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .endAt(lastKey)

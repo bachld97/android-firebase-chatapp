@@ -7,7 +7,6 @@ import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.Roo
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.RoomMessage
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.model.User
 import io.reactivex.Completable
 import io.reactivex.Single

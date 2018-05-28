@@ -5,8 +5,6 @@ import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.model.Message
-import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
 
 @Entity(tableName = "Conversation")
 data class RoomConversation(@PrimaryKey var id: String,

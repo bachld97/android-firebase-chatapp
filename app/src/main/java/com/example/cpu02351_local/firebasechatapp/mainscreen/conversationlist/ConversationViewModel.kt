@@ -1,13 +1,10 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 
 import android.content.Context
-import android.content.Intent
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
-import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.model.Message
 import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers

@@ -22,7 +22,7 @@
             android:layout_marginStart="@dimen/avaMargin"
             android:padding="8dp"
             android:background="@drawable/rounded_rect"
-            android:backgroundTint="@color/chatMe"
+            android:backgroundTint="@{message.isSending ? @color/chatSending : @color/chatMe}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"

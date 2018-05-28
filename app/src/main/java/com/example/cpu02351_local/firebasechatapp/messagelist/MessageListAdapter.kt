@@ -111,11 +111,15 @@ class MessageListAdapter(private val mMessages: ArrayList<AbstractMessage>,
     }
 
     fun addMessage(message: AbstractMessage) {
-        if (mMessages[0].id != message.id) {
+        val oldPos = mMessages.indexOf(message)
+        if (oldPos == -1) {
             mMessages.add(0, message)
             notifyItemChanged(0)
             notifyItemInserted(0)
             mRecyclerView.smoothScrollToPosition(0)
+        } else {
+            mMessages[oldPos] = message
+            notifyItemChanged(oldPos)
         }
     }
 

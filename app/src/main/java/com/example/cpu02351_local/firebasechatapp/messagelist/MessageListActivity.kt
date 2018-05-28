@@ -16,10 +16,8 @@ import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabas
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import io.reactivex.android.schedulers.AndroidSchedulers
-import kotlinx.android.synthetic.main.activity_message_list.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
@@ -67,11 +65,12 @@ class MessageListActivity :
     }
 
     override fun onRequestSendMessage(message: AbstractMessage) {
+        mAdapter.addMessage(message)
         mBinding.invalidateAll()
     }
 
     override fun onMessageSent(message: AbstractMessage) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        // mAdapter.removeTempMessage(message)
     }
 
     override fun onNewMessage(message: AbstractMessage) {

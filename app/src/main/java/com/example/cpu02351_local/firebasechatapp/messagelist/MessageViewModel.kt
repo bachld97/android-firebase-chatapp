@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
 import io.reactivex.CompletableObserver
 import io.reactivex.Observer
@@ -87,8 +86,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         com.subscribe(object : CompletableObserver {
             override fun onComplete() {
                 // messageView.onNewMessage(message)
-                mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
-                        ?.subscribe { Log.d("DEBUGGING", "New message sent") }
+                updatePendingMessageState(message)
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -98,7 +96,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             override fun onError(e: Throwable) {
                 messageView.onError()
             }
-
         })
     }
 
@@ -106,15 +103,24 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         if (messageText.trim().isEmpty()) {
             return
         }
-
         val id = messageLoader.getNewMessageId(conversationId)
-        val m = TextMessage(id)
-        m.atTime = System.currentTimeMillis()
-        m.content = messageText
-        m.byUser = messageView.getSender()
+        val m = TextMessage(id, System.currentTimeMillis(), messageView.getSender(), messageText)
+        m.isSending = true
         messageText = ""
         messageView.onRequestSendMessage(m)
+        addPendingMessage(m)
         proceedSendMessage(m, messageView.getParticipants())
+    }
+
+    private fun updatePendingMessageState(message: AbstractMessage) {
+        message.isSending = false
+        mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
+                ?.subscribe { Log.d("DEBUGGING", "New message sent") }
+    }
+
+    private fun addPendingMessage(message: AbstractMessage) {
+        mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
+                ?.subscribe { Log.d("DEBUGGING", "New message sent") }
     }
 
     fun loadMore() {

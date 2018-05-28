@@ -32,21 +32,6 @@ class Conversation(val id: String, users: Array<User> = arrayOf()) {
         }
     }
 
-    fun getTime() : String {
-        createdTime = lastMessage?.atTime ?: createdTime
-        val interval = System.currentTimeMillis() - createdTime
-        val minutes = interval / (1000 * 60)
-        val hours = minutes / 60
-        val days= hours / 24
-
-        return when {
-            minutes == 0L -> "Just now"
-            hours == 0L -> "$minutes minutes ago"
-            days == 0L -> "$hours hours ago"
-            else -> "$days days ago"
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         return other is Conversation && other.id == id
     }

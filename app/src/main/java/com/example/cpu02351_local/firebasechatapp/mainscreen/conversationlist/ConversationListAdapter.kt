@@ -20,6 +20,13 @@ class ConversationListAdapter(private val mConversations: ArrayList<Conversation
 
     private var userMap: HashMap<String, User>? = null
 
+    fun resetState() {
+        hasResultFromServer = false
+        val oldSize = mConversations.size
+        mConversations.clear()
+        notifyItemRangeRemoved(0, oldSize)
+    }
+
     private val mItemAction: View.OnClickListener? = View.OnClickListener { v ->
         val pos = mRecyclerView.getChildAdapterPosition(v)
         if (pos != RecyclerView.NO_POSITION) {

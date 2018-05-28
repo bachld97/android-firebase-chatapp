@@ -16,4 +16,5 @@ interface LocalDatabase {
 
     fun loadMessages(conversationId: String): Single<List<AbstractMessage>>
     fun saveMessageAll(messages: List<AbstractMessage>, conversationId: String): Completable
+    fun updateConversationLastMessage(conversationId: String, id: String): Completable
 }

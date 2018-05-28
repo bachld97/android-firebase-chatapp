@@ -119,6 +119,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private fun addPendingMessage(message: AbstractMessage) {
+        mLocalDatabase?.updateConversationLastMessage(conversationId, message.id)
+                ?.subscribe { Log.d("DEBUGGING", "Last message Id updated") }
+
         mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
                 ?.subscribe { Log.d("DEBUGGING", "New message sent") }
     }
@@ -139,6 +142,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 .subscribe(object : SingleObserver<List<AbstractMessage>> {
                     override fun onSuccess(t: List<AbstractMessage>) {
                         messageView.onLocalLoadInitial(t)
+                        t.filter { it.isSending }.forEach { proceedSendMessage(it, messageView.getParticipants()) }
                     }
 
                     override fun onSubscribe(d: Disposable) {

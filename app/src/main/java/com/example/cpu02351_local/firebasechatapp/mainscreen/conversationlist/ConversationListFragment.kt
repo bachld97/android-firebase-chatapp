@@ -102,6 +102,7 @@ class ConversationListFragment :
     override fun onStart() {
         super.onStart()
         mConversationViewModel.resume()
+        mAdapter.resetState()
     }
 
 

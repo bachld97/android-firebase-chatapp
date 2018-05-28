@@ -27,6 +27,7 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
     }
 
     fun resume() {
+        loadLocalConversation()
         loadConversations()
     }
 
@@ -76,9 +77,9 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
 
     private var mLocalDisposable: Disposable ?=null
     private fun loadLocalConversation() {
-         localDatabase!!.loadConversationAll()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(object : SingleObserver<List<Conversation>> {
+         localDatabase?.loadConversationAll()
+                ?.observeOn(AndroidSchedulers.mainThread())
+                ?.subscribe(object : SingleObserver<List<Conversation>> {
                     override fun onSuccess(t: List<Conversation>) {
                         conversationView.onLocalConversationsLoaded(
                                 t.filter { it.participantIds.contains(userId) })

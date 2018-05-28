@@ -48,6 +48,11 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
         return messageDao.getById(messageId).toMessage()
     }
 
+    override fun updateConversationLastMessage(conversationId: String, id: String): Completable {
+        return Completable.fromAction { conversationDao.updateLastMessage(conversationId, id) }
+                .subscribeOn(Schedulers.io())
+    }
+
     override fun saveConversationAll(conversations: List<Conversation>): Completable {
         return Completable.fromAction { conversationDao.insertAll(conversations.toListRoomConversation().toTypedArray()) }
                 .andThen { conversations.filter { it.lastMessage != null}

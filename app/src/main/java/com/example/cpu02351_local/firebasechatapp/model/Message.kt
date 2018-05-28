@@ -2,7 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.model
 
 import android.text.format.DateFormat
 
-class Message(val id: String) {
+class Message(var id: String) {
 
     var byUser: String? = null // Default = getCurrent  User
     var atTime = System.currentTimeMillis()

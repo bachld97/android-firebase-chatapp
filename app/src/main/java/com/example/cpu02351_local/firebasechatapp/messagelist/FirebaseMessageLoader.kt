@@ -155,9 +155,14 @@ class FirebaseMessageLoader : MessageLoader {
         return obs.doFinally { reference.removeEventListener(listener) }
     }
 
+
+    override fun getNewMessageId(conversationId: String): String {
+        return databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE").push().key
+    }
+
     override fun addMessage(conversationId: String, message: Message, byUsers: List<String>): Completable {
         // Check if conversation exist
-        return Completable.create {
+        return Completable.create { emitter ->
             val conversationRef = databaseRef.child(CONVERSATIONS)
             conversationRef.addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
@@ -165,17 +170,20 @@ class FirebaseMessageLoader : MessageLoader {
                         addConversation(conversationId, byUsers, message.atTime.toString())
                     }
 
-                    conversationRef.child("$conversationId/$MESSAGE").push()
+                     conversationRef.child("$conversationId/$MESSAGE/${message.id}")
                             .setValue(FirebaseMessage.from(message).toMap())
-                    // databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/$newMessId")
-                    //        .setValue(FirebaseMessage.from(message).toMap())
-                    databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
-                            .setValue(message.atTime.toString())
-                    it.onComplete()
+                            .addOnSuccessListener {
+                                databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
+                                        .setValue(message.atTime.toString())
+                                emitter.onComplete()
+                            }
+                            .addOnFailureListener {
+                                emitter.onError(it)
+                            }
                 }
 
                 override fun onCancelled(p0: DatabaseError?) {
-                    it.onError(Throwable("Cannot send message"))
+                    emitter.onError(Throwable("Cannot send message"))
                 }
             })
         }

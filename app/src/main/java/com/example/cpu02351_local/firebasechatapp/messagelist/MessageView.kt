@@ -7,9 +7,10 @@ interface MessageView {
 
     fun onNewMessage(message: Message)
     fun onLoadMoreResult(moreMessages: List<Message>)
+    fun onRequestSendMessage(message: Message)
     fun onMessageSent(message: Message)
-    fun addMessage()
-
+    fun getSender(): String
+    fun getParticipants(): String
 
     fun onNetworkLoadInitial(messages: List<Message>)
     fun onLocalLoadInitial(messages: List<Message>)

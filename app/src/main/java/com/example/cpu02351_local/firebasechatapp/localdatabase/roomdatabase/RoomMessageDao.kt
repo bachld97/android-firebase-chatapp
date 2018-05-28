@@ -15,6 +15,6 @@ interface RoomMessageDao {
     @Insert(onConflict = REPLACE)
     fun insertAll(messages: Array<RoomMessage>)
 
-    @Query("SELECT * FROM Message WHERE conversationId = (:conversationId)")
+    @Query("SELECT * FROM Message WHERE conversationId = (:conversationId) ORDER BY atTime DESC")
     fun getAllInConversation(conversationId: String): Single<List<RoomMessage>>
 }

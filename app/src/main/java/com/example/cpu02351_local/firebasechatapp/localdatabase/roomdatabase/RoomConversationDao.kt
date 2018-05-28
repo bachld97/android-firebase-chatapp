@@ -8,7 +8,7 @@ import io.reactivex.Single
 
 @Dao
 interface RoomConversationDao {
-    @Query("SELECT * FROM Conversation")
+    @Query("SELECT * FROM Conversation ORDER BY lastModified DESC")
     fun getAll(): Single<List<RoomConversation>>
 
     @Insert(onConflict = REPLACE)

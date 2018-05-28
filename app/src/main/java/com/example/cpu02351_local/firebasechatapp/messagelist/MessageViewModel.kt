@@ -79,16 +79,14 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         })
     }
 
-    fun sendMessage(conId: String, message: Message, byUsers: String) {
-        if (messageText.trim().isEmpty()) {
-            return
-        }
-
-        val list = byUsers.split(Conversation.ID_DELIM)
-        val com = messageLoader.addMessage(conId, message, list)
+    private fun proceedSendMessage(message: Message, participantIds: String) {
+        val list = participantIds.split(Conversation.ID_DELIM)
+        val com = messageLoader.addMessage(conversationId, message, list)
         com.subscribe(object : CompletableObserver {
             override fun onComplete() {
                 // messageView.onNewMessage(message)
+                mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
+                        ?.subscribe { Log.d("DEBUGGING", "New message sent") }
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -103,7 +101,18 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     fun sendNewMessage() {
-        messageView.addMessage()
+        if (messageText.trim().isEmpty()) {
+            return
+        }
+
+        val id = messageLoader.getNewMessageId(conversationId)
+        val m = Message(id)
+        m.atTime = System.currentTimeMillis()
+        m.content = messageText
+        m.byUser = messageView.getSender()
+        messageText = ""
+        messageView.onRequestSendMessage(m)
+        proceedSendMessage(m, messageView.getParticipants())
     }
 
     fun loadMore() {

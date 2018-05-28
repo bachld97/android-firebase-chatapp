@@ -65,23 +65,27 @@ class MessageListActivity :
         mAdapter.addLoadMoreMessages(moreMessages)
     }
 
+    override fun onRequestSendMessage(message: Message) {
+        mBinding.invalidateAll()
+    }
+
     override fun onMessageSent(message: Message) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
 
     override fun onNewMessage(message: Message) {
         mAdapter.addMessage(message)
     }
 
+    private lateinit var mBinding: ActivityMessageListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mConversationId = intent.getStringExtra(CONVERSATION_ID)
         mByUsers = intent.getStringExtra(BY_USERS_STRING)
-        val binding = DataBindingUtil.setContentView<ActivityMessageListBinding>(this, R.layout.activity_message_list)
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_message_list)
         mMessageViewModel = MessageViewModel(mMessageLoader, this, mConversationId)
-        binding.viewModel = mMessageViewModel
-        binding.executePendingBindings()
+        mBinding.viewModel = mMessageViewModel
+        mBinding.executePendingBindings()
         val toolbar = findViewById<Toolbar>(R.id.my_toolbar)
         toolbar.alpha = 0.2f
         setSupportActionBar(toolbar)
@@ -141,14 +145,12 @@ class MessageListActivity :
         // Do nothing
     }
 
-    override fun addMessage() {
-        // TODO: Rework the ID
-        val m = Message(UUID.randomUUID().toString())
-        m.byUser = getLoggedInUser()
-        m.content = mess.text.toString()
-        m.atTime = System.currentTimeMillis()
-        mMessageViewModel.sendMessage(mConversationId, m, intent.getStringExtra(BY_USERS_STRING))
-        mess.text.clear()
+    override fun getSender(): String {
+        return getLoggedInUser()
+    }
+
+    override fun getParticipants(): String {
+        return intent.getStringExtra(BY_USERS_STRING)
     }
 
     private fun getLoggedInUser(): String {

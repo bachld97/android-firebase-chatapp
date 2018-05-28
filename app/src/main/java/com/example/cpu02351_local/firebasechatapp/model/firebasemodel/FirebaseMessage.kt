@@ -1,7 +1,8 @@
 package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
-import com.example.cpu02351_local.firebasechatapp.model.Message
 
 class FirebaseMessage : FirebaseObject() {
     private lateinit var id: String
@@ -12,12 +13,12 @@ class FirebaseMessage : FirebaseObject() {
 
     companion object {
         @JvmStatic
-        fun from(message: Message) : FirebaseMessage {
+        fun from(message: AbstractMessage) : FirebaseMessage {
             val res = FirebaseMessage()
             res.id = message.id
             res.atTime = message.atTime
             res.type = message.getType()
-            res.byUser = message.byUser!!
+            res.byUser = message.byUser
             res.content = message.content
             return res
         }
@@ -38,13 +39,12 @@ class FirebaseMessage : FirebaseObject() {
         }
     }
 
-    fun toMessage() : Message {
+    fun toMessage() : AbstractMessage {
         // Later add switch type to return correct type of user
-        val res = Message(id)
-        res.atTime = atTime
-        res.content = content
-        res.byUser = byUser
-        return res
+        return when (type) {
+            "text" -> TextMessage(id, atTime, byUser, content)
+            else -> throw IllegalStateException()
+        }
     }
 
     override fun toMap(): Map<String, Any> {
@@ -56,7 +56,7 @@ class FirebaseMessage : FirebaseObject() {
         return res
     }
 
-    fun toMessageFromMap(key: String, value: Any?): Message {
+    fun toMessageFromMap(key: String, value: Any?): AbstractMessage {
         this.fromMap(key, value)
         return this.toMessage()
     }

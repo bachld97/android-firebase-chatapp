@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.localdatabase
 
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.model.User
@@ -16,6 +17,6 @@ interface LocalDatabase {
     fun loadConversationAll(): Single<List<Conversation>>
     fun saveConversationAll(conversations: List<Conversation>): Completable
 
-    fun loadMessages(conversationId: String): Single<List<Message>>
-    fun saveMessageAll(messages: List<Message>, conversationId: String): Completable
+    fun loadMessages(conversationId: String): Single<List<AbstractMessage>>
+    fun saveMessageAll(messages: List<AbstractMessage>, conversationId: String): Completable
 }

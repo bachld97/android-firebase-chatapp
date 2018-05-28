@@ -11,9 +11,9 @@ import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageFro
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.BaseMessageViewHolder
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolder
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolderOther
-import com.example.cpu02351_local.firebasechatapp.model.Message
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 
-class MessageListAdapter(private val mMessages: ArrayList<Message>,
+class MessageListAdapter(private val mMessages: ArrayList<AbstractMessage>,
                          private val loggedInUser: String,
                          private val mRecyclerView: RecyclerView,
                          private val endlessLoader: EndlessLoader)
@@ -87,7 +87,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
     }
 
     private var hasResultFromServer = false
-    fun updateFromLocal(result: List<Message>) {
+    fun updateFromLocal(result: List<AbstractMessage>) {
         if (!hasResultFromServer) {
             synchronized(mMessages) {
                 mMessages.clear()
@@ -97,7 +97,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
         }
     }
 
-    fun updateFromNetwork(result: List<Message>) {
+    fun updateFromNetwork(result: List<AbstractMessage>) {
         hasResultFromServer = true
         synchronized(mMessages) {
             // val old = mMessages.subList(0, commonPoint)
@@ -110,7 +110,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
         }
     }
 
-    fun addMessage(message: Message) {
+    fun addMessage(message: AbstractMessage) {
         if (mMessages[0].id != message.id) {
             mMessages.add(0, message)
             notifyItemChanged(0)
@@ -125,7 +125,7 @@ class MessageListAdapter(private val mMessages: ArrayList<Message>,
         this.nameMap = nameMap
     }
 
-    fun addLoadMoreMessages(moreMessages: List<Message>) {
+    fun addLoadMoreMessages(moreMessages: List<AbstractMessage>) {
         val oldSize = mMessages.size - 1
         mMessages.addAll(moreMessages.reversed())
         notifyItemRangeInserted(oldSize + 1, moreMessages.size)

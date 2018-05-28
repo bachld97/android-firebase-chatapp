@@ -10,7 +10,7 @@ import io.reactivex.Single
 @Dao
 interface RoomMessageDao {
     @Query("SELECT * FROM  Message WHERE id = (:id)")
-    fun getById(id: String): Message
+    fun getById(id: String): RoomMessage
 
     @Insert(onConflict = REPLACE)
     fun insertAll(messages: Array<RoomMessage>)

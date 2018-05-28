@@ -2,8 +2,10 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
+import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
 import io.reactivex.CompletableObserver
 import io.reactivex.Observer
 import io.reactivex.SingleObserver
@@ -32,8 +34,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     private fun loadMessages() {
         val single = messageLoader.loadInitialMessages(conversationId, messageLimit)
         dispose()
-        single.subscribe(object : SingleObserver<List<Message>> {
-            override fun onSuccess(t: List<Message>) {
+        single.subscribe(object : SingleObserver<List<AbstractMessage>> {
+            override fun onSuccess(t: List<AbstractMessage>) {
                 if (mLocalDisposable != null && !mLocalDisposable!!.isDisposed) {
                     mLocalDisposable!!.dispose()
                 }
@@ -60,7 +62,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         val obs = messageLoader
                 .observeNextMessages(conversationId, lastKey)
         dispose()
-        obs.subscribe(object : Observer<Message> {
+        obs.subscribe(object : Observer<AbstractMessage> {
             override fun onComplete() {
                 dispose()
             }
@@ -69,7 +71,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 mDisposable = d
             }
 
-            override fun onNext(t: Message) {
+            override fun onNext(t: AbstractMessage) {
                 messageView.onNewMessage(t)
             }
 
@@ -79,7 +81,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         })
     }
 
-    private fun proceedSendMessage(message: Message, participantIds: String) {
+    private fun proceedSendMessage(message: AbstractMessage, participantIds: String) {
         val list = participantIds.split(Conversation.ID_DELIM)
         val com = messageLoader.addMessage(conversationId, message, list)
         com.subscribe(object : CompletableObserver {
@@ -106,7 +108,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         }
 
         val id = messageLoader.getNewMessageId(conversationId)
-        val m = Message(id)
+        val m = TextMessage(id)
         m.atTime = System.currentTimeMillis()
         m.content = messageText
         m.byUser = messageView.getSender()
@@ -128,8 +130,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     fun setLocalDatabase(localDatabase: LocalDatabase) {
         mLocalDatabase = localDatabase
         localDatabase.loadMessages(conversationId)
-                .subscribe(object : SingleObserver<List<Message>> {
-                    override fun onSuccess(t: List<Message>) {
+                .subscribe(object : SingleObserver<List<AbstractMessage>> {
+                    override fun onSuccess(t: List<AbstractMessage>) {
                         messageView.onLocalLoadInitial(t)
                     }
 

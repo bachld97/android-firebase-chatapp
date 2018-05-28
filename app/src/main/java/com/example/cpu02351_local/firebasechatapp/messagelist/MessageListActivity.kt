@@ -14,6 +14,7 @@ import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageLis
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
@@ -52,28 +53,28 @@ class MessageListActivity :
         }
     }
 
-    override fun onLocalLoadInitial(messages: List<Message>) {
+    override fun onLocalLoadInitial(messages: List<AbstractMessage>) {
         mAdapter.updateFromLocal(messages)
     }
 
-    override fun onNetworkLoadInitial(messages: List<Message>) {
+    override fun onNetworkLoadInitial(messages: List<AbstractMessage>) {
         mAdapter.updateFromNetwork(messages)
     }
 
 
-    override fun onLoadMoreResult(moreMessages: List<Message>) {
+    override fun onLoadMoreResult(moreMessages: List<AbstractMessage>) {
         mAdapter.addLoadMoreMessages(moreMessages)
     }
 
-    override fun onRequestSendMessage(message: Message) {
+    override fun onRequestSendMessage(message: AbstractMessage) {
         mBinding.invalidateAll()
     }
 
-    override fun onMessageSent(message: Message) {
+    override fun onMessageSent(message: AbstractMessage) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onNewMessage(message: Message) {
+    override fun onNewMessage(message: AbstractMessage) {
         mAdapter.addMessage(message)
     }
 

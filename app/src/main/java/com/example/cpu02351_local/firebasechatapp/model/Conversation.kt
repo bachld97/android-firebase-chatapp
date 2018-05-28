@@ -6,7 +6,7 @@ class Conversation(val id: String, users: Array<User> = arrayOf()) {
     var participantIds: List<String> = ArrayList()
     var createdTime = -1L
 
-    var lastMessage: Message? = null
+    var lastMessage: AbstractMessage? = null
 
     init {
         participantIds = users.joinToString("$").split("$")

@@ -1,17 +1,17 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseConversation
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.BY_USERS
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.CONVERSATIONS
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_MOD
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.MESSAGE
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
-import com.example.cpu02351_local.firebasechatapp.model.Message
-import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
 import com.google.firebase.database.*
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -27,12 +27,12 @@ class FirebaseMessageLoader : MessageLoader {
         DaggerFirebaseReferenceComponent.create().injectInto(this)
     }
 
-    override fun loadInitialMessages(conversationId: String, limit: Int): Single<List<Message>> {
+    override fun loadInitialMessages(conversationId: String, limit: Int): Single<List<AbstractMessage>> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .orderByKey()
                 .limitToLast(limit)
         lateinit var listener : ValueEventListener
-        val s = Single.create<List<Message>> { emitter ->
+        val s = Single.create<List<AbstractMessage>> { emitter ->
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
@@ -55,12 +55,12 @@ class FirebaseMessageLoader : MessageLoader {
         return s.doFinally { reference.removeEventListener(listener) }
     }
 
-    override fun observeNextMessages(conversationId: String, lastKey: String?): Observable<Message> {
+    override fun observeNextMessages(conversationId: String, lastKey: String?): Observable<AbstractMessage> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .startAt(lastKey)
                 .orderByKey()
         lateinit var listener: ChildEventListener
-        val obs = Observable.create<Message> { emitter ->
+        val obs = Observable.create<AbstractMessage> { emitter ->
             // Subsequent loads
             listener = object : ChildEventListener {
                 override fun onCancelled(p0: DatabaseError?) {
@@ -91,13 +91,13 @@ class FirebaseMessageLoader : MessageLoader {
         return obs.doFinally { reference.removeEventListener(listener) }
     }
 
-    override fun loadMore(conversationId: String, lastKey: String?, messageLimit: Int): Single<List<Message>> {
+    override fun loadMore(conversationId: String, lastKey: String?, messageLimit: Int): Single<List<AbstractMessage>> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .endAt(lastKey)
                 .orderByKey()
                 .limitToLast(messageLimit)
         lateinit var listener: ValueEventListener
-        val single = Single.create<List<Message>> { emitter ->
+        val single = Single.create<List<AbstractMessage>> { emitter ->
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
@@ -119,12 +119,12 @@ class FirebaseMessageLoader : MessageLoader {
         return single.doFinally { reference.removeEventListener(listener) }
     }
 
-    override fun loadMessages(conversationId: String, limit: Int): Observable<Message> {
+    override fun loadMessages(conversationId: String, limit: Int): Observable<AbstractMessage> {
         val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .orderByKey()
                 .limitToLast(limit)
         lateinit var listener: ChildEventListener
-        val obs = Observable.create<Message> { emitter ->
+        val obs = Observable.create<AbstractMessage> { emitter ->
             // Subsequent loads
             listener = object : ChildEventListener {
                 override fun onCancelled(p0: DatabaseError?) {
@@ -160,7 +160,7 @@ class FirebaseMessageLoader : MessageLoader {
         return databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE").push().key
     }
 
-    override fun addMessage(conversationId: String, message: Message, byUsers: List<String>): Completable {
+    override fun addMessage(conversationId: String, message: AbstractMessage, byUsers: List<String>): Completable {
         // Check if conversation exist
         return Completable.create { emitter ->
             val conversationRef = databaseRef.child(CONVERSATIONS)

@@ -5,7 +5,7 @@
 
         <variable
             name="message"
-            type="com.example.cpu02351_local.firebasechatapp.model.Message"/>
+            type="com.example.cpu02351_local.firebasechatapp.model.AbstractMessage"/>
 
         <variable
             name="infoViewModel"
@@ -59,7 +59,7 @@
                 android:textSize="@dimen/textSmall"
                 android:visibility="@{infoViewModel.showTime ? View.VISIBLE : View.GONE}"
                 android:textColor="@color/textTime"
-                android:text="@{message.getTime()}"
+                android:text="@{message.displayTime}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

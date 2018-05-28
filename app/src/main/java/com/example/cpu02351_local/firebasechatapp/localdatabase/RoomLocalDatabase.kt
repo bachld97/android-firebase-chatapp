@@ -5,6 +5,7 @@ import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.Roo
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.MyRoomDatabase
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.RoomConversation
 import com.example.cpu02351_local.firebasechatapp.localdatabase.roomdatabase.RoomMessage
+import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Message
 import com.example.cpu02351_local.firebasechatapp.model.User
@@ -28,13 +29,13 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
                 .map { loadLastMessage(it) }
     }
 
-    override fun loadMessages(conversationId: String): Single<List<Message>> {
+    override fun loadMessages(conversationId: String): Single<List<AbstractMessage>> {
         return messageDao.getAllInConversation(conversationId)
                 .subscribeOn(Schedulers.io())
                 .map { it.toListMessage() }
     }
 
-    override fun saveMessageAll(messages: List<Message>, conversationId: String): Completable {
+    override fun saveMessageAll(messages: List<AbstractMessage>, conversationId: String): Completable {
         return Completable.fromAction { messageDao.insertAll(messages.toListRoomMessage(conversationId).toTypedArray()) }
                 .subscribeOn(Schedulers.io())
     }
@@ -44,8 +45,8 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
         return list.map { it.toConversation(loadMessage(it.lastMessId))}
     }
 
-    private fun loadMessage(messageId: String): Message? {
-        return messageDao.getById(messageId)
+    private fun loadMessage(messageId: String): AbstractMessage? {
+        return messageDao.getById(messageId).toMessage()
     }
 
     override fun saveConversationAll(conversations: List<Conversation>): Completable {
@@ -74,7 +75,7 @@ class RoomLocalDatabase @Inject constructor(appContext: Context) : LocalDatabase
 }
 
 
-private fun List<RoomMessage>.toListMessage(): List<Message> {
+private fun List<RoomMessage>.toListMessage(): List<AbstractMessage> {
     return this.map { it.toMessage() }
 }
 private fun List<RoomUser>.toListUser(): List<User> {
@@ -87,6 +88,6 @@ private fun List<User>.toListRoomUser(): List<RoomUser> {
 private fun List<Conversation>.toListRoomConversation(): List<RoomConversation> {
     return this.map { RoomConversation.from(it) }
 }
-private fun List<Message>.toListRoomMessage(conversationId: String): List<RoomMessage> {
+private fun List<AbstractMessage>.toListRoomMessage(conversationId: String): List<RoomMessage> {
     return this.map {RoomMessage.from(it, conversationId)}
 }

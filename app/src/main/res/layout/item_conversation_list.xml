@@ -80,7 +80,7 @@
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:text="@{conversation.lastMessage.display()}"
+                android:text="@{conversation.lastMessage.conversationPreviewDisplay}"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:textColor="@color/textSecondary"

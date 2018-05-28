@@ -33,6 +33,8 @@ class ContactListFragment :
 
     private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
+
+    private lateinit var mAdapter2: ContactItemAdapter
     private lateinit var mAdapter: ContactListAdapter
     private var mContactLoader: ContactLoader = FirebaseContactLoader()
     private lateinit var mContactViewModel: ContactViewModel
@@ -43,9 +45,11 @@ class ContactListFragment :
 
     private fun init() {
         mContactViewModel = ContactViewModel(mContactLoader, this, userId)
-        mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
+        mAdapter2 = ContactItemAdapter()
+        // mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mRecyclerView.adapter = mAdapter
+        // mRecyclerView.adapter = mAdapter
+        mRecyclerView.adapter = mAdapter2
 
         DaggerRoomLocalDatabaseComponent
                 .builder()
@@ -61,7 +65,8 @@ class ContactListFragment :
     }
 
     override fun onContactsLoaded(res: List<User>) {
-        mAdapter.updateContacts(res.sortedWith(kotlin.Comparator { c1, c2 ->  c1.name.compareTo(c2.name, true)}))
+        // mAdapter.updateContacts(res.sortedWith(kotlin.Comparator { c1, c2 ->  c1.name.compareTo(c2.name, true)}))
+       mAdapter2.setItems(res.map { ContactItem(it) }, null)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

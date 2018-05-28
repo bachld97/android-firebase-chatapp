@@ -44,7 +44,7 @@ class ContactListAdapter(private var mContacts: ArrayList<User>,
 
     class ContactViewHolder(private val binding: ItemContactListBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(contact: User) {
-            binding.user = contact
+            //binding.user = contact
             binding.executePendingBindings()
         }
     }

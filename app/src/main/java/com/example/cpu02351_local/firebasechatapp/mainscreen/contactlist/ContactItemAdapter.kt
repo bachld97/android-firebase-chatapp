@@ -15,9 +15,13 @@ class ContactItemAdapter(private val mContactViewModel: ContactViewModel,
 
     private val itemClickListener = View.OnClickListener {
         val pos = mRecyclerView.getChildAdapterPosition(it)
-        if (pos != RecyclerView.NO_POSITION && items != null) {
-            mContactViewModel.onSelectedContactsAction(
-                    arrayListOf(items!![pos]).map { it as ContactItem })
+        if (pos != RecyclerView.NO_POSITION && listItems != null) {
+            if (selectedItems.size != 0) {
+                itemSelectedCallback.onItemSelected(listItems!![pos] as ContactItem)
+            } else {
+                mContactViewModel.onSelectedContactsAction(
+                        arrayListOf(listItems!![pos]).map { it as ContactItem })
+            }
         }
     }
 
@@ -31,18 +35,17 @@ class ContactItemAdapter(private val mContactViewModel: ContactViewModel,
             else {
                 if (selectedItems.contains(pos)) {
                     selectedItems.remove(pos)
-                    (items!![pos] as ContactItem).isSelected = false
-                    notifyItemChanged(pos)
+                    (listItems!![pos] as ContactItem).isSelected = false
                 }
                 else {
-                    (items!![pos] as ContactItem).isSelected= true
+                    (listItems!![pos] as ContactItem).isSelected= true
                     selectedItems.add(pos)
-                    notifyItemChanged(pos)
                 }
+                notifyItemChanged(pos)
             }
 
-            if (items != null) {
-                val selectedMess = selectedItems.map { items!![it] as ContactItem }
+            if (listItems != null) {
+                val selectedMess = selectedItems.map { listItems!![it] as ContactItem }
                 mContactViewModel.onSelectedContactChanged(selectedItems, selectedMess)
             }
         }
@@ -50,7 +53,7 @@ class ContactItemAdapter(private val mContactViewModel: ContactViewModel,
 
     fun clearSelected() {
         selectedItems.forEach {
-            (items?.get(it) as ContactItem).isSelected = false
+            (listItems?.get(it) as ContactItem).isSelected = false
         }
         selectedItems.clear()
         notifyDataSetChanged()

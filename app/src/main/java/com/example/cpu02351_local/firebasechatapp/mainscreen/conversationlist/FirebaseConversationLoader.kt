@@ -34,7 +34,7 @@ class FirebaseConversationLoader : ConversationLoader {
                             ?.filter { it.participantIds.contains(userId) }
 
                     if (res != null) {
-                        emitter.onNext(res)
+                        emitter.onNext(res.sortedByDescending { it.createdTime })
                     } else {
                         emitter.onError(Throwable("Cannot load conversations"))
                     }

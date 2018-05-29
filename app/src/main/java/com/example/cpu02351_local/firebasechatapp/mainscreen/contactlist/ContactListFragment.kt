@@ -83,11 +83,11 @@ class ContactListFragment :
     }
 
     override fun onLocalContactsLoaded(res: List<ContactItem>) {
-        mAdapter.setItems(res, null, false)
+        mAdapter.setItems(res, false)
     }
 
     override fun onNetworkContactsLoaded(res: List<ContactItem>) {
-       mAdapter.setItems(res, null, true)
+       mAdapter.setItems(res, true)
     }
 
     private lateinit var mBinding: FragmentContactListBinding

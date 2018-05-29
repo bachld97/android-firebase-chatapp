@@ -44,7 +44,7 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                     mLocalDisposable!!.dispose()
                 }
 
-                conversationView.onConversationsLoaded(t)
+                conversationView.onConversationsLoaded(t.map { ConversationItem(it, userId) })
                 localDatabase?.saveConversationAll(t)
                         ?.subscribe { Log.d("DEBUGGING", "Conversation saved") }
             }
@@ -59,18 +59,11 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
         })
     }
 
-    fun onConversationClicked(context: Context, conversation: Conversation) {
-        startConversation(context, conversation)
-    }
-
-    private fun startConversation(context: Context, conversation: Conversation) {
-        val intent = MessageListActivity.newInstance(
-                context, conversation.id, conversation.participantIds.joinToString(Conversation.ID_DELIM))
-        context.startActivity(intent)
+    fun onConversationClicked(conversation: ConversationItem) {
+        conversationView.navigate(conversation)
     }
 
     fun setLocalDatabase(localDatabase: LocalDatabase) {
-        Log.d("LOCAL_LOAD", "LocalDatabaseEstablished")
         this.localDatabase = localDatabase
         loadLocalConversation()
     }
@@ -82,7 +75,8 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                 ?.subscribe(object : SingleObserver<List<Conversation>> {
                     override fun onSuccess(t: List<Conversation>) {
                         conversationView.onLocalConversationsLoaded(
-                                t.filter { it.participantIds.contains(userId) })
+                                t.filter { it.participantIds.contains(userId) }
+                                        .map { ConversationItem(it, userId) })
                     }
 
                     override fun onSubscribe(d: Disposable) {

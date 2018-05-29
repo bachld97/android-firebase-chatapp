@@ -12,6 +12,7 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
+import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import com.example.cpu02351_local.firebasechatapp.utils.ConversationListDivider
@@ -35,7 +36,7 @@ class ConversationListFragment :
 
     private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mAdapter: ConversationListAdapter
+    private lateinit var mAdapter: ConversationItemAdapter
     private var mConversationLoader: ConversationLoader = FirebaseConversationLoader()
     private lateinit var mConversationViewModel: ConversationViewModel
 
@@ -43,7 +44,10 @@ class ConversationListFragment :
 
     private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
-        mAdapter = ConversationListAdapter(ArrayList(), mRecyclerView, mConversationViewModel)
+
+
+        mAdapter = ConversationItemAdapter(mRecyclerView, mConversationViewModel)
+
         mRecyclerView.adapter = mAdapter
 
         DaggerRoomLocalDatabaseComponent
@@ -77,17 +81,18 @@ class ConversationListFragment :
         mConversationViewModel.dispose()
     }
 
-    override fun onLocalConversationsLoaded(result: List<Conversation>) {
-        result.forEach {
-            Log.d("LOCAL_LOAD", "${it.id} ${it.participantIds.joinToString("@@@")}")
-        }
-        mAdapter.updateFromLocal(result)
+    override fun onLocalConversationsLoaded(result: List<ConversationItem>) {
+        mAdapter.setItems(result, false)
     }
-    override fun onConversationsLoaded(result: List<Conversation>) {
-        result.forEach {
-            Log.d("REMOTE_LOAD", "${it.id} ${it.participantIds.joinToString("@@@")}")
-        }
-        mAdapter.updateList(result)
+    override fun onConversationsLoaded(result: List<ConversationItem>) {
+        mAdapter.setItems(result, true)
+    }
+
+    override fun navigate(where: ConversationItem) {
+        val conversation = where.getConversation()
+        val intent = MessageListActivity.newInstance(
+                context!!, conversation.id, conversation.participantIds.joinToString(Conversation.ID_DELIM))
+        context!!.startActivity(intent)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

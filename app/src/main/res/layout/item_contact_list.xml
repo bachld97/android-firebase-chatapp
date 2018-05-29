@@ -8,6 +8,7 @@
     </data>
 
     <LinearLayout
+        android:background="@{viewModel.isSelected ? @color/contactSelected : @color/contactUnselected }"
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,6 +17,7 @@
         >
 
         <de.hdodenhof.circleimageview.CircleImageView
+            android:onClick="@{() -> viewModel.avaSelected()}"
             app:civ_border_width="0.2dp"
             app:smallImageUrl="@{viewModel.contactAvaUrl}"
             android:layout_weight="0"

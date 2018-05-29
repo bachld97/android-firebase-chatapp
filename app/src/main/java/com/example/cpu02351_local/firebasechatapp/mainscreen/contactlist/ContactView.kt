@@ -1,7 +1,8 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
-import com.example.cpu02351_local.firebasechatapp.model.User
-
 interface ContactView {
-    fun onContactsLoaded(res: List<User>)
+    fun onNetworkContactsLoaded(res: List<ContactItem>)
+    fun onLocalContactsLoaded(res: List<ContactItem>)
+    fun navigate(conversationId: String, userIds: String)
+    fun onContactItemSelected(selectedPosition: List<Int>)
 }

@@ -67,12 +67,13 @@
             android:layout_height="wrap_content">
 
             <TextView
+                android:textStyle="bold"
                 android:visibility="@{viewModel.getDisplaySender()? View.VISIBLE : View.GONE}"
-                android:text="@{viewModel.getSenderName(conversation.lastMessage.byUser)}"
+                android:text="@{viewModel.getSenderName(conversation.lastMessage.byUser) + `:`}"
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:layout_marginEnd="4dp"
-                android:textColor="@color/textSecondary"
+                android:textColor="@color/textOtherName"
                 android:gravity="top"
                 android:textSize="@dimen/textStandard"
                 android:layout_weight="0"

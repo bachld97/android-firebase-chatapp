@@ -56,9 +56,13 @@ class FirebaseMessageLoader : MessageLoader {
     }
 
     override fun observeNextMessages(conversationId: String, lastKey: String?): Observable<AbstractMessage> {
-        val reference = databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
-                .startAt(lastKey)
+        val reference = if (lastKey == null) {
+            databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
+        }
+        else databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
                 .orderByKey()
+                .startAt(lastKey)
+
         lateinit var listener: ChildEventListener
         val obs = Observable.create<AbstractMessage> { emitter ->
             // Subsequent loads

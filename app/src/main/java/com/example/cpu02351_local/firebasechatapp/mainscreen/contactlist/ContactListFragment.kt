@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist
 
+import android.databinding.DataBindingUtil
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
@@ -8,12 +9,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.databinding.FragmentContactListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
+import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
-import java.util.*
 import javax.inject.Inject
 
 class ContactListFragment :
@@ -34,8 +35,7 @@ class ContactListFragment :
     private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
 
-    private lateinit var mAdapter2: ContactItemAdapter
-    private lateinit var mAdapter: ContactListAdapter
+    private lateinit var mAdapter: ContactItemAdapter
     private var mContactLoader: ContactLoader = FirebaseContactLoader()
     private lateinit var mContactViewModel: ContactViewModel
     private lateinit var mCreateGroupChat: FloatingActionButton
@@ -45,11 +45,12 @@ class ContactListFragment :
 
     private fun init() {
         mContactViewModel = ContactViewModel(mContactLoader, this, userId)
-        mAdapter2 = ContactItemAdapter()
-        // mAdapter = ContactListAdapter(ArrayList(), mRecyclerView, mContactViewModel)
+        mBinding.viewModel = mContactViewModel
+        mBinding.executePendingBindings()
+
+        mAdapter = ContactItemAdapter(mContactViewModel, mRecyclerView)
         mRecyclerView.layoutManager = LinearLayoutManager(context)
-        // mRecyclerView.adapter = mAdapter
-        mRecyclerView.adapter = mAdapter2
+        mRecyclerView.adapter = mAdapter
 
         DaggerRoomLocalDatabaseComponent
                 .builder()
@@ -64,29 +65,38 @@ class ContactListFragment :
         mContactViewModel.dispose()
     }
 
-    override fun onContactsLoaded(res: List<User>) {
-        // mAdapter.updateContacts(res.sortedWith(kotlin.Comparator { c1, c2 ->  c1.name.compareTo(c2.name, true)}))
-       mAdapter2.setItems(res.map { ContactItem(it) }, null)
+    override fun navigate(conversationId: String, userIds: String) {
+        val _context = context
+        if (_context != null) {
+            val intent = MessageListActivity.newInstance(context!!, conversationId, userIds)
+            _context.startActivity(intent)
+        }
+        mAdapter.clearSelected()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val v = inflater.inflate(R.layout.fragment_contact_list, container, false)
-        mRecyclerView = v.findViewById(R.id.recyclerView)
+    override fun onContactItemSelected(selectedPosition: List<Int>) {
+        if (selectedPosition.isNotEmpty()) {
+            mCreateGroupChat.show()
+        } else {
+            mCreateGroupChat.hide()
+        }
+    }
 
+    override fun onLocalContactsLoaded(res: List<ContactItem>) {
+        mAdapter.setItems(res, null, false)
+    }
+
+    override fun onNetworkContactsLoaded(res: List<ContactItem>) {
+       mAdapter.setItems(res, null, true)
+    }
+
+    private lateinit var mBinding: FragmentContactListBinding
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_contact_list, container, false)
+        val v = mBinding.root
+        mRecyclerView = v.findViewById(R.id.recyclerView)
         mCreateGroupChat = v.findViewById(R.id.createGroupChat)
         mCreateGroupChat.visibility = View.INVISIBLE
-        /*
-        mCreateGroupChat.setOnClickListener {
-            val users = arrayOf(
-                        User(currentUser()),
-                        User("user2"),
-                        User("user3"))
-            val intent = Intent(context, MessageListActivity::class.java)
-            intent.putExtra("conversationId", Conversation.uniqueId(users))
-            intent.putExtra("byUsers", users.joinToString(Conversation.ID_DELIM))
-            context?.startActivity(intent)
-        }
-        */
         init()
         return v
     }

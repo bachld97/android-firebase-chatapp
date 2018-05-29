@@ -19,4 +19,6 @@
     <color name="textLogOut">#ffffff</color>
     <color name="buttonLogOut">#CD0a51b5</color>
     <color name="backgroundTint">#a0e8eff4</color>
+    <color name="contactSelected">#0AFAFF</color>
+    <color name="contactUnselected">#00000000</color>
 </resources>

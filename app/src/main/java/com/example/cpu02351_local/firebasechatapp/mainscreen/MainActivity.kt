@@ -6,7 +6,8 @@ import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
 import com.example.cpu02351_local.firebasechatapp.R
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+        AppCompatActivity() {
 
     private lateinit var mViewPager: ViewPager
     private lateinit var mTabLayout: TabLayout

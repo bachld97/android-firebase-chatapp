@@ -40,7 +40,6 @@ class FirebaseConversation : FirebaseObject() {
         val valueMap = try {
              value as HashMap<String, Any>
         } catch (e: TypeCastException) {
-            Log.d("BUG_FOUND", "FirebaseConversation: Cannot load map")
             null
         }
         if (valueMap != null) {
@@ -61,7 +60,6 @@ class FirebaseConversation : FirebaseObject() {
 
     override fun toMap(): Map<String, Any> {
         val res = HashMap<String, Any>()
-        // res[FirebaseHelper.LAST_MOD] = lastModified
         res[FirebaseHelper.BY_USERS] = userIds.joinToString(DELIM)
         return res
     }

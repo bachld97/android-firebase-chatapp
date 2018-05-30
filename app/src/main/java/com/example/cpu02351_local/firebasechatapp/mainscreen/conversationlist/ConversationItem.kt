@@ -10,29 +10,31 @@ class ConversationItem(private val conversation: Conversation, private val curUs
 
     fun computeDisplayInfo(info: HashMap<String, User>) {
         lastSenderName = info[conversation.lastMessage?.byUser]?.name ?: ""
-        displayAvaUrl = parseDisplayUrl(info)
+        parseDisplayUrl(info)
         conversationDisplayName = parseConversationDisplayName(info)
     }
 
+    var size = conversation.participantIds.size
     var lastMessagePreview = conversation.lastMessage?.getConversationPreviewDisplay() ?: ""
     var lastSenderName = conversation.lastMessage?.byUser ?: ""
     var elapseTimeDisplay = parseTime(conversation.lastMessage?.atTime)
     var shouldDisplaySender = conversation.participantIds.size > 2
     var displayAvaUrl = ""
+    var displayAvaUrl1 = ""
+    var displayAvaUrl2 = ""
+    var displayAvaUrl3 = ""
+    var displayAvaUrl4 = ""
     var conversationDisplayName = parseConversationDisplayName(null)
 
-    private fun parseDisplayUrl(info: HashMap<String, User>?): String {
-        var res = info?.get(conversation.lastMessage?.byUser)?.avaUrl ?: ""
-
-        if (conversation.participantIds.size == 2) {
-            res = conversation.participantIds
-                    .findLast { it != curUserId }!!
-            res = info?.get(res)?.avaUrl ?: ""
-        }
-
-        return res
+    private fun parseDisplayUrl(info: HashMap<String, User>?) {
+        displayAvaUrl = conversation.participantIds
+                .findLast { it != curUserId }!!
+        displayAvaUrl = info?.get(displayAvaUrl)?.avaUrl ?: ""
+        displayAvaUrl1 = info?.get(conversation.participantIds[1 % size])?.avaUrl ?: ""
+        displayAvaUrl2 = info?.get(conversation.participantIds[2 % size])?.avaUrl ?: ""
+        displayAvaUrl3 = info?.get(conversation.participantIds[3 % size])?.avaUrl ?: ""
+        displayAvaUrl4 = info?.get(conversation.participantIds[4 % size])?.avaUrl ?: ""
     }
-
 
     private fun parseConversationDisplayName(info: HashMap<String, User>?): String {
         var res = conversation.participantIds.joinToString(", ") {

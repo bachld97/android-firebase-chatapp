@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="viewModel"
+            type="com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.ConversationItemViewModel"/>
+    </data>
+
+    <RelativeLayout
+        android:background="?android:attr/selectableItemBackground"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <FrameLayout
+            android:id="@+id/image"
+            android:layout_marginEnd="@dimen/avaThumbnailMargin"
+            android:layout_height="@dimen/avaThumbnail"
+            android:layout_width="@dimen/avaThumbnail"
+            android:padding="4dp">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_gravity="bottom|end"
+                app:civ_border_color="@color/chatBackground"
+                app:civ_border_width="2dp"
+                app:smallImageUrl="@{viewModel.avaDisplayUrlFourth}"
+                android:src="@drawable/ic_sample_ava"
+                android:layout_width="@dimen/avaThumbnailGroup"
+                android:layout_height="@dimen/avaThumbnailGroup" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_gravity="bottom|start"
+                app:civ_border_width="2dp"
+                app:civ_border_color="@color/chatBackground"
+                app:smallImageUrl="@{viewModel.avaDisplayUrlThird}"
+                android:src="@drawable/ic_sample_ava"
+                android:layout_width="@dimen/avaThumbnailGroup"
+                android:layout_height="@dimen/avaThumbnailGroup" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_gravity="top|end"
+                app:civ_border_color="@color/chatBackground"
+                app:civ_border_width="2dp"
+                app:smallImageUrl="@{viewModel.avaDisplayUrlSecond}"
+                android:src="@drawable/ic_sample_ava"
+                android:layout_width="@dimen/avaThumbnailGroup"
+                android:layout_height="@dimen/avaThumbnailGroup" />
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_gravity="top|start"
+                app:civ_border_color="@color/chatBackground"
+                app:civ_border_width="2dp"
+                app:smallImageUrl="@{viewModel.avaDisplayUrlFirst}"
+                android:src="@drawable/ic_sample_ava"
+                android:layout_width="@dimen/avaThumbnailGroup"
+                android:layout_height="@dimen/avaThumbnailGroup" />
+
+        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/topGroup"
+            android:layout_toEndOf="@+id/image"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@{viewModel.conversationDisplayName}"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/textPrimary"
+                android:gravity="bottom"
+                android:textSize="@dimen/textLarge"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="@{viewModel.elapseTimeDisplay}"
+                android:textColor="@color/textTime"
+                android:gravity="bottom"
+                android:textSize="@dimen/textSmall"
+                android:layout_weight="0"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_below="@id/topGroup"
+            android:layout_toEndOf="@+id/image"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:textStyle="bold"
+                android:visibility="@{viewModel.shouldDisplaySender ? View.VISIBLE : View.GONE}"
+                android:text="@{viewModel.lastSenderName}"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:layout_marginEnd="4dp"
+                android:textColor="@color/textOtherName"
+                android:gravity="top"
+                android:textSize="@dimen/textStandard"
+                android:layout_weight="0"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:text="@{viewModel.lastMessagePreview}"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textColor="@color/textSecondary"
+                android:gravity="top"
+                android:textSize="@dimen/textStandard"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

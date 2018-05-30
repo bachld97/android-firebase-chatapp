@@ -27,9 +27,9 @@ class FirebaseConversationLoader : ConversationLoader {
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
-                            ?.map { it ->
-                                FirebaseConversation().parseLastMess(snapshot.child("${it.key}/$MESSAGE").children.last())
-                                                .toConversationFromMap(it.key, it.value)
+                            ?.mapNotNull { it ->
+                                FirebaseConversation().parseLastMess(snapshot.child("${it.key}/$MESSAGE").children.lastOrNull())
+                                                ?.toConversationFromMap(it.key, it.value, userId)
                             }
                             ?.filter { it.participantIds.contains(userId) }
 

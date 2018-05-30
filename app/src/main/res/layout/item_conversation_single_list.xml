@@ -93,7 +93,7 @@
 
             <TextView
                 android:text="@string/unreadText"
-                android:visibility="@{viewModel.isRead ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.isRead ? View.GONE : View.VISIBLE, default=gone}"
                 style="@style/unreadBadge" />
 
         </LinearLayout>

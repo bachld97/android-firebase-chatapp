@@ -119,7 +119,7 @@
                 android:layout_height="match_parent" />
 
             <TextView
-                android:visibility="@{viewModel.isRead ? View.GONE : View.VISIBLE}"
+                android:visibility="@{viewModel.isRead ? View.GONE : View.VISIBLE, default=gone}"
                 android:text="@string/unreadText"
                 style="@style/unreadBadge" />
         </LinearLayout>

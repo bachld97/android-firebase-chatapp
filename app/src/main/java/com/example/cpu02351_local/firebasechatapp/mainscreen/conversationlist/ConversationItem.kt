@@ -4,8 +4,7 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 
-class ConversationItem(private val conversation: Conversation, private val curUserId: String,
-                       val isRead: Boolean = true) : ListItem {
+class ConversationItem(private val conversation: Conversation, private val curUserId: String) : ListItem {
     override fun equalsItem(otherItem: ListItem): Boolean {
         return otherItem is ConversationItem && conversation.id == otherItem.conversation.id
     }
@@ -84,6 +83,8 @@ class ConversationItem(private val conversation: Conversation, private val curUs
             }
         }
     }
+
+    var isRead = conversation.isRead
 
     override fun equals(other: Any?): Boolean {
         return other is ConversationItem && other.conversation.id == conversation.id

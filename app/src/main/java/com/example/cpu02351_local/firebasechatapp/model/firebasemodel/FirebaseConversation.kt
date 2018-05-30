@@ -30,9 +30,9 @@ class FirebaseConversation : FirebaseObject() {
         }
     }
 
-    fun toConversationFromMap(id: String, value: Any?) : Conversation {
+    fun toConversationFromMap(id: String, value: Any?, curUser: String) : Conversation {
         this.fromMap(id, value)
-        return this.toConversation()
+        return this.toConversation(curUser)
     }
 
     override fun fromMap(id: String, value: Any?) {
@@ -51,7 +51,8 @@ class FirebaseConversation : FirebaseObject() {
         }
     }
 
-    fun parseLastMess(last: DataSnapshot): FirebaseConversation {
+    fun parseLastMess(last: DataSnapshot?): FirebaseConversation? {
+        if (last == null) return null
         val mess = FirebaseMessage()
         mess.fromMap(last.key, last.value)
         this.lastMessage = mess
@@ -65,12 +66,13 @@ class FirebaseConversation : FirebaseObject() {
         return res
     }
 
-    private fun toConversation() : Conversation {
+    private fun toConversation(userId: String) : Conversation {
         val res = Conversation(id)
         res.participantIds = userIds
         res.createdTime = lastModified
         res.lastMessage = lastMessage?.toMessage()
         res.lastRead = lastRead
+        res.isRead = lastRead[userId] != null && (res.lastMessage?.id == lastRead[userId])
         return res
     }
 }

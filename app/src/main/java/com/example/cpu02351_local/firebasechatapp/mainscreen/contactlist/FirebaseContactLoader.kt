@@ -8,6 +8,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
+import io.reactivex.Observable
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -21,16 +22,16 @@ class FirebaseContactLoader : ContactLoader {
     }
 
 
-    override fun loadContacts(userId: String): Single<List<User>> {
+    override fun loadContacts(userId: String): Observable<List<User>> {
         val reference = databaseRef.child(USERS)
         lateinit var listener: ValueEventListener
-        val obs = Single.create<List<User>> { emitter ->
+        val obs = Observable.create<List<User>> { emitter ->
             listener = object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot?) {
                     val res = snapshot?.children
                             ?.map { it -> FirebaseUser().toUserFromMap(it.key, it.value) }
                     if (res != null) {
-                        emitter.onSuccess(res)
+                        emitter.onNext(res)
                     } else {
                         emitter.onError(Throwable("No contact found"))
                     }

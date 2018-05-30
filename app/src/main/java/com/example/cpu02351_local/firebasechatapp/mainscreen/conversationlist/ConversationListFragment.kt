@@ -107,7 +107,6 @@ class ConversationListFragment :
         mAdapter.resetState()
     }
 
-
     override fun onStop() {
         super.onStop()
         dispose()

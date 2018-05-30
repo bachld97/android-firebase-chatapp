@@ -6,6 +6,7 @@ import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
+import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -56,9 +57,13 @@ class ContactViewModel(private val contactLoader: ContactLoader,
     private fun loadContacts() {
         val obs = contactLoader.loadContacts(userId)
         dispose()
-        obs.subscribe(object : SingleObserver<List<User>> {
-            override fun onSuccess(t: List<User>) {
-                localDatabase?.saveUserAll(t)
+        obs.subscribe(object : Observer<List<User>> {
+            override fun onComplete() {
+                // Do nothing?
+            }
+
+            override fun onNext(t: List<User>) {
+               localDatabase?.saveUserAll(t)
                         ?.observeOn(AndroidSchedulers.mainThread())
                         ?.subscribe {
                             Log.d("DEBUGGING", "save finish")
@@ -87,13 +92,6 @@ class ContactViewModel(private val contactLoader: ContactLoader,
         contactView.onLocalContactsLoaded(data.filter { it.id != userId}
                 .map { ContactItem(it) }
                 .sortedBy { it.contactName.toUpperCase() })
-    }
-
-    fun onContactClicked(context: Context, user: User) {
-        val userIds = arrayOf(userId, user.id)
-        val conId = Conversation.uniqueId(userIds)
-        val intent = MessageListActivity.newInstance(context, conId, conId)
-        context.startActivity(intent)
     }
 
     fun onSelectedContactsAction(contacts: List<ContactItem>) {

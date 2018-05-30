@@ -1,9 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist
 
-import android.content.Context
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
-import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import io.reactivex.Observer
 import io.reactivex.SingleObserver
@@ -61,18 +59,18 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
     }
 
     fun toConversationItem(con: Conversation): ConversationItem {
-        val isRead = if (con.lastRead[userId] != null) {
-            (con.lastMessage?.id == con.lastRead[userId])
-        } else {
+        /*
+        val isRead =  if (useReadState)
+            con.lastRead[userId] != null && (con.lastMessage?.id == con.lastRead[userId])
+        else
             true
-        }
-
+        */
         /*
         if (con.lastRead[userId] != null && con.lastMessage?.id == con.lastMessage?.id) {
             // false
         }*/
 
-        return ConversationItem(con, userId, isRead)
+        return ConversationItem(con, userId)
     }
 
     fun onConversationClicked(conversation: ConversationItem) {
@@ -102,7 +100,6 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                     override fun onError(e: Throwable) {
                         // Do nothing for now
                     }
-
                 })
     }
 }

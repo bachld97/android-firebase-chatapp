@@ -9,6 +9,7 @@ class Conversation(val id: String, users: Array<User> = arrayOf()) {
 
     var lastMessage: AbstractMessage? = null
     var lastRead = HashMap<String, String>()
+    var isRead = false
 
     init {
         participantIds = users.joinToString("$").split("$")

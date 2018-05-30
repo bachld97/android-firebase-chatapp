@@ -8,9 +8,10 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 
 @Entity(tableName = "Conversation")
 data class RoomConversation(@PrimaryKey var id: String,
-                       var lastModified: Long,
-                       var byUser: String,
-                       var lastMessId: String = "") {
+                            var lastModified: Long,
+                            var byUser: String,
+                            var lastMessId: String = "",
+                            var isRead: Boolean = false) {
     constructor(): this("", -1, "", "")
 
     @Ignore
@@ -19,6 +20,7 @@ data class RoomConversation(@PrimaryKey var id: String,
         con.participantIds = byUser.split(Conversation.ID_DELIM)
         con.createdTime = lastModified
         con.lastMessage = lastMess
+        con.isRead = isRead
         return con
     }
 
@@ -28,7 +30,8 @@ data class RoomConversation(@PrimaryKey var id: String,
         fun from(conversation: Conversation): RoomConversation {
             return RoomConversation(conversation.id, conversation.createdTime,
                     conversation.participantIds.joinToString(Conversation.ID_DELIM),
-                    conversation.lastMessage?.id ?: "")
+                    conversation.lastMessage?.id ?: "",
+                    conversation.isRead)
         }
     }
 }

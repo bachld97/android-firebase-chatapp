@@ -12,5 +12,5 @@ interface MessageLoader {
 
     fun getNewMessageId(conversationId: String): String
     fun loadInitialMessages(conversationId: String, limit: Int): Single<List<AbstractMessage>>
-    fun observeNextMessages(conversationId: String, lastKey: String?): Observable<AbstractMessage>
+    fun observeNextMessages(conversationId: String, lastKey: String?, thisUser: String): Observable<AbstractMessage>
 }

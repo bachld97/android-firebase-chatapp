@@ -15,7 +15,7 @@ class ConversationItemViewModel(var item: ConversationItem) {
 
     fun getShouldDisplaySender(): Boolean = item.shouldDisplaySender
 
-
+    fun getIsRead(): Boolean = item.isRead
     fun getAvaDisplayUrlFirst(): String = item.displayAvaUrl1
     fun getAvaDisplayUrlSecond(): String = item.displayAvaUrl2
     fun getAvaDisplayUrlThird(): String = item.displayAvaUrl3

@@ -10,6 +10,7 @@ import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.CONVERSATIONS
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_MOD
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_READ
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.MESSAGE
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
 import com.google.firebase.database.*
@@ -55,7 +56,7 @@ class FirebaseMessageLoader : MessageLoader {
         return s.doFinally { reference.removeEventListener(listener) }
     }
 
-    override fun observeNextMessages(conversationId: String, lastKey: String?): Observable<AbstractMessage> {
+    override fun observeNextMessages(conversationId: String, lastKey: String?, thisUser: String): Observable<AbstractMessage> {
         val reference = if (lastKey == null) {
             databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE")
         }
@@ -87,12 +88,19 @@ class FirebaseMessageLoader : MessageLoader {
                     val message = FirebaseMessage()
                     message.fromMap(snapshot?.key as String, snapshot.value)
                     emitter.onNext(message.toMessage())
+
+                    // Update LastRead map for this user as well
+
+                    databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_READ/$thisUser")
+                            .setValue(snapshot.key)
                 }
             }
             reference.addChildEventListener(listener)
         }
 
-        return obs.doFinally { reference.removeEventListener(listener) }
+        return obs.doFinally {
+            reference.removeEventListener(listener)
+        }
     }
 
     override fun loadMore(conversationId: String, lastKey: String?, messageLimit: Int): Single<List<AbstractMessage>> {
@@ -177,6 +185,8 @@ class FirebaseMessageLoader : MessageLoader {
                      conversationRef.child("$conversationId/$MESSAGE/${message.id}")
                             .setValue(FirebaseMessage.from(message).toMap())
                             .addOnSuccessListener {
+                                // Reset seen_by
+
                                 databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
                                         .setValue(message.atTime.toString())
                                 emitter.onComplete()
@@ -196,7 +206,6 @@ class FirebaseMessageLoader : MessageLoader {
     private fun addConversation(conversationId: String, byUsers: List<String>, lastMod: String) {
         val con = FirebaseConversation()
         val map = HashMap<String, String>()
-        Log.d("DEBUGGING", byUsers.toString())
         map[LAST_MOD] = lastMod
         map[BY_USERS] = byUsers.joinToString(DELIM)
         con.fromMap(conversationId, map)

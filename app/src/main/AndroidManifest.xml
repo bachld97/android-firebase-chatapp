@@ -15,9 +15,8 @@
         <activity android:name=".mainscreen.MainActivity"
             >
         </activity>
-        <activity android:name=".messagelist.MessageListActivity" android:launchMode="singleInstance"/>
+        <activity android:name=".messagelist.MessageListActivity" />
         <activity android:name=".loginscreen.AuthenticationActivity"
-            android:launchMode="singleInstance"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

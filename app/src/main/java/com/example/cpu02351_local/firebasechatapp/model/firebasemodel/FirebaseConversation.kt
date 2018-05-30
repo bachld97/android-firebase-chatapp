@@ -6,6 +6,7 @@ import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_READ
 import com.google.firebase.database.DataSnapshot
 
 class FirebaseConversation : FirebaseObject() {
@@ -13,6 +14,7 @@ class FirebaseConversation : FirebaseObject() {
     private lateinit var id: String
     private var lastModified = -1L
     private var userIds = ArrayList<String>()
+    private var lastRead = HashMap<String, String>()
 
     var lastMessage: FirebaseMessage? = null
 
@@ -45,7 +47,7 @@ class FirebaseConversation : FirebaseObject() {
             lastModified = (valueMap[FirebaseHelper.LAST_MOD] as String? ?: "-1").toLong()
             userIds.clear()
             userIds.addAll((valueMap[FirebaseHelper.BY_USERS] as String).split(DELIM))
-
+            lastRead.putAll(valueMap[LAST_READ] as HashMap<String, String>? ?: HashMap())
         }
     }
 
@@ -63,11 +65,12 @@ class FirebaseConversation : FirebaseObject() {
         return res
     }
 
-    fun toConversation() : Conversation {
+    private fun toConversation() : Conversation {
         val res = Conversation(id)
         res.participantIds = userIds
         res.createdTime = lastModified
         res.lastMessage = lastMessage?.toMessage()
+        res.lastRead = lastRead
         return res
     }
 }

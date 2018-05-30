@@ -44,7 +44,8 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                     mLocalDisposable!!.dispose()
                 }
 
-                conversationView.onConversationsLoaded(t.map { ConversationItem(it, userId) })
+
+                conversationView.onConversationsLoaded(t.map { toConversationItem(it)})
                 localDatabase?.saveConversationAll(t)
                         ?.subscribe { Log.d("DEBUGGING", "Conversation saved") }
             }
@@ -57,6 +58,21 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                 // Do nothing for now
             }
         })
+    }
+
+    fun toConversationItem(con: Conversation): ConversationItem {
+        val isRead = if (con.lastRead[userId] != null) {
+            (con.lastMessage?.id == con.lastRead[userId])
+        } else {
+            true
+        }
+
+        /*
+        if (con.lastRead[userId] != null && con.lastMessage?.id == con.lastMessage?.id) {
+            // false
+        }*/
+
+        return ConversationItem(con, userId, isRead)
     }
 
     fun onConversationClicked(conversation: ConversationItem) {
@@ -76,7 +92,7 @@ class ConversationViewModel(private val conversationLoader: ConversationLoader,
                     override fun onSuccess(t: List<Conversation>) {
                         conversationView.onLocalConversationsLoaded(
                                 t.filter { it.participantIds.contains(userId) }
-                                        .map { ConversationItem(it, userId) })
+                                        .map {  toConversationItem(it) })
                     }
 
                     override fun onSubscribe(d: Disposable) {

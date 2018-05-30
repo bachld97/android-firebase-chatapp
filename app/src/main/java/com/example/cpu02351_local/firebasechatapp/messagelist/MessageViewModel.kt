@@ -59,7 +59,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     fun observeNextMessage(lastKey: String?) {
         val obs = messageLoader
-                .observeNextMessages(conversationId, lastKey)
+                .observeNextMessages(conversationId, lastKey, messageView.getSender())
         dispose()
         obs.subscribe(object : Observer<AbstractMessage> {
             override fun onComplete() {
@@ -90,7 +90,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
 
             override fun onSubscribe(d: Disposable) {
-                mDisposable = d
             }
 
             override fun onError(e: Throwable) {

@@ -4,12 +4,24 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 
-class ConversationItem(private val conversation: Conversation, private val curUserId: String) : ListItem {
+class ConversationItem(private val conversation: Conversation, private val curUserId: String,
+                       val isRead: Boolean = true) : ListItem {
+    override fun equalsItem(otherItem: ListItem): Boolean {
+        return otherItem is ConversationItem && conversation.id == otherItem.conversation.id
+    }
+
+    override fun equalsContent(otherItem: ListItem): Boolean {
+        return otherItem is ConversationItem && conversation.createdTime == otherItem.conversation.createdTime
+    }
 
     fun getConversation(): Conversation = conversation
 
     fun computeDisplayInfo(info: HashMap<String, User>) {
-        lastSenderName = info[conversation.lastMessage?.byUser]?.name ?: ""
+        lastSenderName = if (conversation.lastMessage?.byUser == curUserId) {
+            "You"
+        } else {
+            info[conversation.lastMessage?.byUser]?.name ?: ""
+        }
         parseDisplayUrl(info)
         conversationDisplayName = parseConversationDisplayName(info)
     }

@@ -1,12 +1,14 @@
 package com.example.cpu02351_local.firebasechatapp.model
 
 import java.util.*
+import kotlin.collections.HashMap
 
 class Conversation(val id: String, users: Array<User> = arrayOf()) {
     var participantIds: List<String> = ArrayList()
     var createdTime = -1L
 
     var lastMessage: AbstractMessage? = null
+    var lastRead = HashMap<String, String>()
 
     init {
         participantIds = users.joinToString("$").split("$")

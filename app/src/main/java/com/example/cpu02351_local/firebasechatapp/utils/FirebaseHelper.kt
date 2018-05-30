@@ -14,6 +14,7 @@ import dagger.Provides
 @Module
 class FirebaseHelper {
     companion object {
+        const val LAST_READ = "last_mess"
         const val AVA_URL = "ava_url"
         const val USERS = "users"
         const val CONVERSATIONS = "conversations"

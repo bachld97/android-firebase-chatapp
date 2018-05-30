@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">FirebaseChatApp</string>
     <string name="message_hint">Message, ...</string>
+    <string name="unreadText">New</string>
 </resources>

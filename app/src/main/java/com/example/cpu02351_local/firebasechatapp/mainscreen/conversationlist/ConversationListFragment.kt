@@ -44,10 +44,7 @@ class ConversationListFragment :
 
     private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
-
-
         mAdapter = ConversationItemAdapter(mRecyclerView, mConversationViewModel)
-
         mRecyclerView.adapter = mAdapter
 
         DaggerRoomLocalDatabaseComponent

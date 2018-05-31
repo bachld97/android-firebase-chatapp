@@ -12,7 +12,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 
 open class ContactProducerViewModel(private val contactLoader: ContactLoader,
-                                    private val contactView: ContactView,
+                                    private val contactView: ContactConsumerView,
                                     private val userId: String) {
 
     private var mDisposable: Disposable? = null
@@ -47,6 +47,17 @@ open class ContactProducerViewModel(private val contactLoader: ContactLoader,
     }
 
     fun dispose() {
+        disposeLocal()
+        disposeNetwork()
+    }
+
+    private fun disposeLocal() {
+        if (mLocalDisposable != null && !mLocalDisposable!!.isDisposed) {
+            mLocalDisposable!!.dispose()
+        }
+    }
+
+    private fun disposeNetwork() {
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable!!.dispose()
         }
@@ -54,13 +65,14 @@ open class ContactProducerViewModel(private val contactLoader: ContactLoader,
 
     private fun loadContacts() {
         val obs = contactLoader.loadContacts(userId)
-        dispose()
+        disposeNetwork()
         obs.subscribe(object : Observer<List<User>> {
             override fun onComplete() {
                 // Do nothing?
             }
 
             override fun onNext(t: List<User>) {
+                disposeLocal()
                 localDatabase?.saveUserAll(t)
                         ?.observeOn(AndroidSchedulers.mainThread())
                         ?.subscribe {

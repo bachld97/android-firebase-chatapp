@@ -6,6 +6,7 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,10 +15,12 @@ import com.example.cpu02351_local.firebasechatapp.databinding.FragmentContactLis
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
+import com.example.cpu02351_local.firebasechatapp.utils.ContactConsumerView
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import javax.inject.Inject
 
 class ContactListFragment :
+        ContactConsumerView,
         ContactView,
         Fragment() {
 
@@ -35,34 +38,17 @@ class ContactListFragment :
     private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
 
-    private lateinit var mAdapter: ContactItemAdapter
-    private var mContactLoader: ContactLoader = FirebaseContactLoader()
+    private var mAdapter: ContactItemAdapter? = null
     private lateinit var mContactViewModel: ContactViewModel
     private lateinit var mCreateGroupChat: FloatingActionButton
+    private var temContactItem: List<ContactItem>? = null
 
-    @Inject
-    lateinit var localDatabase: RoomLocalDatabase
 
     private fun init() {
-        mContactViewModel = ContactViewModel(mContactLoader, this, userId)
-        mBinding.viewModel = mContactViewModel
-        mBinding.executePendingBindings()
-
-        mAdapter = ContactItemAdapter(mContactViewModel, mRecyclerView)
-        mRecyclerView.layoutManager = LinearLayoutManager(context)
-        mRecyclerView.adapter = mAdapter
-
-        DaggerRoomLocalDatabaseComponent
-                .builder()
-                .contextModule(ContextModule(this.context!!))
-                .build()
-                .injectInto(this)
-
-        mContactViewModel.setLocalUserDatabase(localDatabase)
+        mContactViewModel = ContactViewModel(this, userId)
     }
 
     private fun dispose() {
-        mContactViewModel.dispose()
     }
 
     override fun navigate(conversationId: String, userIds: String) {
@@ -71,7 +57,7 @@ class ContactListFragment :
             val intent = MessageListActivity.newInstance(context!!, conversationId, userIds)
             _context.startActivity(intent)
         }
-        mAdapter.clearSelected()
+        mAdapter?.clearSelected()
     }
 
     override fun onContactItemSelected(selectedPosition: List<Int>) {
@@ -83,11 +69,19 @@ class ContactListFragment :
     }
 
     override fun onLocalContactsLoaded(res: List<ContactItem>) {
-        mAdapter.setItems(res, false)
+        Log.d("DEBUG_LC", "localResult ${res.size}, mAdapter null state: ${mAdapter == null}, fragment: ${this}")
+        mAdapter?.setItems(res, false)
     }
 
     override fun onNetworkContactsLoaded(res: List<ContactItem>) {
-       mAdapter.setItems(res, true)
+        Log.d("DEBUG_LC", "networkResult ${res.size}, mAdapter null state: ${mAdapter == null}, fragment: ${this}")
+       mAdapter?.setItems(res, true)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        init()
+        Log.d("DEBUG_LC", "onCreate, fragment: ${this}")
     }
 
     private lateinit var mBinding: FragmentContactListBinding
@@ -97,8 +91,19 @@ class ContactListFragment :
         mRecyclerView = v.findViewById(R.id.recyclerView)
         mCreateGroupChat = v.findViewById(R.id.createGroupChat)
         mCreateGroupChat.visibility = View.INVISIBLE
-        init()
+        mRecyclerView.layoutManager = LinearLayoutManager(context)
+        mBinding.viewModel = mContactViewModel
+        mBinding.executePendingBindings()
+        Log.d("DEBUG_LC", "createView, fragment: ${this}")
         return v
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        mAdapter = ContactItemAdapter(mContactViewModel, mRecyclerView)
+        mRecyclerView.adapter = mAdapter
+        Log.d("DEBUG_LC", "onStart - mAdapter created here, fragment: ${this}")
     }
 
     override fun setArguments(args: Bundle?) {

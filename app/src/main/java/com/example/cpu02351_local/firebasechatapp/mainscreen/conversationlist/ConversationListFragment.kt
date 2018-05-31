@@ -4,22 +4,24 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
+import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivity
+import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
+import com.example.cpu02351_local.firebasechatapp.utils.ContactConsumerView
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import com.example.cpu02351_local.firebasechatapp.utils.ConversationListDivider
 import io.reactivex.android.schedulers.AndroidSchedulers
 import javax.inject.Inject
 
 class ConversationListFragment :
+        ContactConsumerView,
         ConversationView,
         Fragment() {
 
@@ -36,7 +38,7 @@ class ConversationListFragment :
 
     private lateinit var userId: String
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mAdapter: ConversationItemAdapter
+    private var mAdapter: ConversationItemAdapter? = null
     private var mConversationLoader: ConversationLoader = FirebaseConversationLoader()
     private lateinit var mConversationViewModel: ConversationViewModel
 
@@ -44,8 +46,6 @@ class ConversationListFragment :
 
     private fun init() {
         mConversationViewModel = ConversationViewModel(mConversationLoader, this, userId)
-        mAdapter = ConversationItemAdapter(mRecyclerView, mConversationViewModel)
-        mRecyclerView.adapter = mAdapter
 
         DaggerRoomLocalDatabaseComponent
                 .builder()
@@ -53,7 +53,6 @@ class ConversationListFragment :
                 .build()
                 .injectInto(this)
         loadUsers()
-
         mConversationViewModel.setLocalDatabase(localDatabase)
     }
 
@@ -65,8 +64,21 @@ class ConversationListFragment :
                     res.forEach {
                         userMap[it.id] = it
                     }
-                    mAdapter.updateUserInfo(userMap)
+                    mAdapter?.updateUserInfo(userMap)
                 }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        init()
+    }
+
+    override fun onNetworkContactsLoaded(res: List<ContactItem>) {
+        mAdapter?.updateUserInfo(res)
+    }
+
+    override fun onLocalContactsLoaded(res: List<ContactItem>) {
+        mAdapter?.updateUserInfo(res)
     }
 
     override fun setArguments(args: Bundle?) {
@@ -79,10 +91,10 @@ class ConversationListFragment :
     }
 
     override fun onLocalConversationsLoaded(result: List<ConversationItem>) {
-        mAdapter.setItems(result, false)
+        mAdapter?.setItems(result, false)
     }
     override fun onConversationsLoaded(result: List<ConversationItem>) {
-        mAdapter.setItems(result, true)
+        mAdapter?.setItems(result, true)
     }
 
     override fun navigate(where: ConversationItem) {
@@ -97,14 +109,18 @@ class ConversationListFragment :
         mRecyclerView = root.findViewById(R.id.conversationListContainer)
         mRecyclerView.addItemDecoration(ConversationListDivider(context!!))
         mRecyclerView.layoutManager = LinearLayoutManager(context)
-        init()
+
+        if (mAdapter == null) {
+            mAdapter = ConversationItemAdapter(mRecyclerView, mConversationViewModel)
+            mRecyclerView.adapter = mAdapter
+        }
         return root
     }
 
     override fun onStart() {
         super.onStart()
         mConversationViewModel.resume()
-        mAdapter.resetState()
+        mAdapter?.resetState()
     }
 
     override fun onStop() {

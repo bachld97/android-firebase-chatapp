@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationGroup3ListBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationGroup4ListBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationSingleListBinding
+import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactItem
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemAdapter
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
@@ -84,6 +85,20 @@ class ConversationItemAdapter(private val mRecyclerView: RecyclerView,
                     }
                 }
     }
+
+    // On bindViewHolder will trigger calculate time elapse
+    // time elapse check if the dif(curTime, lastUpdateTime)
+    // ifTrue > threshold --> update
+    // else --> return old val
+    override fun onBindViewHolder(holder: BaseItemHolder<out ListItem>, position: Int) {
+        super.onBindViewHolder(holder, position)
+    }
+
+    fun updateUserInfo(newInfo: List<ContactItem>) {
+        // item.isInfoChanged()
+        // ifTrue --> notifyItemChanged()
+    }
+
 
     override fun calculateDiffResult(newItems: List<ListItem>?): DiffUtil.DiffResult? {
         if (newItems == null || listItems == null) return null

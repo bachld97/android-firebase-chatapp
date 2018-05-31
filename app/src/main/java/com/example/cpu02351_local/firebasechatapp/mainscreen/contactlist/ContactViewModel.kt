@@ -4,9 +4,8 @@ import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.utils.ContactProducerViewModel
 import java.util.*
 
-class ContactViewModel(contactLoader: ContactLoader,
-                       private val contactView: ContactView,
-                       private val userId: String) : ContactProducerViewModel(contactLoader, contactView, userId) {
+class ContactViewModel(private val contactView: ContactView,
+                       private val userId: String) {
 
     fun onSelectedContactsAction(contacts: List<ContactItem>) {
         val userIdString = contacts.joinToString(Conversation.ID_DELIM) { it.contactId }

@@ -10,6 +10,7 @@ class ConversationItemHolder(private val binding: ItemConversationSingleListBind
         if (binding.viewModel == null) {
             binding.viewModel = ConversationItemViewModel(item)
         } else {
+            item.updateElapse()
             binding.viewModel!!.item = item
             binding.invalidateAll()
         }

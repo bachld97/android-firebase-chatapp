@@ -21,7 +21,9 @@ abstract class BaseItemAdapter<T : ListItem> : RecyclerView.Adapter<BaseItemHold
     }
 
     open fun calculateDiffResult(newItems: List<ListItem>?): DiffUtil.DiffResult? {
-        return null
+        if (newItems == null || listItems == null) return null
+        val oldList = ArrayList(listItems)
+        return DiffUtil.calculateDiff(BaseDiffCallback(oldList, newItems), true)
     }
 
     @CallSuper
@@ -60,5 +62,26 @@ abstract class BaseItemAdapter<T : ListItem> : RecyclerView.Adapter<BaseItemHold
 
     fun resetState() {
         hasResultFromNetwork = false
+    }
+
+    class BaseDiffCallback(private val oldList : List<ListItem>,
+                                   private val newList : List<ListItem>) : DiffUtil.Callback() {
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].equalsItem(newList[newItemPosition])
+        }
+
+        override fun getOldListSize(): Int {
+            return oldList.size
+        }
+
+        override fun getNewListSize(): Int {
+            return newList.size
+        }
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
+            return oldList[oldItemPosition].equalsContent(newList[newItemPosition])
+        }
+
     }
 }

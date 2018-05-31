@@ -3,49 +3,25 @@ package com.example.cpu02351_local.firebasechatapp.mainscreen
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactItem
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactListFragment
 import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.ConversationListFragment
 import com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail.UserDetailFragment
-import com.example.cpu02351_local.firebasechatapp.utils.ContactConsumerView
 
-class AppFragmentPagerAdapter(fm: FragmentManager, userId: String) : FragmentPagerAdapter(fm) {
-    private val fragments =  arrayOf(
-                ConversationListFragment.newInstance(userId),
-                ContactListFragment.newInstance(userId),
-                UserDetailFragment.newInstance(userId))
-
-    companion object {
-        @JvmStatic
-        var instanceCount = 0L
-    }
-
-    init {
-        instanceCount++
-    }
+class AppFragmentPagerAdapter(fm: FragmentManager, private val userId: String) : FragmentPagerAdapter(fm) {
 
     private val titles = arrayOf("Chat", "Contact", "Setting")
 
     override fun getItem(position: Int): Fragment {
-        return fragments[position]
+        return when (position) {
+            0 -> ConversationListFragment.newInstance(userId)
+            1-> ContactListFragment.newInstance(userId)
+            else -> UserDetailFragment.newInstance(userId)
+        }
     }
 
     override fun getPageTitle(position: Int): CharSequence? = titles[position]
 
-    override fun getCount(): Int = fragments.size
-
-    fun dispatchNetworkResult(res: List<ContactItem>?) {
-        if (res == null) return
-        fragments.mapNotNull { it as? ContactConsumerView }
-                .forEach { it.onNetworkContactsLoaded(res) }
-    }
-
-    fun dispatchLocalResult(res: List<ContactItem>?) {
-        if (res == null) return
-        fragments.mapNotNull { it as? ContactConsumerView }
-                .forEach { it.onLocalContactsLoaded(res) }
-    }
+    override fun getCount(): Int = 3
 
     /*
     override fun getItemId(position: Int): Long {

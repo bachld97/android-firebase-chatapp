@@ -8,14 +8,13 @@ import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactItem
-import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactListFragment
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactLoader
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.FirebaseContactLoader
-import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.ConversationListFragment
-import com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail.UserDetailFragment
 import com.example.cpu02351_local.firebasechatapp.utils.ContactConsumerView
+import com.example.cpu02351_local.firebasechatapp.utils.ContactItemEvent
 import com.example.cpu02351_local.firebasechatapp.utils.ContactProducerViewModel
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
+import org.greenrobot.eventbus.EventBus
 import javax.inject.Inject
 
 class MainActivity :
@@ -47,7 +46,7 @@ class MainActivity :
     lateinit var mLocalDatabase: RoomLocalDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(createBundleNoFragmentRestore(savedInstanceState))
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         mLoggedInUser = intent.getStringExtra("loggedInUser")
         mViewPager = findViewById(R.id.viewPager)
@@ -71,12 +70,19 @@ class MainActivity :
     }
 
     private fun notifyData() {
+        if (contactItems == null)
+            return
+
         if (hasResultFromNetwork)
-            mAdapter?.dispatchNetworkResult(contactItems)
+            EventBus.getDefault().post(ContactItemEvent(contactItems!!, true))
         else
-            mAdapter?.dispatchLocalResult(contactItems)
+            EventBus.getDefault().post(ContactItemEvent(contactItems!!, false))
     }
 
+    override fun onStart() {
+        super.onStart()
+        mContactProducerViewModel.resume()
+    }
 
     override fun onStop() {
         super.onStop()
@@ -88,10 +94,6 @@ class MainActivity :
         mContactProducerViewModel.dispose()
     }
 
-    private fun createBundleNoFragmentRestore(bundle: Bundle?): Bundle? {
-        bundle?.remove("android:support:fragments")
-        return bundle
-    }
 }
 
 

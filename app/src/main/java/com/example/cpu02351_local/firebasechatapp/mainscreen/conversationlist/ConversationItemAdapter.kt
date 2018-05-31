@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationGroup3ListBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationGroup4ListBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemConversationSingleListBinding
-import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.ContactItem
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemAdapter
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
@@ -74,29 +73,16 @@ class ConversationItemAdapter(private val mRecyclerView: RecyclerView,
     }
 
     private var infoMap: HashMap<String, User> ?= null
+
+
     fun updateUserInfo(info: HashMap<String, User>) {
         infoMap = info
         listItems?.mapNotNull { it as? ConversationItem }
-                ?.forEach{ item ->
-                    val pos = findItem(item)
-                    if (pos != -1) {
-                        item.computeDisplayInfo(info)
-                        notifyItemChanged(pos)
-                    }
+                ?.forEachIndexed { index, item ->
+                    // Check if something is changed here, ifTrue notify
+                    if (item.hasUserInfoChange(info))
+                        notifyItemChanged(index)
                 }
-    }
-
-    // On bindViewHolder will trigger calculate time elapse
-    // time elapse check if the dif(curTime, lastUpdateTime)
-    // ifTrue > threshold --> update
-    // else --> return old val
-    override fun onBindViewHolder(holder: BaseItemHolder<out ListItem>, position: Int) {
-        super.onBindViewHolder(holder, position)
-    }
-
-    fun updateUserInfo(newInfo: List<ContactItem>) {
-        // item.isInfoChanged()
-        // ifTrue --> notifyItemChanged()
     }
 
 

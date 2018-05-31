@@ -103,4 +103,9 @@ open class ContactProducerViewModel(private val contactLoader: ContactLoader,
                 .map { ContactItem(it) }
                 .sortedBy { it.contactName.toUpperCase() })
     }
+
+    fun resume() {
+        loadLocalContacts()
+        loadContacts()
+    }
 }

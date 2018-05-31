@@ -5,6 +5,17 @@ import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 
 class ConversationItem(private val conversation: Conversation, private val curUserId: String) : ListItem {
+    fun updateElapse() {
+        val curTime = System.currentTimeMillis()
+        if (curTime - lastUpdateTime >= timeThreshold) {
+            elapseTimeDisplay = parseTime(conversation.lastMessage?.atTime, curTime)
+        }
+    }
+
+    private var lastUpdateTime = 0L
+    private var timeThreshold = 60000
+
+
     override fun equalsItem(otherItem: ListItem): Boolean {
         return otherItem is ConversationItem && conversation.id == otherItem.conversation.id
     }
@@ -15,14 +26,19 @@ class ConversationItem(private val conversation: Conversation, private val curUs
 
     fun getConversation(): Conversation = conversation
 
-    fun computeDisplayInfo(info: HashMap<String, User>) {
+    fun hasUserInfoChange(info: HashMap<String, User>): Boolean {
+        val oldSender = lastSenderName
         lastSenderName = if (conversation.lastMessage?.byUser == curUserId) {
             "You"
         } else {
             info[conversation.lastMessage?.byUser]?.name ?: ""
         }
-        parseDisplayUrl(info)
+        val avaUrlChanged = hasUrlChange(info)
+        val oldConversationName = conversationDisplayName
         conversationDisplayName = parseConversationDisplayName(info)
+        val oldTimeDisplay = elapseTimeDisplay
+        updateElapse()
+        return avaUrlChanged || oldSender != lastSenderName || oldConversationName != conversationDisplayName || oldTimeDisplay != elapseTimeDisplay
     }
 
     var size = conversation.participantIds.size
@@ -37,7 +53,14 @@ class ConversationItem(private val conversation: Conversation, private val curUs
     var displayAvaUrl4 = ""
     var conversationDisplayName = parseConversationDisplayName(null)
 
-    private fun parseDisplayUrl(info: HashMap<String, User>?) {
+    private fun hasUrlChange(info: HashMap<String, User>?) : Boolean {
+
+        val oldAvaUrl = displayAvaUrl
+        val oldAvaUrl1 = displayAvaUrl1
+        val oldAvaUrl2 = displayAvaUrl2
+        val oldAvaUrl3 = displayAvaUrl3
+        val oldAvaUrl4 = displayAvaUrl4
+
         displayAvaUrl = conversation.participantIds
                 .findLast { it != curUserId }!!
         displayAvaUrl = info?.get(displayAvaUrl)?.avaUrl ?: ""
@@ -45,6 +68,12 @@ class ConversationItem(private val conversation: Conversation, private val curUs
         displayAvaUrl2 = info?.get(conversation.participantIds[2 % size])?.avaUrl ?: ""
         displayAvaUrl3 = info?.get(conversation.participantIds[3 % size])?.avaUrl ?: ""
         displayAvaUrl4 = info?.get(conversation.participantIds[4 % size])?.avaUrl ?: ""
+
+        return oldAvaUrl != displayAvaUrl ||
+                oldAvaUrl1 != displayAvaUrl1 ||
+                oldAvaUrl2 != displayAvaUrl2 ||
+                oldAvaUrl3 != displayAvaUrl3 ||
+                oldAvaUrl4 != displayAvaUrl4
     }
 
     private fun parseConversationDisplayName(info: HashMap<String, User>?): String {
@@ -60,9 +89,9 @@ class ConversationItem(private val conversation: Conversation, private val curUs
         return res
     }
 
-    private fun parseTime(time: Long?): String {
+    private fun parseTime(time: Long?, curTime: Long = System.currentTimeMillis()): String {
         val createdTime = time ?: conversation.createdTime
-        val interval = System.currentTimeMillis() - createdTime
+        val interval = curTime - createdTime
         val minutes = interval / (1000 * 60)
         val hours = minutes / 60
         val days= hours / 24

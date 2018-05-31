@@ -15,9 +15,12 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.MessageListActivit
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContactConsumerView
+import com.example.cpu02351_local.firebasechatapp.utils.ContactItemEvent
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import com.example.cpu02351_local.firebasechatapp.utils.ConversationListDivider
-import io.reactivex.android.schedulers.AndroidSchedulers
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 import javax.inject.Inject
 
 class ConversationListFragment :
@@ -52,20 +55,16 @@ class ConversationListFragment :
                 .contextModule(ContextModule(context!!))
                 .build()
                 .injectInto(this)
-        loadUsers()
         mConversationViewModel.setLocalDatabase(localDatabase)
     }
 
-    private fun loadUsers() {
-        localDatabase.loadUserAll()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { res ->
-                    val userMap = HashMap<String, User>()
-                    res.forEach {
-                        userMap[it.id] = it
-                    }
-                    mAdapter?.updateUserInfo(userMap)
-                }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onContactListLoaded(itemEvent: ContactItemEvent) {
+        if (itemEvent.isFromNetwork) {
+            onNetworkContactsLoaded(itemEvent.contactItems)
+        } else {
+            onLocalContactsLoaded(itemEvent.contactItems)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,12 +72,21 @@ class ConversationListFragment :
         init()
     }
 
+    private fun updateUserInfo(contactItems: List<ContactItem>) {
+        val userMap = HashMap<String, User>()
+        contactItems.map {
+            userMap[it.contactId] = User(it.contactId, it.contactName, "", it.avaUrl)
+        }
+        mAdapter?.updateUserInfo(userMap)
+    }
+
+
     override fun onNetworkContactsLoaded(res: List<ContactItem>) {
-        mAdapter?.updateUserInfo(res)
+        updateUserInfo(res)
     }
 
     override fun onLocalContactsLoaded(res: List<ContactItem>) {
-        mAdapter?.updateUserInfo(res)
+        updateUserInfo(res)
     }
 
     override fun setArguments(args: Bundle?) {
@@ -90,11 +98,21 @@ class ConversationListFragment :
         mConversationViewModel.dispose()
     }
 
-    override fun onLocalConversationsLoaded(result: List<ConversationItem>) {
-        mAdapter?.setItems(result, false)
+    private fun updateConversations(result: List<ConversationItem>, fromNetwork: Boolean) {
+        val manager = mRecyclerView.layoutManager as LinearLayoutManager
+        val firstVisible = manager.findFirstCompletelyVisibleItemPosition()
+        mAdapter?.setItems(result, fromNetwork)
+        if (firstVisible == 0) {
+            manager.scrollToPosition(0)
+        }
     }
+
+    override fun onLocalConversationsLoaded(result: List<ConversationItem>) {
+        updateConversations(result, false)
+    }
+
     override fun onConversationsLoaded(result: List<ConversationItem>) {
-        mAdapter?.setItems(result, true)
+        updateConversations(result, true)
     }
 
     override fun navigate(where: ConversationItem) {
@@ -121,10 +139,12 @@ class ConversationListFragment :
         super.onStart()
         mConversationViewModel.resume()
         mAdapter?.resetState()
+        EventBus.getDefault().register(this)
     }
 
     override fun onStop() {
-        super.onStop()
+        EventBus.getDefault().unregister(this)
         dispose()
+        super.onStop()
     }
 }

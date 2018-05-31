@@ -16,8 +16,12 @@ abstract class BaseItemAdapter<T : ListItem> : RecyclerView.Adapter<BaseItemHold
         listItems?.get(position)?.let { holder.bindItem(it) }
     }
     fun findItem(item: T): Int {
-        val tem = listItems?.mapNotNull { it as? T }
-        return tem?.indexOf(item) ?: -1
+        val tem = listItems?.mapNotNull { it as? T } ?: return -1
+        tem.forEachIndexed { index, t ->
+            if (item.equalsItem(t))
+                return index
+        }
+        return -1
     }
 
     open fun calculateDiffResult(newItems: List<ListItem>?): DiffUtil.DiffResult? {

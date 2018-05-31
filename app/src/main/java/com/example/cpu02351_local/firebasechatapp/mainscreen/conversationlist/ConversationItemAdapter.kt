@@ -79,7 +79,6 @@ class ConversationItemAdapter(private val mRecyclerView: RecyclerView,
         infoMap = info
         listItems?.mapNotNull { it as? ConversationItem }
                 ?.forEachIndexed { index, item ->
-                    // Check if something is changed here, ifTrue notify
                     if (item.hasUserInfoChange(info))
                         notifyItemChanged(index)
                 }

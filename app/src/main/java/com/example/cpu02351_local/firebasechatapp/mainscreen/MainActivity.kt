@@ -27,7 +27,7 @@ class MainActivity :
     }
 
     override fun onLocalContactsLoaded(res: List<ContactItem>) {
-        if (hasResultFromNetwork)
+        if (!hasResultFromNetwork)
             contactItems = res
         notifyData()
     }

@@ -5,11 +5,11 @@
     <color name="colorAccent">#FF4081</color>
     <color name="chatBackground">#e8eff4</color>
     <color name="chatSending">#bae2f9</color>
-    <color name="chatMe">#7ccfff</color>
+    <color name="chatMe">#8fd2ff</color>
     <color name="chatOther">#FAFAFA</color>
     <color name="textTime">#9295a3</color>
     <color name="textOtherName">#FA4f40</color>
-    <color name="textPrimary">#050505</color>
+    <color name="textPrimary">#0F0F0F</color>
     <color name="textSecondary">#727583</color>
     <color name="divider">#9295a3</color>
     <color name="buttonSend">#0a51b5</color>
@@ -19,6 +19,6 @@
     <color name="textLogOut">#ffffff</color>
     <color name="buttonLogOut">#CD0a51b5</color>
     <color name="backgroundTint">#a0e8eff4</color>
-    <color name="contactSelected">#89a9dd</color>
+    <color name="contactSelected">#89a9b0</color>
     <color name="contactUnselected">#00000000</color>
 </resources>

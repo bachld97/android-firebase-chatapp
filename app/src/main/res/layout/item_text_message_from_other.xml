@@ -25,6 +25,8 @@
             android:layout_height="@dimen/avaThumbnail" />
 
         <LinearLayout
+            android:onClick="@{() -> viewModel.messageClicked()}"
+            android:onLongClick="@{() -> viewModel.messageLongClicked()}"
             android:layout_marginEnd="@dimen/avaMargin"
             android:layout_marginStart="@dimen/avaMargin"
             android:padding="8dp"

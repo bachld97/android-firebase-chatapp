@@ -13,6 +13,10 @@ import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemAdapter
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.widget.Toast
+
 
 class MessageItemAdapter(context: Context)
     : BaseItemAdapter<MessageItem>() {
@@ -32,7 +36,6 @@ class MessageItemAdapter(context: Context)
                 }
     }
 
-
     override fun calculateDiffResult(newItems: List<ListItem>?): DiffUtil.DiffResult? {
         return null
     }
@@ -51,22 +54,48 @@ class MessageItemAdapter(context: Context)
         }
     }
 
+    private val textLongClicked = object : ItemLongClickCallback {
+        override fun onLongClick(item: MessageItem) {
+            Toast.makeText(context, "Text copied to clipboard", Toast.LENGTH_SHORT).show()
+            val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText(null, item.getContent())
+            clipboard.primaryClip = clip
+        }
+    }
+
+    private val messageClick = object : ItemClickCallback {
+        override fun onClick(item: MessageItem) {
+            val pos = findItem(item)
+            if (pos != -1) {
+                item.shouldDisplayTime = !item.shouldDisplayTime
+                notifyItemChanged(pos)
+            }
+        }
+    }
+
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {
         val layoutInflater = LayoutInflater.from(parent.context)
         lateinit var holder: BaseItemHolder<MessageItem>
         holder = when (viewType) {
             TEXT_MINE -> {
                 val binding = ItemTextMessageBinding.inflate(layoutInflater, parent, false)
-                MessageTextMineHolder(binding)
+                MessageTextMineHolder(binding, messageClick, textLongClicked)
             }
             TEXT_OTHER -> {
                 val binding = ItemTextMessageFromOtherBinding.inflate(layoutInflater, parent, false)
-                MessageTextOtherHolder(binding)
+                MessageTextOtherHolder(binding, messageClick, textLongClicked)
             }
             else -> throw RuntimeException("Unsupported viewType")
         }
         return holder
     }
 
+    interface ItemLongClickCallback {
+        fun onLongClick(item: MessageItem)
+    }
 
+    interface ItemClickCallback {
+        fun onClick(item: MessageItem)
+    }
 }

@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.utils
 
+import com.example.cpu02351_local.firebasechatapp.changeinfoscreen.ChangeInfoActivity
 import com.example.cpu02351_local.firebasechatapp.mainscreen.contactlist.FirebaseContactLoader
 import com.example.cpu02351_local.firebasechatapp.mainscreen.conversationlist.FirebaseConversationLoader
 import com.example.cpu02351_local.firebasechatapp.mainscreen.userdetail.FirebaseUserDetailLoader
@@ -52,4 +53,5 @@ interface FirebaseReferenceComponent {
     fun injectInto(loader: FirebaseConversationLoader)
     fun injectInto(loader: FirebaseUserDetailLoader)
     fun injectInto(loader: FirebaseMessageLoader)
+    fun injectInto(changeInfoActivity: ChangeInfoActivity)
 }

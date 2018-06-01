@@ -19,7 +19,9 @@ import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.GlideDataBinder
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.R
+import com.example.cpu02351_local.firebasechatapp.changeinfoscreen.ChangeInfoActivity
 import com.example.cpu02351_local.firebasechatapp.databinding.FragmentUserDetailBinding
+import kotlinx.android.synthetic.main.fragment_user_detail.*
 
 
 class UserDetailFragment :
@@ -79,6 +81,14 @@ class UserDetailFragment :
             context?.startActivity(intent)
             activity?.finish()
         }
+
+        v.findViewById<ImageView>(R.id.btn_changeInfo).setOnClickListener { _ ->
+            val intent = Intent(context, ChangeInfoActivity::class.java)
+            intent.putExtra("current_name", text_name.text.toString())
+            intent.putExtra("current_id", userId)
+            context?.startActivity(intent)
+        }
+
         return v
     }
 

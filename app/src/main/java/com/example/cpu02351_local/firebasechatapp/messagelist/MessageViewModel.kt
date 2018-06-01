@@ -164,14 +164,15 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     private var mMessageItems = ArrayList<MessageItem>()
     private fun onFirstLoad(data: List<AbstractMessage>) {
+        data.sortedBy { item -> item.atTime }
         mMessageItems.clear()
         mMessageItems.addAll(data.mapIndexed { index, abstractMessage ->
-            val shouldDisplayTime = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
-            val shouldDisplaySender = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
+            val shouldDisplaySender = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
+            val shouldDisplayTime = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
             val fromThisUser = abstractMessage.byUser == messageView.getSender()
             abstractMessage.toMessageItem(shouldDisplaySender, shouldDisplayTime, fromThisUser)
         })
-        mMessageItems.reverse()
+        //mMessageItems.reverse()
         dispatchInfo()
     }
 
@@ -222,6 +223,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private fun dispatchInfo() {
+        mMessageItems.sortByDescending { messageItem -> messageItem.messTime }
         messageView.updateMessageItem(mMessageItems)
     }
 

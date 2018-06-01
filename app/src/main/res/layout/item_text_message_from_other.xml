@@ -25,6 +25,7 @@
             android:layout_height="@dimen/avaThumbnail" />
 
         <LinearLayout
+            android:foreground="?android:attr/selectableItemBackground"
             android:onClick="@{() -> viewModel.messageClicked()}"
             android:onLongClick="@{() -> viewModel.messageLongClicked()}"
             android:layout_marginEnd="@dimen/avaMargin"
@@ -38,6 +39,7 @@
             android:orientation="vertical">
 
             <TextView
+                android:textIsSelectable="true"
                 android:textSize="@dimen/textStandard"
                 android:visibility="@{viewModel.shouldDisplaySenderInfo() ? View.VISIBLE : View.GONE}"
                 android:textColor="@color/textOtherName"

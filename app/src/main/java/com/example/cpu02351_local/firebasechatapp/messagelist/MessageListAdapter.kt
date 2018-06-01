@@ -9,8 +9,6 @@ import android.widget.AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageFromOtherBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.BaseMessageViewHolder
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolder
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.TextMessageHolderOther
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 
 class MessageListAdapter(private val mMessages: ArrayList<AbstractMessage>,
@@ -52,12 +50,7 @@ class MessageListAdapter(private val mMessages: ArrayList<AbstractMessage>,
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseMessageViewHolder {
         val layoutInflater= LayoutInflater.from(parent.context)
-
-        return when (viewType) {
-            MY_TEXT -> TextMessageHolder(ItemTextMessageBinding.inflate(layoutInflater, parent, false))
-            OTHER_TEXT -> TextMessageHolderOther(ItemTextMessageFromOtherBinding.inflate(layoutInflater, parent, false))
-            else -> throw IllegalStateException()
-        }
+        throw IllegalStateException()
     }
 
     override fun getItemViewType(position: Int): Int {

@@ -15,6 +15,7 @@ abstract class BaseItemAdapter<T : ListItem> : RecyclerView.Adapter<BaseItemHold
     override fun onBindViewHolder(holder: BaseItemHolder<out ListItem>, position: Int) {
         listItems?.get(position)?.let { holder.bindItem(it) }
     }
+
     fun findItem(item: T): Int {
         val tem = listItems?.mapNotNull { it as? T } ?: return -1
         tem.forEachIndexed { index, t ->

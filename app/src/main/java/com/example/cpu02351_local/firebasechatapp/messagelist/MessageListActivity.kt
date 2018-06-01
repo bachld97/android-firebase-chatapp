@@ -14,8 +14,10 @@ import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageLis
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
 import io.reactivex.android.schedulers.AndroidSchedulers
 import java.util.*
@@ -31,7 +33,7 @@ class MessageListActivity :
 
     private lateinit var mConversationId: String
     private lateinit var mRecyclerView: RecyclerView
-    private lateinit var mAdapter: MessageListAdapter
+    private lateinit var mAdapter2: MessageItemAdapter
     private lateinit var mByUsers: String
     private lateinit var mLoggedInUser: String
     private val mMessageLoader: MessageLoader = FirebaseMessageLoader()
@@ -51,31 +53,11 @@ class MessageListActivity :
         }
     }
 
-    override fun onLocalLoadInitial(messages: List<AbstractMessage>) {
-        mAdapter.updateFromLocal(messages)
-    }
-
-    override fun onNetworkLoadInitial(messages: List<AbstractMessage>) {
-        mAdapter.updateFromNetwork(messages)
-    }
-
-
-    override fun onLoadMoreResult(moreMessages: List<AbstractMessage>) {
-        mAdapter.addLoadMoreMessages(moreMessages)
-    }
-
-    override fun onRequestSendMessage(message: AbstractMessage) {
-        mAdapter.addMessage(message)
+    override fun onRequestSendMessage() {
+        // mAdapter.addMessage(message)
         mBinding.invalidateAll()
     }
 
-    override fun onMessageSent(message: AbstractMessage) {
-        // mAdapter.removeTempMessage(message)
-    }
-
-    override fun onNewMessage(message: AbstractMessage) {
-        mAdapter.addMessage(message)
-    }
 
     private lateinit var mBinding: ActivityMessageListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,8 +97,9 @@ class MessageListActivity :
             }
         }
 
-        mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser, mRecyclerView, endlessLoader)
-        mRecyclerView.adapter = mAdapter
+        // mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser, mRecyclerView, endlessLoader)
+        mAdapter2 = MessageItemAdapter(this)
+        mRecyclerView.adapter = mAdapter2
 
         DaggerRoomLocalDatabaseComponent
                 .builder()
@@ -127,17 +110,24 @@ class MessageListActivity :
         loadUsers()
     }
 
+    override fun updateMessageItem(messages: List<MessageItem>) {
+        mAdapter2.setItems(messages, true)
+    }
+
     private fun loadUsers() {
         localDatabase.loadUserByIds(mByUsers.split(Conversation.ID_DELIM))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { res ->
+                    val userMap = HashMap<String, User>()
                     val avaMap = HashMap<String, String>()
                     val nameMap = HashMap<String, String>()
                     res.forEach {
                         avaMap[it.id] = it.avaUrl
                         nameMap[it.id] = it.name
+                        userMap[it.id] = it
                     }
-                    mAdapter.updateInfoMaps(avaMap, nameMap)
+                    // mAdapter.updateInfoMaps(avaMap, nameMap)
+                    mAdapter2.updateUserInfo(userMap)
                 }
     }
 

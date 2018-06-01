@@ -4,12 +4,9 @@
         <import type="android.view.View"/>
 
         <variable
-            name="message"
-            type="com.example.cpu02351_local.firebasechatapp.model.AbstractMessage"/>
-
-        <variable
-            name="infoViewModel"
-            type="com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.InfoDisplayViewModel"/>
+            name="viewModel"
+            type="com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.TextMessageOtherItemViewModel"
+            />
     </data>
 
     <FrameLayout
@@ -21,8 +18,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             app:civ_border_width="0.2dp"
             android:layout_gravity="start"
-            app:smallImageUrl="@{infoViewModel.avaUrl}"
-            android:visibility="@{infoViewModel.showAva ? View.VISIBLE : View.GONE}"
+            app:smallImageUrl="@{viewModel.getDisplaySenderAvaUrl()}"
+            android:visibility="@{viewModel.shouldDisplaySenderInfo() ? View.VISIBLE : View.GONE}"
             android:src="@drawable/ic_sample_ava"
             android:layout_width="@dimen/avaThumbnail"
             android:layout_height="@dimen/avaThumbnail" />
@@ -40,9 +37,9 @@
 
             <TextView
                 android:textSize="@dimen/textStandard"
-                android:visibility="@{infoViewModel.showAva ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.shouldDisplaySenderInfo() ? View.VISIBLE : View.GONE}"
                 android:textColor="@color/textOtherName"
-                android:text="@{infoViewModel.displayName}"
+                android:text="@{viewModel.getDisplaySenderName()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -51,15 +48,15 @@
                 android:textSize="@dimen/textStandard"
                 android:layout_marginTop="4dp"
                 android:layout_marginBottom="4dp"
-                android:text="@{message.content}"
+                android:text="@{viewModel.getMessageContent()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <TextView
                 android:textSize="@dimen/textSmall"
-                android:visibility="@{infoViewModel.showTime ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.shouldDisplayTime() ? View.VISIBLE : View.GONE}"
                 android:textColor="@color/textTime"
-                android:text="@{message.displayTime}"
+                android:text="@{viewModel.getDisplayTime()}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
         </LinearLayout>

@@ -4,13 +4,13 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="chatBackground">#e8eff4</color>
-    <color name="chatMe">#bae2f9</color>
-    <color name="chatSending">#7ccfff</color>
+    <color name="chatSending">#bae2f9</color>
+    <color name="chatMe">#7ccfff</color>
     <color name="chatOther">#FAFAFA</color>
     <color name="textTime">#9295a3</color>
     <color name="textOtherName">#FA4f40</color>
     <color name="textPrimary">#050505</color>
-    <color name="textSecondary">#9295a3</color>
+    <color name="textSecondary">#727583</color>
     <color name="divider">#9295a3</color>
     <color name="buttonSend">#0a51b5</color>
     <color name="chatSend">#FAFAFA</color>

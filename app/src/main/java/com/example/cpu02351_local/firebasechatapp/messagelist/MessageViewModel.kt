@@ -2,6 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
@@ -38,8 +39,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 if (mLocalDisposable != null && !mLocalDisposable!!.isDisposed) {
                     mLocalDisposable!!.dispose()
                 }
-                messageView.onNetworkLoadInitial(t)
-
+                // messageView.onNetworkLoadInitial(t)
+                onFirstLoad(t)
                 mLocalDatabase?.saveMessageAll(t, conversationId)
                         ?.subscribe { Log.d("DEBUGGING", "Message saved for conversation $conversationId") }
 
@@ -71,7 +72,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
 
             override fun onNext(t: AbstractMessage) {
-                messageView.onNewMessage(t)
+                // messageView.onNewMessage(t)
+                onMessageAdded(t)
             }
 
             override fun onError(e: Throwable) {
@@ -98,6 +100,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         })
     }
 
+
+    // rework this function
     fun sendNewMessage() {
         if (messageText.trim().isEmpty()) {
             return
@@ -106,7 +110,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         val m = TextMessage(id, System.currentTimeMillis(), messageView.getSender(), messageText)
         m.isSending = true
         messageText = ""
-        messageView.onRequestSendMessage(m)
+        messageView.onRequestSendMessage()
+        onMessageAdded(m)
         addPendingMessage(m)
         proceedSendMessage(m, messageView.getParticipants())
     }
@@ -128,7 +133,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     fun loadMore() {
         messageLoader.loadMore(conversationId, mLastKey, messageLimit)
                 .subscribe({ res ->
-                        messageView.onLoadMoreResult(res)
+                        // messageView.onLoadMoreResult(res)
+                        onLoadMore(res)
                         mLastKey = res.first().id
                 }, { messageView.onError() })
     }
@@ -140,7 +146,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         localDatabase.loadMessages(conversationId)
                 .subscribe(object : SingleObserver<List<AbstractMessage>> {
                     override fun onSuccess(t: List<AbstractMessage>) {
-                        messageView.onLocalLoadInitial(t)
+                        // messageView.onLocalLoadInitial(t)
+                        onFirstLoad(t)
                         t.filter { it.isSending }.forEach { proceedSendMessage(it, messageView.getParticipants()) }
                     }
 
@@ -154,4 +161,76 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 })
     }
 
+
+    private var mMessageItems = ArrayList<MessageItem>()
+    private fun onFirstLoad(data: List<AbstractMessage>) {
+        mMessageItems.clear()
+        mMessageItems.addAll(data.mapIndexed { index, abstractMessage ->
+            val shouldDisplayTime = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
+            val shouldDisplaySender = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
+            val fromThisUser = abstractMessage.byUser == messageView.getSender()
+            abstractMessage.toMessageItem(shouldDisplaySender, shouldDisplayTime, fromThisUser)
+        })
+        mMessageItems.reverse()
+        dispatchInfo()
+    }
+
+    private fun onLoadMore(data: List<AbstractMessage>) {
+        val tem = data.mapIndexed { index, abstractMessage ->
+            val shouldDisplayTime = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
+            val shouldDisplaySender = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
+            val fromThisUser = abstractMessage.byUser == messageView.getSender()
+            abstractMessage.toMessageItem(shouldDisplaySender, shouldDisplayTime, fromThisUser)
+        }.reversed()
+
+        // tem.first() nullable --> can crash here
+        val newFirst =  tem.firstOrNull() ?: return // No more new message
+        val oldLast = tem.last()
+        val isSameSender = newFirst.getSenderId() == oldLast.getSenderId()
+        newFirst.shouldDisplayTime = !isSameSender
+        oldLast.shouldDisplaySenderInfo = !isSameSender
+
+        mMessageItems.addAll(tem)
+        dispatchInfo()
+    }
+
+    private fun onMessageAdded(addedMessage: AbstractMessage) {
+        var pos = -1
+        val fromThisUser = addedMessage.byUser == messageView.getSender()
+        val shouldDisplaySender = mMessageItems.first().getSenderId() != addedMessage.byUser
+        val curItem = if (mMessageItems.isNotEmpty()) {
+            mMessageItems.first().shouldDisplayTime = false
+            addedMessage.toMessageItem(shouldDisplaySender, true, fromThisUser)
+        } else {
+            addedMessage.toMessageItem(true, true, fromThisUser)
+        }
+
+        mMessageItems.forEachIndexed { index, messageItem ->
+            if (messageItem.equalsItem(curItem)) {
+                pos = index
+            }
+        }
+
+        if (pos == -1)
+            mMessageItems.add(0, curItem)
+        else {
+            curItem.shouldDisplayTime = (pos == 0) || curItem.getSenderId() != mMessageItems[pos + 1].getSenderId()
+            mMessageItems[pos] = curItem
+        }
+
+        dispatchInfo()
+    }
+
+    private fun dispatchInfo() {
+        messageView.updateMessageItem(mMessageItems)
+    }
+
+    private fun AbstractMessage.toMessageItem(shouldDisplaySender: Boolean, shouldDisplayTime: Boolean, fromThisUser: Boolean): MessageItem {
+        return convertMessageToMessageItem(this,shouldDisplaySender, shouldDisplayTime, fromThisUser)
+    }
+
+    private fun convertMessageToMessageItem(message: AbstractMessage, shouldDisplaySender: Boolean, shouldDisplayTime: Boolean, fromThisUser: Boolean): MessageItem {
+        return MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
+    }
 }
+

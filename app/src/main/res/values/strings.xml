@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">FirebaseChatApp</string>
+    <string name="app_name">AwesomeChat</string>
     <string name="message_hint">Message, ...</string>
     <string name="unreadText">New</string>
+    <string name="hint_sign_up">New to our AwesomeChat? To register, register username and password, then click the android icon above. Happy chatting.</string>
 </resources>

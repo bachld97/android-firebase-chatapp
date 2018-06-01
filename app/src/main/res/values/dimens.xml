@@ -13,4 +13,6 @@
     <dimen name="avaThumbnailMargin">16dp</dimen>
     <dimen name="avaThumbnailGroup">28dp</dimen>
     <dimen name="unread_padding_vertical">1dp</dimen>
+    <dimen name="hugeGap">176dp</dimen>
+    <dimen name="appIcon">96dp</dimen>
 </resources>

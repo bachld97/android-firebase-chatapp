@@ -21,4 +21,7 @@
     <color name="backgroundTint">#a0e8eff4</color>
     <color name="contactSelected">#89a9b0</color>
     <color name="contactUnselected">#00000000</color>
+    <color name="backgroundTextAuthen">#457A86AA</color>
+    <color name="backgroundUselessView">#bae2f9</color>
 </resources>
+

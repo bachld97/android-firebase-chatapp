@@ -4,7 +4,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
-import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
 
 
 @Entity(tableName = "Message")

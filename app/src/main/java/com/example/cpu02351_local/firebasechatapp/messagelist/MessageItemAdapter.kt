@@ -16,6 +16,9 @@ import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.widget.Toast
+import com.example.cpu02351_local.firebasechatapp.imagepreviewscreen.ImagePreviewActivity
+import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageBinding
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageMineHolder
 
 
 class MessageItemAdapter(context: Context)
@@ -25,6 +28,7 @@ class MessageItemAdapter(context: Context)
     companion object {
         const val TEXT_MINE = 0
         const val TEXT_OTHER = 1
+        const val IMAGE_MINE = 2
     }
 
     fun updateUserInfo(info: HashMap<String, User> ) {
@@ -50,7 +54,10 @@ class MessageItemAdapter(context: Context)
         return when ((listItems?.get(position) as? MessageItem)?.getType()) {
             "text_mine" -> TEXT_MINE
             "text_other" -> TEXT_OTHER
-            else -> throw IllegalStateException("ListItems cannot be null at this time or unsupported messageType found [application is outdated]")
+            "image_other" -> IMAGE_MINE
+            "image_mine" -> IMAGE_MINE
+            else -> throw IllegalStateException("ListItems cannot be null at " +
+                    "this time or unsupported messageType found [application is outdated]")
         }
     }
 
@@ -73,6 +80,13 @@ class MessageItemAdapter(context: Context)
         }
     }
 
+    private val imageClick = object : ItemClickCallback {
+        override fun onClick(item: MessageItem) {
+            val intent = ImagePreviewActivity.fromDownloadUrl(context, item.getContent())
+            context.startActivity(intent)
+        }
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -85,6 +99,10 @@ class MessageItemAdapter(context: Context)
             TEXT_OTHER -> {
                 val binding = ItemTextMessageFromOtherBinding.inflate(layoutInflater, parent, false)
                 MessageTextOtherHolder(binding, messageClick, textLongClicked)
+            }
+            IMAGE_MINE -> {
+                val binding = ItemImageMessageBinding.inflate(layoutInflater, parent, false)
+                MessageImageMineHolder(binding, imageClick)
             }
             else -> throw RuntimeException("Unsupported viewType")
         }

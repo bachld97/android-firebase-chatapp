@@ -10,7 +10,10 @@ class ConversationItemViewModel(var item: ConversationItem) {
    // }
 
     fun getLastMessagePreview(): Spanned {
-        val text = item.lastMessagePreview
+        var text = item.lastMessagePreview
+        if (!getIsRead()) {
+            text = "<b>$text</b>"
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return Html.fromHtml(text, Html.FROM_HTML_MODE_LEGACY)
         } else {
@@ -18,8 +21,6 @@ class ConversationItemViewModel(var item: ConversationItem) {
             return Html.fromHtml(text)
         }
     }
-
-
 
     fun getLastSenderName(): String = item .lastSenderName + ":"
 

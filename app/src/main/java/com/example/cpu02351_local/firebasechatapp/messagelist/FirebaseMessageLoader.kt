@@ -174,6 +174,7 @@ class FirebaseMessageLoader : MessageLoader {
 
     override fun addMessage(conversationId: String, message: AbstractMessage, byUsers: List<String>): Completable {
         // Check if conversation exist
+        Log.d("MESSAGE_DEBUG", "Send")
         return Completable.create { emitter ->
             val conversationRef = databaseRef.child(CONVERSATIONS)
             conversationRef.addListenerForSingleValueEvent(object : ValueEventListener {

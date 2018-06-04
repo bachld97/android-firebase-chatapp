@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes
+package com.example.cpu02351_local.firebasechatapp.model.messagetypes
 
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 

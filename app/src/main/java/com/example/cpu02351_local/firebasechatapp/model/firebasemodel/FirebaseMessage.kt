@@ -1,7 +1,8 @@
 package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
-import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 
 class FirebaseMessage : FirebaseObject() {
@@ -43,6 +44,7 @@ class FirebaseMessage : FirebaseObject() {
         // Later add switch type to return correct type of user
         return when (type) {
             "text" -> TextMessage(id, atTime, byUser, content)
+            "image" -> ImageMessage(id, atTime, byUser, content)
             else -> throw IllegalStateException()
         }
     }

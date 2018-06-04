@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".mainscreen.MainActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".messagelist.MessageListActivity"
             android:screenOrientation="portrait" />
@@ -28,7 +28,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".changeinfoscreen.ChangeInfoActivity"></activity>
+        <activity android:name=".changeinfoscreen.ChangeInfoActivity" />
+        <activity android:name=".imagepreviewscreen.ImagePreviewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent"
+            />
     </application>
 
 </manifest>

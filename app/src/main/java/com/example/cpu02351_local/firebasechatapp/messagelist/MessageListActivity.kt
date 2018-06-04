@@ -1,14 +1,18 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
+import android.graphics.Bitmap
 import android.os.Bundle
+import android.provider.MediaStore
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
+import android.widget.ImageView
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
@@ -19,7 +23,10 @@ import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import junit.framework.Assert
+import kotlinx.android.synthetic.main.item_conversation_group3_list.*
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
@@ -151,4 +158,28 @@ class MessageListActivity :
         super.onStop()
         mMessageViewModel.dispose()
     }
+
+    private var mChosenImage: Bitmap? = null
+    override fun getImageToSend() {
+        startImagePickerActivity()
+    }
+
+    private val captureImageRequest = 1111
+    private fun startImagePickerActivity() {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (takePictureIntent.resolveActivity(packageManager) != null) {
+                startActivityForResult(takePictureIntent, captureImageRequest)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK && requestCode == captureImageRequest) {
+            val extra = data?.extras ?: return
+            val imageBitmap = extra["data"] as Bitmap
+            mMessageViewModel.sendNewImageMessage(imageBitmap)
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 }
+
+

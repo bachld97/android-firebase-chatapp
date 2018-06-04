@@ -1,11 +1,13 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.graphics.Bitmap
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
-import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.messagetypes.TextMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
 import io.reactivex.CompletableObserver
 import io.reactivex.Observer
 import io.reactivex.SingleObserver
@@ -102,7 +104,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
 
     // rework this function
-    fun sendNewMessage() {
+    fun sendNewTextMessage() {
         if (messageText.trim().isEmpty()) {
             return
         }
@@ -114,6 +116,19 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         onMessageAdded(m)
         addPendingMessage(m)
         proceedSendMessage(m, messageView.getParticipants())
+    }
+
+    fun sendNewImageMessage(image: Bitmap) {
+        val id = messageLoader.getNewMessageId(conversationId)
+        // Content will be update later
+        val m = ImageMessage(id, System.currentTimeMillis(), messageView.getSender(), "")
+        m.onBitmapLoaded(image)
+        m.isSending = true
+        onMessageAdded(m)
+    }
+
+    fun initSendImage() {
+        messageView.getImageToSend()
     }
 
     private fun updatePendingMessageState(message: AbstractMessage) {
@@ -167,8 +182,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         data.sortedBy { item -> item.atTime }
         mMessageItems.clear()
         mMessageItems.addAll(data.mapIndexed { index, abstractMessage ->
-            val shouldDisplaySender = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
-            val shouldDisplayTime = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
+            val shouldDisplayTime = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
+            val shouldDisplaySender = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
             val fromThisUser = abstractMessage.byUser == messageView.getSender()
             abstractMessage.toMessageItem(shouldDisplaySender, shouldDisplayTime, fromThisUser)
         })
@@ -198,9 +213,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     private fun onMessageAdded(addedMessage: AbstractMessage) {
         var pos = -1
         val fromThisUser = addedMessage.byUser == messageView.getSender()
-        val shouldDisplaySender = mMessageItems.first().getSenderId() != addedMessage.byUser
         val curItem = if (mMessageItems.isNotEmpty()) {
             mMessageItems.first().shouldDisplayTime = false
+            val shouldDisplaySender = mMessageItems.first().getSenderId() != addedMessage.byUser
             addedMessage.toMessageItem(shouldDisplaySender, true, fromThisUser)
         } else {
             addedMessage.toMessageItem(true, true, fromThisUser)
@@ -215,7 +230,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         if (pos == -1)
             mMessageItems.add(0, curItem)
         else {
-            curItem.shouldDisplayTime = (pos == 0) || curItem.getSenderId() != mMessageItems[pos + 1].getSenderId()
+            curItem.shouldDisplayTime = (pos == 0) ||
+                    curItem.getSenderId() != mMessageItems[pos - 1].getSenderId()
             mMessageItems[pos] = curItem
         }
 
@@ -234,5 +250,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     private fun convertMessageToMessageItem(message: AbstractMessage, shouldDisplaySender: Boolean, shouldDisplayTime: Boolean, fromThisUser: Boolean): MessageItem {
         return MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
     }
+
+
+
 }
 

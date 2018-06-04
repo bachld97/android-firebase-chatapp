@@ -15,4 +15,6 @@
     <dimen name="unread_padding_vertical">1dp</dimen>
     <dimen name="hugeGap">176dp</dimen>
     <dimen name="appIcon">96dp</dimen>
+    <dimen name="marginMessageEndRight">16dp</dimen>
+    <dimen name="marginMessageStartRight">62dp</dimen>
 </resources>

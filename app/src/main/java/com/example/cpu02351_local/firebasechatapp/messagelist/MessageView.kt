@@ -1,7 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
-import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 
 interface MessageView {
     fun onError()
@@ -9,4 +8,5 @@ interface MessageView {
     fun getSender(): String
     fun getParticipants(): String
     fun updateMessageItem(messages: List<MessageItem>)
+    fun getImageToSend()
 }

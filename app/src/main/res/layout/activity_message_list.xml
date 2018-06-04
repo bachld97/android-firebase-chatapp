@@ -35,15 +35,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"/>
 
-            <RelativeLayout
+            <LinearLayout
                 android:padding="8dp"
                 android:background="@color/chatSend"
                 android:layout_weight="0"
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
+                <ImageView
+                    android:onClick="@{() -> viewModel.initSendImage()}"
+                    android:tint="@color/buttonSend"
+                    android:layout_marginStart="4dp"
+                    android:padding="4dp"
+                    android:layout_weight="0"
+                    android:id="@+id/sendImgMess"
+                    android:src="@drawable/ic_send_img"
+                    android:layout_width="@dimen/buttonSendMessage"
+                    android:layout_height="@dimen/buttonSendMessage" />
+
+
                 <EditText
-                    android:layout_centerVertical="true"
+                    android:layout_weight="1"
                     android:gravity="center_vertical"
                     android:textSize="@dimen/textLarge"
                     android:background="@null"
@@ -53,21 +66,20 @@
                     android:textColorHint="@color/textSecondary"
                     android:textColor="@color/textPrimary"
                     android:text="@={viewModel.messageText}"
-                    android:layout_toStartOf="@id/sendMes"
                     android:id="@+id/mess"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:inputType="text" />
 
 
                 <ImageView
+                    android:layout_weight="0"
                     android:background="?android:attr/selectableItemBackground"
                     android:layout_marginEnd="4dp"
                     android:id="@+id/sendMes"
                     android:src="@drawable/ic_send"
                     android:tint="@color/buttonSend"
-                    android:onClick="@{() -> viewModel.sendNewMessage()}"
-                    android:layout_alignParentEnd="true"
+                    android:onClick="@{() -> viewModel.sendNewTextMessage()}"
                     android:padding="4dp"
                     android:layout_width="@dimen/buttonSendMessage"
                     android:layout_height="@dimen/buttonSendMessage" />
@@ -75,13 +87,13 @@
                 <Button
                     android:src="@drawable/ic_send"
                     android:foregroundTint="@color/buttonSend"
-                    android:onClick="@{() -> viewModel.sendNewMessage()}"
+                    android:onClick="@{() -> viewModel.sendNewTextMessage()}"
                     android:layout_alignParentEnd="true"
                     android:id="@+id/sendMes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
                     -->
-            </RelativeLayout>
+            </LinearLayout>
         </LinearLayout>
 
 

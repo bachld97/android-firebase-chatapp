@@ -1,11 +1,14 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseConversation
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
+import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.BY_USERS
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.CONVERSATIONS
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.DELIM
@@ -13,10 +16,14 @@ import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_READ
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.MESSAGE
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
+import com.google.android.gms.tasks.Continuation
+import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
+import com.google.firebase.storage.UploadTask
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.util.*
 import javax.inject.Inject
 
 class FirebaseMessageLoader : MessageLoader {
@@ -167,14 +174,11 @@ class FirebaseMessageLoader : MessageLoader {
         return obs.doFinally { reference.removeEventListener(listener) }
     }
 
-
     override fun getNewMessageId(conversationId: String): String {
         return databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE").push().key
     }
 
     override fun addMessage(conversationId: String, message: AbstractMessage, byUsers: List<String>): Completable {
-        // Check if conversation exist
-        Log.d("MESSAGE_DEBUG", "Send")
         return Completable.create { emitter ->
             val conversationRef = databaseRef.child(CONVERSATIONS)
             conversationRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -238,4 +242,35 @@ class FirebaseMessageLoader : MessageLoader {
                     })
         }
     }
+
+    override fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String) {
+        val storageRef = FirebaseHelper.getImageMessageReference(imageMessage.id)
+        storageRef.putFile(imageMessage.localUri)
+                .continueWithTask { task ->
+                    if (!task.isSuccessful)
+                        throw Objects.requireNonNull(task.exception)!!
+                    storageRef.downloadUrl
+                }
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val downloadUri = task.result
+                        updateImageMessage(imageMessage, conversationId, downloadUri.toString())
+                    }
+                }
+    }
+
+    private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String) {
+        imageMessage.content = resourceLink
+        databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/${imageMessage.id}")
+                .setValue(FirebaseMessage.from(imageMessage).toMap())
+                .addOnSuccessListener {
+                    databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
+                            .setValue(imageMessage.atTime.toString())
+                }
+                .addOnFailureListener {
+                    // Do nothing for now
+                }
+
+    }
+
 }

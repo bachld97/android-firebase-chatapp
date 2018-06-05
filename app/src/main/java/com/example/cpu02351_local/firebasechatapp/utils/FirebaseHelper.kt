@@ -42,7 +42,11 @@ class FirebaseHelper {
 
         @JvmStatic
         fun getAvatarReference(userId: String) =
-            getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$AVA/$userId")
+                getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$AVA/$userId")
+
+        @JvmStatic
+        fun getImageMessageReference(messageId: String) =
+                getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$MESSAGE/$messageId")
 
     }
     @Provides fun getFirebaseReference(): DatabaseReference = getFirebaseInstance().reference!!

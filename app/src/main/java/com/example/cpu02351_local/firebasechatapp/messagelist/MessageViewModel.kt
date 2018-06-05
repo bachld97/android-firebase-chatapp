@@ -15,7 +15,7 @@ import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import java.io.File
 import android.graphics.BitmapFactory
-
+import android.media.Image
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -258,12 +258,17 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         return MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
     }
 
-    fun sendImageMessageWithUri(fromFile: Uri?) {
+    fun sendImageMessageWithUri(fromFile: Uri?, messageId: String) {
         if (fromFile == null)
             return
 
         val dimen = getMetaData(fromFile)
         Log.d("DEBUG_METADATA", "${dimen.first} ${dimen.second}")
+        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), "")
+        imageMessage.width = dimen.first
+        imageMessage.height = dimen.second
+        imageMessage.localUri = fromFile
+        messageLoader.uploadImageAndUpdateDatabase(imageMessage, conversationId)
         // messageView.sendImageMessageWithService(uploader, dimen)
     }
 

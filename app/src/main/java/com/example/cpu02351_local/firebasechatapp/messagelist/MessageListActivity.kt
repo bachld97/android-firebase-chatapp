@@ -192,14 +192,10 @@ class MessageListActivity :
         }
     }
 
-    override fun sendImageMessageWithService(uploader: Any) {
-        TODO()
-    }
-
     private var mPhoto: File? = null
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == captureImageRequest) {
-             mMessageViewModel.sendImageMessageWithUri(Uri.fromFile(mPhoto))
+             mMessageViewModel.sendImageMessageWithUri(Uri.fromFile(mPhoto), mMessageId)
         } else super.onActivityResult(requestCode, resultCode, data)
     }
 
@@ -210,7 +206,7 @@ class MessageListActivity :
         } else {
             val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             imageFile = File.createTempFile(
-                    "AwesomeChat_${messageId.subSequence(1, messageId.lastIndex)}",
+                    messageId,
                     ".jpg",
                     storageDir)
         }

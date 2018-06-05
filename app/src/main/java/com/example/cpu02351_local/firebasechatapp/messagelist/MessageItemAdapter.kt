@@ -18,7 +18,9 @@ import android.content.ClipboardManager
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.imagepreviewscreen.ImagePreviewActivity
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageBinding
+import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageFromOtherBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageMineHolder
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageOtherHolder
 
 
 class MessageItemAdapter(context: Context)
@@ -29,6 +31,7 @@ class MessageItemAdapter(context: Context)
         const val TEXT_MINE = 0
         const val TEXT_OTHER = 1
         const val IMAGE_MINE = 2
+        const val IMAGE_OTHER = 3
     }
 
     fun updateUserInfo(info: HashMap<String, User> ) {
@@ -37,7 +40,7 @@ class MessageItemAdapter(context: Context)
                 ?.forEachIndexed { index, item ->
                     if (item.hasUserInfoChange(info))
                         notifyItemChanged(index)
-                }
+               }
     }
 
     override fun calculateDiffResult(newItems: List<ListItem>?): DiffUtil.DiffResult? {
@@ -54,7 +57,7 @@ class MessageItemAdapter(context: Context)
         return when ((listItems?.get(position) as? MessageItem)?.getType()) {
             "text_mine" -> TEXT_MINE
             "text_other" -> TEXT_OTHER
-            "image_other" -> IMAGE_MINE
+            "image_other" -> IMAGE_OTHER
             "image_mine" -> IMAGE_MINE
             else -> throw IllegalStateException("ListItems cannot be null at " +
                     "this time or unsupported messageType found [application is outdated]")
@@ -87,7 +90,6 @@ class MessageItemAdapter(context: Context)
         }
     }
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {
         val layoutInflater = LayoutInflater.from(parent.context)
         lateinit var holder: BaseItemHolder<MessageItem>
@@ -103,6 +105,10 @@ class MessageItemAdapter(context: Context)
             IMAGE_MINE -> {
                 val binding = ItemImageMessageBinding.inflate(layoutInflater, parent, false)
                 MessageImageMineHolder(binding, imageClick)
+            }
+            IMAGE_OTHER -> {
+                val binding = ItemImageMessageFromOtherBinding.inflate(layoutInflater, parent, false)
+                MessageImageOtherHolder(binding, imageClick)
             }
             else -> throw RuntimeException("Unsupported viewType")
         }

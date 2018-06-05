@@ -16,6 +16,7 @@ import io.reactivex.disposables.Disposable
 import java.io.File
 import android.graphics.BitmapFactory
 import android.media.Image
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -23,7 +24,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                        private val conversationId: String) {
     var messageText =""
 
-    private val messageLimit = 15
+    private val messageLimit = 30
 
     private var mDisposable: Disposable? = null
     init {
@@ -36,6 +37,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         }
     }
 
+    private lateinit var mObserveFromHere: String
     var mLastKey: String? = null
 
     private fun loadMessages() {
@@ -49,10 +51,13 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 // messageView.onNetworkLoadInitial(t)
                 onFirstLoad(t)
                 mLocalDatabase?.saveMessageAll(t, conversationId)
-                        ?.subscribe { Log.d("DEBUGGING", "Message saved for conversation $conversationId") }
+                        ?.subscribe {
+                            // Subscribe so it can run
+                        }
 
                 mLastKey = t.first().id
-                observeNextMessage(t.last().id)
+                mObserveFromHere = t.last().id
+                observeNextMessage(mObserveFromHere)
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -121,17 +126,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         onMessageAdded(m)
         addPendingMessage(m)
         proceedSendMessage(m, messageView.getParticipants())
-    }
-
-    fun sendNewImageMessage(image: Bitmap) {
-        val id = messageLoader.getNewMessageId(conversationId)
-        // Content will be update later
-        val m = ImageMessage(id, System.currentTimeMillis(), messageView.getSender(), "")
-        m.onBitmapLoaded(image)
-        m.isSending = true
-        onMessageAdded(m)
-        // addPendingMessage(m)
-        // proceedSendMessage(m, messageView.getParticipants())
     }
 
     fun initSendImage() {
@@ -217,12 +211,24 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         dispatchInfo()
     }
 
+
+    private var firstLoad = true
     private fun onMessageAdded(addedMessage: AbstractMessage) {
+        if (firstLoad) {
+            firstLoad = false
+            return
+        }
+
+        if (addedMessage.id == mObserveFromHere) {
+            return
+        }
+
         var pos = -1
         val fromThisUser = addedMessage.byUser == messageView.getSender()
         val curItem = if (mMessageItems.isNotEmpty()) {
             mMessageItems.first().shouldDisplayTime = false
-            val shouldDisplaySender = mMessageItems.first().getSenderId() != addedMessage.byUser
+            val shouldDisplaySender =
+                        mMessageItems.first().getSenderId() != addedMessage.byUser
             addedMessage.toMessageItem(shouldDisplaySender, true, fromThisUser)
         } else {
             addedMessage.toMessageItem(true, true, fromThisUser)
@@ -239,7 +245,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         else {
             curItem.shouldDisplayTime = (pos == 0) ||
                     curItem.getSenderId() != mMessageItems[pos - 1].getSenderId()
-            mMessageItems[pos] = curItem
+            val updatedItem = curItem.diff(mMessageItems[pos])
+            updatedItem.isSending = false
+            mMessageItems[pos] = updatedItem
         }
 
         dispatchInfo()
@@ -255,7 +263,13 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private fun convertMessageToMessageItem(message: AbstractMessage, shouldDisplaySender: Boolean, shouldDisplayTime: Boolean, fromThisUser: Boolean): MessageItem {
-        return MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
+        return when (message) {
+            is TextMessage ->
+                MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
+            is ImageMessage ->
+                ImageMessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
+            else -> throw RuntimeException("Unsupported type")
+        }
     }
 
     fun sendImageMessageWithUri(fromFile: Uri?, messageId: String) {
@@ -263,16 +277,19 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             return
 
         val dimen = getMetaData(fromFile)
-        Log.d("DEBUG_METADATA", "${dimen.first} ${dimen.second}")
-        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), "")
+        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), fromFile.toString())
         imageMessage.width = dimen.first
         imageMessage.height = dimen.second
         imageMessage.localUri = fromFile
+        imageMessage.isSending = true
+        onMessageAdded(imageMessage)
         messageLoader.uploadImageAndUpdateDatabase(imageMessage, conversationId)
         // messageView.sendImageMessageWithService(uploader, dimen)
     }
 
-
+    fun resume() {
+        observeNextMessage(mObserveFromHere)
+    }
 
     private fun getMetaData(fromFile: Uri): Pair<Int, Int> {
         val opts = BitmapFactory.Options()

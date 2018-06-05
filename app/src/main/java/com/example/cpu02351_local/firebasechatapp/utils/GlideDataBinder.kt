@@ -49,6 +49,7 @@ class GlideDataBinder {
             params.height = h
             imageView.layoutParams = params
             val url = bundle.getString("url")
+            Log.d("DEBUGGING_GLIDE", url)
             Glide.with(imageView)
                     .load(url)
                     .into(imageView)
@@ -63,7 +64,6 @@ class GlideDataBinder {
             Glide.with(context).load("file://${pictureUri.path}")
                     .apply(options)
                     .into(imageView)
-            Log.d("DEBUGGING", pictureUri.path)
         }
     }
 }

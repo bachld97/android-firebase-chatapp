@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.model
 
+import android.os.Message
 import android.text.format.DateFormat
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.User
@@ -37,4 +38,9 @@ open class MessageItem(val message: AbstractMessage, var shouldDisplaySenderInfo
     fun getType(): String = "${message.getType()}$fromWhom"
     fun getContent() = message.content
     fun getSenderId() = message.byUser
+
+
+    open fun diff(oldItem: MessageItem): MessageItem {
+        return this
+    }
 }

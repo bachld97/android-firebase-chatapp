@@ -164,6 +164,11 @@ class MessageListActivity :
         return mLoggedInUser
     }
 
+    override fun onRestart() {
+        super.onRestart()
+        mMessageViewModel.resume()
+    }
+
     override fun onStop() {
         super.onStop()
         mMessageViewModel.dispose()
@@ -232,6 +237,7 @@ class MessageListActivity :
             }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
 
 }
 

@@ -4,6 +4,7 @@
     <dimen name="avaThumbnail">56dp</dimen>
     <dimen name="textStandard">14sp</dimen>
     <dimen name="textSmaller">10sp</dimen>
+    <dimen name="textTiny">9sp</dimen>
     <dimen name="textSmall">13sp</dimen>
     <dimen name="textLarge">16sp</dimen>
     <dimen name="buttonSendMessage">36dp</dimen>

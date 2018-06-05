@@ -15,18 +15,11 @@ import android.view.Display
 class RoundedImageView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ImageView(context, attrs, defStyleAttr) {
-
-    // Max width = 2/3 screen width
-    // Max height = 2/3 screen height
-
-    var imageMaxWidth : Int = -1
-    var imageMaxHeight: Int = -1
-
     init {
         val displayMetrics = DisplayMetrics()
         (context as Activity).windowManager.defaultDisplay.getMetrics(displayMetrics)
-        maxWidth = displayMetrics.widthPixels * 1 / 2
-        maxHeight = displayMetrics.heightPixels * 1 / 2
+        maxWidth = displayMetrics.widthPixels * 3 / 5
+        maxHeight = displayMetrics.heightPixels * 2 / 5
     }
 
     override fun setLayoutParams(params: ViewGroup.LayoutParams?) {

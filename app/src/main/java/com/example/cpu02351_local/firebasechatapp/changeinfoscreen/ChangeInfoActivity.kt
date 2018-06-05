@@ -26,7 +26,6 @@ class ChangeInfoActivity : AppCompatActivity() {
         DaggerFirebaseReferenceComponent.create().injectInto(this)
     }
 
-
     private lateinit var thisUser: String
 
     override fun onCreate(savedInstanceState: Bundle?) {

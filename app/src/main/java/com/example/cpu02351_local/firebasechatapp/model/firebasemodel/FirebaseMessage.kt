@@ -10,6 +10,7 @@ class FirebaseMessage : FirebaseObject() {
     private lateinit var type: String
     private lateinit var content: String
     private lateinit var byUser: String
+    private var additionalContent: HashMap<String, String>? = null
     private var atTime = 0L
 
     companion object {
@@ -21,22 +22,24 @@ class FirebaseMessage : FirebaseObject() {
             res.type = message.getType()
             res.byUser = message.byUser
             res.content = message.content
+            res.additionalContent = message.additionalContent
             return res
         }
     }
 
     override fun fromMap(id: String, value: Any?) {
         val valueMap = try {
-            value as HashMap<String, String>
+            value as HashMap<*, *>
         } catch (e: TypeCastException) {
             null
         }
         if (valueMap != null) {
             this.id = id
-            this.atTime = valueMap[FirebaseHelper.TIME]!!.toLong()
+            this.atTime = (valueMap[FirebaseHelper.TIME] as String).toLong()
             this.type = valueMap[FirebaseHelper.TYPE] as String
             this.byUser = valueMap[FirebaseHelper.BY_USER] as String
             this.content = valueMap[FirebaseHelper.CONTENT] as String
+            this.additionalContent = valueMap[FirebaseHelper.ADDITIONAL] as HashMap<String, String>?
         }
     }
 
@@ -50,11 +53,13 @@ class FirebaseMessage : FirebaseObject() {
     }
 
     override fun toMap(): Map<String, Any> {
-        val res = HashMap<String, String>()
+        val res = HashMap<String, Any>()
         res[FirebaseHelper.TIME] = atTime.toString()
         res[FirebaseHelper.TYPE] = type
         res[FirebaseHelper.BY_USER] = byUser
         res[FirebaseHelper.CONTENT] = content
+        if (additionalContent != null)
+           res[FirebaseHelper.ADDITIONAL] = additionalContent!!
         return res
     }
 

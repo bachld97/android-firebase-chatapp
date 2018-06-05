@@ -31,6 +31,7 @@ class FirebaseHelper {
         const val CONTENT = "content"
         const val PASSWORD = "password"
         const val AVA = "ava"
+        const val ADDITIONAL = "additional"
 
         private const val STORAGE_BASE_URL = "gs://fir-chat-47b52.appspot.com"
         @JvmStatic

@@ -186,8 +186,6 @@ class FirebaseMessageLoader : MessageLoader {
                      conversationRef.child("$conversationId/$MESSAGE/${message.id}")
                             .setValue(FirebaseMessage.from(message).toMap())
                             .addOnSuccessListener {
-                                // Reset seen_by
-
                                 databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
                                         .setValue(message.atTime.toString())
                                 emitter.onComplete()

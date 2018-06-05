@@ -17,4 +17,5 @@
     <dimen name="appIcon">96dp</dimen>
     <dimen name="marginMessageEndRight">16dp</dimen>
     <dimen name="marginMessageStartRight">62dp</dimen>
+    <dimen name="marginImageMessageStartRight">128dp</dimen>
 </resources>

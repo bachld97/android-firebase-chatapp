@@ -108,12 +108,14 @@ class UserDetailFragment :
     }
 
     private fun askPermission() {
-        ActivityCompat.requestPermissions(activity!!, arrayOf(), STORAGE_PERM) // change requestCode please
+        ActivityCompat.requestPermissions(activity!!,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                STORAGE_PERM)
     }
 
     private fun shouldAskPermission(): Boolean {
         return ContextCompat
-                .checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                .checkSelfPermission(context!!, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

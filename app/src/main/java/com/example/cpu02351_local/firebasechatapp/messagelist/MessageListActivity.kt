@@ -1,16 +1,24 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
+import android.util.Log
 import android.view.MenuItem
 import android.widget.ImageView
 import com.example.cpu02351_local.firebasechatapp.R
@@ -27,6 +35,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import junit.framework.Assert
 import kotlinx.android.synthetic.main.item_conversation_group3_list.*
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.HashMap
@@ -50,6 +59,7 @@ class MessageListActivity :
     companion object {
         const val BY_USERS_STRING = "by_users_string"
         const val CONVERSATION_ID = "conversation_id"
+        const val STORAGE_PERM = 111
 
         @JvmStatic
         fun newInstance(context: Context, conId: String, byUsers: String? = null): Intent {
@@ -159,27 +169,74 @@ class MessageListActivity :
         mMessageViewModel.dispose()
     }
 
-    private var mChosenImage: Bitmap? = null
-    override fun getImageToSend() {
+    private lateinit var mMessageId: String
+    override fun getImageToSend(messageId: String) {
+        mMessageId = messageId
         startImagePickerActivity()
     }
 
     private val captureImageRequest = 1111
     private fun startImagePickerActivity() {
-            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            if (takePictureIntent.resolveActivity(packageManager) != null) {
-                startActivityForResult(takePictureIntent, captureImageRequest)
+        val file = try {
+               createImageFile(mMessageId)
+        } catch (exception: Exception) {
+            null
+        } ?: return
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            val uri = FileProvider.getUriForFile( this,
+                    "com.example.firebasechatapp.fileprovider",
+                    file)
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
+            startActivityForResult(takePictureIntent, captureImageRequest)
         }
     }
 
+    override fun sendImageMessageWithService(uploader: Any) {
+        TODO()
+    }
+
+    private var mPhoto: File? = null
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == captureImageRequest) {
-            val extra = data?.extras ?: return
-            val imageBitmap = extra["data"] as Bitmap
-            mMessageViewModel.sendNewImageMessage(imageBitmap)
-        }
-        super.onActivityResult(requestCode, resultCode, data)
+             mMessageViewModel.sendImageMessageWithUri(Uri.fromFile(mPhoto))
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
+
+    override fun createImageFile(messageId: String): File? {
+        var imageFile: File? = null
+        if (shouldAskPermission()) {
+            askPermission()
+        } else {
+            val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            imageFile = File.createTempFile(
+                    "AwesomeChat_${messageId.subSequence(1, messageId.lastIndex)}",
+                    ".jpg",
+                    storageDir)
+        }
+
+        mPhoto = imageFile
+        return imageFile
+    }
+
+    private fun askPermission() {
+        ActivityCompat.requestPermissions(this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                STORAGE_PERM)
+    }
+
+    private fun shouldAskPermission(): Boolean {
+        return ContextCompat
+                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+    }
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == STORAGE_PERM)
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startImagePickerActivity()
+            }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
 }
 
 

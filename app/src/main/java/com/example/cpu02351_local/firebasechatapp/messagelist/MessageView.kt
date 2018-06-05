@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
+import java.io.File
 
 interface MessageView {
     fun onError()
@@ -8,5 +9,8 @@ interface MessageView {
     fun getSender(): String
     fun getParticipants(): String
     fun updateMessageItem(messages: List<MessageItem>)
-    fun getImageToSend()
+    fun getImageToSend(messageId: String)
+    fun createImageFile(messageId: String): File?
+    fun sendImageMessageWithService(uploader: Any)
+
 }

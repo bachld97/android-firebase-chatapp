@@ -7,8 +7,9 @@
     </data>
 
     <android.support.constraint.ConstraintLayout
+        android:padding="4dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginStart="@dimen/marginMessageStartRight"
+        android:layout_marginStart="@dimen/marginImageMessageStartRight"
         xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

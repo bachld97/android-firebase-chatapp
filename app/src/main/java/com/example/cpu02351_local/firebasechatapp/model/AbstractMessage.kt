@@ -6,6 +6,8 @@ abstract class AbstractMessage(var id: String = "",
                                var atTime: Long = -1L,
                                var byUser: String = "",
                                var content: String = "") {
+    var additionalContent: HashMap<String, String>? = null
+
     var isFailed: Boolean = false
     var isSending: Boolean = false
 

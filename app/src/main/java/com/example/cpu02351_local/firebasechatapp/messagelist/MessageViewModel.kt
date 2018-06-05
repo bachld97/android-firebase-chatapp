@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
@@ -12,6 +13,10 @@ import io.reactivex.CompletableObserver
 import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
+import java.io.File
+import android.graphics.BitmapFactory
+
+
 
 class MessageViewModel(private val messageLoader: MessageLoader,
                        private val messageView: MessageView,
@@ -125,10 +130,13 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         m.onBitmapLoaded(image)
         m.isSending = true
         onMessageAdded(m)
+        // addPendingMessage(m)
+        // proceedSendMessage(m, messageView.getParticipants())
     }
 
     fun initSendImage() {
-        messageView.getImageToSend()
+        val messageId = messageLoader.getNewMessageId(conversationId)
+        messageView.getImageToSend(messageId)
     }
 
     private fun updatePendingMessageState(message: AbstractMessage) {
@@ -175,7 +183,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                     }
                 })
     }
-
 
     private var mMessageItems = ArrayList<MessageItem>()
     private fun onFirstLoad(data: List<AbstractMessage>) {
@@ -251,7 +258,22 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         return MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
     }
 
+    fun sendImageMessageWithUri(fromFile: Uri?) {
+        if (fromFile == null)
+            return
+
+        val dimen = getMetaData(fromFile)
+        Log.d("DEBUG_METADATA", "${dimen.first} ${dimen.second}")
+        // messageView.sendImageMessageWithService(uploader, dimen)
+    }
 
 
+
+    private fun getMetaData(fromFile: Uri): Pair<Int, Int> {
+        val opts = BitmapFactory.Options()
+        opts.inJustDecodeBounds = true
+        BitmapFactory.decodeFile(fromFile.path, opts)
+        return Pair(opts.outWidth, opts.outHeight)
+    }
 }
 

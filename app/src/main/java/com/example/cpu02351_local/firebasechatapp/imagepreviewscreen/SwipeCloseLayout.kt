@@ -74,7 +74,7 @@ class SwipeCloseLayout @JvmOverloads constructor(
                 translationY = rawY - startY
             }
             MotionEvent.ACTION_UP -> {
-                if (Math.abs(difY) > screenHeight / 4) {
+                if (Math.abs(difY) > screenHeight / 4.5) {
                     smoothEndActivity(difY)
                 } else {
                     smoothResetChildPosition()

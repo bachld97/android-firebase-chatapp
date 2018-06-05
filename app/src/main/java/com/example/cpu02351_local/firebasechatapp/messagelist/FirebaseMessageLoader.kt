@@ -260,9 +260,10 @@ class FirebaseMessageLoader : MessageLoader {
     }
 
     private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String) {
-        imageMessage.content = resourceLink
+        val fbMess = FirebaseMessage.from(imageMessage)
+        fbMess.content = resourceLink
         databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/${imageMessage.id}")
-                .setValue(FirebaseMessage.from(imageMessage).toMap())
+                .setValue(fbMess.toMap())
                 .addOnSuccessListener {
                     databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
                             .setValue(imageMessage.atTime.toString())

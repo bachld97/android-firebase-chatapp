@@ -141,10 +141,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     private fun addPendingMessage(message: AbstractMessage) {
         mLocalDatabase?.updateConversationLastMessage(conversationId, message.id)
-                ?.subscribe { Log.d("DEBUGGING", "Last message Id updated") }
-
+                ?.subscribe {  }
         mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
-                ?.subscribe { Log.d("DEBUGGING", "New message sent") }
+                ?.subscribe {  }
     }
 
     fun loadMore() {
@@ -190,6 +189,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         })
         //mMessageItems.reverse()
         dispatchInfo()
+
+        Log.d("DEBUG_CONTENT", "Somehow this lil' shit run :)")
     }
 
     private fun onLoadMore(data: List<AbstractMessage>) {
@@ -240,6 +241,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
         }
 
+
         if (pos == -1)
             mMessageItems.add(0, curItem)
         else {
@@ -283,6 +285,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         imageMessage.localUri = fromFile
         imageMessage.isSending = true
         onMessageAdded(imageMessage)
+        addPendingMessage(imageMessage)
         messageLoader.uploadImageAndUpdateDatabase(imageMessage, conversationId)
         // messageView.sendImageMessageWithService(uploader, dimen)
     }

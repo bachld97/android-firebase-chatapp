@@ -8,7 +8,7 @@ import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 class FirebaseMessage : FirebaseObject() {
     private lateinit var id: String
     private lateinit var type: String
-    private lateinit var content: String
+    internal lateinit var content: String
     private lateinit var byUser: String
     private var additionalContent: HashMap<String, String>? = null
     private var atTime = 0L

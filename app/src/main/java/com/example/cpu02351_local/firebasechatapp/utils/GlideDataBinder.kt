@@ -44,12 +44,13 @@ class GlideDataBinder {
         fun setImageWithSize(imageView: ImageView, bundle: Bundle) {
             val w = bundle.getInt("width")
             val h = bundle.getInt("height")
-            val options = RequestOptions()
-            options.override(w, h)
+            val params = imageView.layoutParams
+            params.width = w
+            params.height = h
+            imageView.layoutParams = params
             val url = bundle.getString("url")
             Glide.with(imageView)
                     .load(url)
-                    .apply(options)
                     .into(imageView)
         }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
             name="viewModel"
@@ -14,8 +14,8 @@
         android:layout_height="wrap_content">
 
         <com.example.cpu02351_local.firebasechatapp.utils.RoundedImageView
+            app:imageWithSize="@{viewModel.attributeBundle}"
             android:onClick="@{() -> viewModel.imageClicked()}"
-            android:src="@{viewModel.hasBitmap() ? viewModel.getImageSrc() : @drawable/ic_default_ava}"
             android:id="@+id/bitmap_display"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

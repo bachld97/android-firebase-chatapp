@@ -22,7 +22,7 @@ class FirebaseMessage : FirebaseObject() {
             res.type = message.getType()
             res.byUser = message.byUser
             res.content = message.content
-            res.additionalContent = message.additionalContent
+            res.additionalContent = message.buildAdditionalContent()
             return res
         }
     }
@@ -47,7 +47,12 @@ class FirebaseMessage : FirebaseObject() {
         // Later add switch type to return correct type of user
         return when (type) {
             "text" -> TextMessage(id, atTime, byUser, content)
-            "image" -> ImageMessage(id, atTime, byUser, content)
+            "image" -> {
+                val tem = ImageMessage(id, atTime, byUser, content)
+                tem.width = additionalContent!!["width"]!!.toInt()
+                tem.height = additionalContent!!["height"]!!.toInt()
+                return tem
+            }
             else -> throw IllegalStateException()
         }
     }

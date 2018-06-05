@@ -2,6 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.utils
 
 import android.databinding.BindingAdapter
 import android.net.Uri
+import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import com.bumptech.glide.Glide
@@ -34,6 +35,20 @@ class GlideDataBinder {
             options.placeholder(R.drawable.ic_default_ava)
             options.sizeMultiplier(0.5f)
             Glide.with(context).load(url)
+                    .apply(options)
+                    .into(imageView)
+        }
+
+        @JvmStatic
+        @BindingAdapter("imageWithSize")
+        fun setImageWithSize(imageView: ImageView, bundle: Bundle) {
+            val w = bundle.getInt("width")
+            val h = bundle.getInt("height")
+            val options = RequestOptions()
+            options.override(w, h)
+            val url = bundle.getString("url")
+            Glide.with(imageView)
+                    .load(url)
                     .apply(options)
                     .into(imageView)
         }

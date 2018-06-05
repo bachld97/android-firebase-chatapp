@@ -5,7 +5,7 @@ import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 
-open class MessageItem(val message: AbstractMessage, var shouldDisplaySenderInfo: Boolean, var shouldDisplayTime: Boolean, fromThisUser: Boolean) : ListItem {
+open class MessageItem(val message: AbstractMessage, var shouldDisplaySenderInfo: Boolean, var shouldDisplayTime: Boolean, val fromThisUser: Boolean) : ListItem {
     private val fromWhom = "_${if (fromThisUser) "mine" else "other"}"
     val displayTime: String = DateFormat.format("HH:mm", message.atTime).toString()
     var messTime = message.atTime

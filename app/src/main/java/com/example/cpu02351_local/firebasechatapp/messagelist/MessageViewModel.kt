@@ -210,7 +210,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         resizeIfNeeded(bitmap)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId) })
+                .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId, null) })
     }
 
 
@@ -233,9 +233,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         }
     }
 
-    private fun sendImageMessageWithBitmap(bitmap: Bitmap, messageId: String) {
+    private fun sendImageMessageWithBitmap(bitmap: Bitmap, messageId: String, uri: Uri?) {
         val dimen = Pair(bitmap.width, bitmap.height)
-        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), "")
+        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), uri?.toString() ?: "")
         imageMessage.width = dimen.first
         imageMessage.height = dimen.second
         imageMessage.isSending = true
@@ -344,7 +344,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         resizeIfNeeded(bitmap)
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId) })
+                .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId, fromFile) })
     }
 
     fun resume() {

@@ -299,8 +299,11 @@ class FirebaseMessageLoader : MessageLoader {
     }
 
     private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String, byUsers: List<String>) {
-        imageMessage.content = resourceLink
-        addMessage(conversationId, imageMessage, byUsers).subscribe {  }
+        val temImage = ImageMessage(imageMessage.id, imageMessage.atTime, imageMessage.byUser, resourceLink)
+        temImage.width = imageMessage.width
+        temImage.height = imageMessage.height
+        // imageMessage.content = resourceLink
+        addMessage(conversationId, temImage, byUsers).subscribe {  }
     }
 
 }

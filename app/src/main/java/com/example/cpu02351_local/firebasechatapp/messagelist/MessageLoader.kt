@@ -15,5 +15,5 @@ interface MessageLoader {
     fun loadInitialMessages(conversationId: String, limit: Int): Single<List<AbstractMessage>>
     fun observeNextMessages(conversationId: String, lastKey: String?, thisUser: String): Observable<AbstractMessage>
 
-    fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String)
+    fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String, byUsers: List<String>)
 }

@@ -49,7 +49,6 @@ class GlideDataBinder {
             params.height = h
             imageView.layoutParams = params
             val url = bundle.getString("url")
-            Log.d("DEBUGGING_GLIDE", url)
             Glide.with(imageView)
                     .load(url)
                     .into(imageView)

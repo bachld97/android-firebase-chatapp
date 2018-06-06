@@ -243,7 +243,7 @@ class FirebaseMessageLoader : MessageLoader {
         }
     }
 
-    override fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String) {
+    override fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String, byUsers: List<String>) {
         val storageRef = FirebaseHelper.getImageMessageReference(imageMessage.id)
         storageRef.putFile(imageMessage.localUri)
                 .continueWithTask { task ->
@@ -254,14 +254,15 @@ class FirebaseMessageLoader : MessageLoader {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         val downloadUri = task.result
-                        updateImageMessage(imageMessage, conversationId, downloadUri.toString())
+                        updateImageMessage(imageMessage, conversationId, downloadUri.toString(), byUsers)
                     }
                 }
     }
 
-    private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String) {
-        val fbMess = FirebaseMessage.from(imageMessage)
-        fbMess.content = resourceLink
+    private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String, byUsers: List<String>) {
+        imageMessage.content = resourceLink
+        addMessage(conversationId, imageMessage, byUsers).subscribe {  }
+        /*
         databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/${imageMessage.id}")
                 .setValue(fbMess.toMap())
                 .addOnSuccessListener {
@@ -271,7 +272,7 @@ class FirebaseMessageLoader : MessageLoader {
                 .addOnFailureListener {
                     // Do nothing for now
                 }
-
+                */
     }
 
 }

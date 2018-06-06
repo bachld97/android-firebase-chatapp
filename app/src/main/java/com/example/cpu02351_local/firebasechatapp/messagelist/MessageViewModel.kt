@@ -37,7 +37,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         }
     }
 
-    private lateinit var mObserveFromHere: String
+    private var mObserveFromHere: String? = null
     var mLastKey: String? = null
 
     private fun loadMessages() {
@@ -190,7 +190,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         //mMessageItems.reverse()
         dispatchInfo()
 
-        Log.d("DEBUG_CONTENT", "Somehow this lil' shit run :)")
     }
 
     private fun onLoadMore(data: List<AbstractMessage>) {
@@ -215,12 +214,15 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     private var firstLoad = true
     private fun onMessageAdded(addedMessage: AbstractMessage) {
+        if (mObserveFromHere == null) {
+            firstLoad = false
+        }
+
         if (firstLoad) {
             firstLoad = false
             return
         }
-
-        if (addedMessage.id == mObserveFromHere) {
+        if (mObserveFromHere != null && addedMessage.id == mObserveFromHere) {
             return
         }
 
@@ -286,7 +288,10 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         imageMessage.isSending = true
         onMessageAdded(imageMessage)
         addPendingMessage(imageMessage)
-        messageLoader.uploadImageAndUpdateDatabase(imageMessage, conversationId)
+
+        val participantIds = messageView.getParticipants()
+        val list = participantIds.split(Conversation.ID_DELIM)
+        messageLoader.uploadImageAndUpdateDatabase(imageMessage, conversationId, list)
         // messageView.sendImageMessageWithService(uploader, dimen)
     }
 

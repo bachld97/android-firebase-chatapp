@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.model
 
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 
@@ -11,6 +12,10 @@ class ImageMessageItem(message: AbstractMessage, shouldDisplaySenderInfo: Boolea
     var height = imageMessage.height
 
     override fun diff(oldItem: MessageItem): MessageItem {
+        if (oldItem is ImageMessageItem) {
+            (message as ImageMessage).localUri = oldItem.imageMessage.localUri
+            imageMessage.localUri = oldItem.imageMessage.localUri
+        }
         message.content = oldItem.getContent()
         return this
     }

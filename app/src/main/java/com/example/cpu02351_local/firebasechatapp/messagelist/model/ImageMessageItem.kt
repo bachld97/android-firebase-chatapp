@@ -12,8 +12,9 @@ class ImageMessageItem(message: AbstractMessage, shouldDisplaySenderInfo: Boolea
 
     override fun diff(oldItem: MessageItem): MessageItem {
         if (oldItem is ImageMessageItem) {
-            (message as ImageMessage).localUri = oldItem.imageMessage.localUri
-            imageMessage.localUri = oldItem.imageMessage.localUri
+            // (message as ImageMessage).localUri = oldItem.imageMessage.localUri
+            // imageMessage.localUri = oldItem.imageMessage.localUri
+            imageMessage.bitmap = oldItem.imageMessage.bitmap
         }
         message.content = oldItem.getContent()
         return this

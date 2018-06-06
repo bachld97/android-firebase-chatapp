@@ -15,12 +15,15 @@ import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.imagepreviewscreen.ImagePreviewActivity
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageBinding
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageFromOtherBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageMineHolder
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageOtherHolder
+import java.io.File
 
 
 class MessageItemAdapter(context: Context, private val mViewModel: MessageViewModel)
@@ -92,9 +95,8 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
 
     private val imageSendRetry = object : ItemClickCallback {
         override fun onClick(item: MessageItem) {
-
+            mViewModel.retrySendImage(item.getContent(), item.message.id)
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {

@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -20,25 +20,19 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
-import android.widget.ImageView
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
 import com.example.cpu02351_local.firebasechatapp.localdatabase.RoomLocalDatabase
 import com.example.cpu02351_local.firebasechatapp.loginscreen.LogInHelper
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
-import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
-import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import junit.framework.Assert
-import kotlinx.android.synthetic.main.item_conversation_group3_list.*
+import kotlinx.android.synthetic.main.activity_message_list.*
 import java.io.File
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.HashMap
 
 class MessageListActivity :
         MessageView,
@@ -207,6 +201,7 @@ class MessageListActivity :
             askPermission()
         } else {
             val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+
             imageFile = File.createTempFile(
                     messageId,
                     ".jpg",
@@ -214,6 +209,7 @@ class MessageListActivity :
         }
 
         mPhoto = imageFile
+        Log.d("DEBUG_PATH", imageFile?.absolutePath)
         return imageFile
     }
 
@@ -235,7 +231,10 @@ class MessageListActivity :
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-
+    override fun testPath(path: String) {
+        val b = BitmapFactory.decodeFile(path.substring(7))
+        sendImgMess.setImageBitmap(b)
+    }
 }
 
 

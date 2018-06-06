@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.graphics.Bitmap
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import io.reactivex.Completable
@@ -16,4 +17,5 @@ interface MessageLoader {
     fun observeNextMessages(conversationId: String, lastKey: String?, thisUser: String): Observable<AbstractMessage>
 
     fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String, byUsers: List<String>)
+    fun uploadImageBitmap(b: Bitmap, imageMessage: ImageMessage, conversationId: String, byUsers: List<String>) : Completable
 }

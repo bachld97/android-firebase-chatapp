@@ -71,6 +71,7 @@
 
         <ImageView
             android:padding="8dp"
+            android:visibility="@{viewModel.isMessageFailed() ? View.VISIBLE : View.GONE}"
             android:src="@drawable/ic_resend"
             android:layout_marginEnd="8dp"
             android:tint="#FFFFFF"

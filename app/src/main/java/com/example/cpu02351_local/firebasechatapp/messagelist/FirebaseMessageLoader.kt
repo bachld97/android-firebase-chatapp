@@ -1,5 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
@@ -23,6 +24,7 @@ import com.google.firebase.storage.UploadTask
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
+import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.inject.Inject
 
@@ -259,20 +261,46 @@ class FirebaseMessageLoader : MessageLoader {
                 }
     }
 
+    private val imageMaxSize = 1000
+    private fun getCompressedByteArray(b: Bitmap): ByteArray {
+        val w = b.width
+        val h = b.height
+        val ratio = if (w > h) {
+            100 * minOf(w, imageMaxSize) / w
+        } else {
+            100 * minOf(h, imageMaxSize) / h
+        }
+
+        Log.d("DEBUG_RATIO", ratio.toString())
+
+        val stream = ByteArrayOutputStream()
+        b.compress(Bitmap.CompressFormat.JPEG, ratio, stream)
+        return stream.toByteArray()
+    }
+
+    override fun uploadImageBitmap(b: Bitmap, imageMessage: ImageMessage, conversationId: String, byUsers: List<String>) : Completable {
+        return Completable.create {emitter ->
+            val storageRef = FirebaseHelper.getImageMessageReference(imageMessage.id)
+            val byteArray = getCompressedByteArray(b)
+            storageRef.putBytes(byteArray)
+                    .continueWithTask { task ->
+                        if (!task.isSuccessful)
+                            throw Objects.requireNonNull(task.exception)!!
+                        storageRef.downloadUrl
+                    }
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val downloadUri = task.result
+                            updateImageMessage(imageMessage, conversationId, downloadUri.toString(), byUsers)
+                            emitter.onComplete()
+                        }
+                    }
+        }
+    }
+
     private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String, byUsers: List<String>) {
         imageMessage.content = resourceLink
         addMessage(conversationId, imageMessage, byUsers).subscribe {  }
-        /*
-        databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE/${imageMessage.id}")
-                .setValue(fbMess.toMap())
-                .addOnSuccessListener {
-                    databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_MOD")
-                            .setValue(imageMessage.atTime.toString())
-                }
-                .addOnFailureListener {
-                    // Do nothing for now
-                }
-                */
     }
 
 }

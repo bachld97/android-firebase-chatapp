@@ -1,5 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
@@ -10,11 +12,12 @@ import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
-import io.reactivex.CompletableObserver
-import io.reactivex.Observer
-import io.reactivex.SingleObserver
+import io.reactivex.*
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import java.io.File
+import io.reactivex.schedulers.Schedulers
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -196,7 +199,57 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         })
         //mMessageItems.reverse()
         dispatchInfo()
+    }
 
+
+    fun retrySendImage(path: String, messageId: String) {
+        // Get messageId, go look up the file
+        // Take uri, then retry
+        if (path.length <= 7) return
+        val bitmap = BitmapFactory.decodeFile(path.substring(7)) ?: return
+        resizeIfNeeded(bitmap)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId) })
+    }
+
+
+    private val imageMaxSize = 1000
+    private fun resizeIfNeeded(b: Bitmap): Single<Bitmap> {
+        return Single.create {
+            val w = b.width
+            val h = b.height
+
+            val res = if (w > h) {
+                val newW = minOf(imageMaxSize, w)
+                val newH = newW * h / w
+                Bitmap.createScaledBitmap(b, newW,newH, false)
+            } else {
+                val newH = minOf(imageMaxSize, h)
+                val newW = newH * w / h
+                Bitmap.createScaledBitmap(b, newW,newH, false)
+            }
+            it.onSuccess(res)
+        }
+    }
+
+    private fun sendImageMessageWithBitmap(bitmap: Bitmap, messageId: String) {
+        val dimen = Pair(bitmap.width, bitmap.height)
+        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), "")
+        imageMessage.width = dimen.first
+        imageMessage.height = dimen.second
+        imageMessage.isSending = true
+        imageMessage.bitmap = bitmap
+        onMessageAdded(imageMessage)
+        addPendingMessage(imageMessage)
+
+        val participantIds = messageView.getParticipants()
+        val list = participantIds.split(Conversation.ID_DELIM)
+
+        messageLoader.uploadImageBitmap(bitmap, imageMessage, conversationId, list)
+                .subscribeOn(Schedulers.computation()) // IO() ?
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe { /* Do nothing */ }
     }
 
     private fun onLoadMore(data: List<AbstractMessage>) {
@@ -286,30 +339,17 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         if (fromFile == null)
             return
 
-        val dimen = getMetaData(fromFile)
-        val imageMessage = ImageMessage(messageId, System.currentTimeMillis(), messageView.getSender(), fromFile.toString())
-        imageMessage.width = dimen.first
-        imageMessage.height = dimen.second
-        imageMessage.localUri = fromFile
-        imageMessage.isSending = true
-        onMessageAdded(imageMessage)
-        addPendingMessage(imageMessage)
+        val bitmap = BitmapFactory.decodeFile(fromFile.toString().substring(7)) ?: return
 
-        val participantIds = messageView.getParticipants()
-        val list = participantIds.split(Conversation.ID_DELIM)
-        messageLoader.uploadImageAndUpdateDatabase(imageMessage, conversationId, list)
-        // messageView.sendImageMessageWithService(uploader, dimen)
+        resizeIfNeeded(bitmap)
+                .subscribeOn(Schedulers.computation())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId) })
     }
 
     fun resume() {
         observeNextMessage(mObserveFromHere)
     }
 
-    private fun getMetaData(fromFile: Uri): Pair<Int, Int> {
-        val opts = BitmapFactory.Options()
-        opts.inJustDecodeBounds = true
-        BitmapFactory.decodeFile(fromFile.path, opts)
-        return Pair(opts.outWidth, opts.outHeight)
-    }
 }
 

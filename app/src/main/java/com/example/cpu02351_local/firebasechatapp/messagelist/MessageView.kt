@@ -11,4 +11,5 @@ interface MessageView {
     fun updateMessageItem(messages: List<MessageItem>)
     fun getImageToSend(messageId: String)
     fun createImageFile(messageId: String): File?
+    fun testPath(path: String)
 }

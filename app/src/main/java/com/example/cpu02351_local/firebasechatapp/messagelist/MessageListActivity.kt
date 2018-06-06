@@ -115,7 +115,7 @@ class MessageListActivity :
         }
 
         // mAdapter = MessageListAdapter(ArrayList(), mLoggedInUser, mRecyclerView, endlessLoader)
-        mAdapter2 = MessageItemAdapter(this)
+        mAdapter2 = MessageItemAdapter(this, mMessageViewModel)
         mRecyclerView.adapter = mAdapter2
 
         DaggerRoomLocalDatabaseComponent
@@ -136,11 +136,7 @@ class MessageListActivity :
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { res ->
                     val userMap = HashMap<String, User>()
-                    val avaMap = HashMap<String, String>()
-                    val nameMap = HashMap<String, String>()
                     res.forEach {
-                        avaMap[it.id] = it.avaUrl
-                        nameMap[it.id] = it.name
                         userMap[it.id] = it
                     }
                     // mAdapter.updateInfoMaps(avaMap, nameMap)
@@ -200,6 +196,7 @@ class MessageListActivity :
     private var mPhoto: File? = null
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (resultCode == Activity.RESULT_OK && requestCode == captureImageRequest) {
+
              mMessageViewModel.sendImageMessageWithUri(Uri.fromFile(mPhoto), mMessageId)
         } else super.onActivityResult(requestCode, resultCode, data)
     }

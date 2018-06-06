@@ -7,12 +7,13 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.MessageImageMineItemViewModel
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
 
-class MessageImageMineHolder(val binding: ItemImageMessageBinding, private val imageClick: MessageItemAdapter.ItemClickCallback): BaseItemHolder<MessageItem>(binding.root) {
+class MessageImageMineHolder(val binding: ItemImageMessageBinding, private val imageClick: MessageItemAdapter.ItemClickCallback,
+                             private val imageRetrySend: MessageItemAdapter.ItemClickCallback): BaseItemHolder<MessageItem>(binding.root) {
 
     override fun onBindItem(item: MessageItem) {
         val imageItem = ImageMessageItem(item.message, item.shouldDisplaySenderInfo, item.shouldDisplayTime, item.fromThisUser)
         if (binding.viewModel == null) {
-            binding.viewModel = MessageImageMineItemViewModel(imageItem, binding.root, imageClick)
+            binding.viewModel = MessageImageMineItemViewModel(imageItem, binding.root, imageClick, imageRetrySend)
         } else {
             binding.viewModel!!.messageItem = imageItem
             binding.viewModel!!.v = binding.root

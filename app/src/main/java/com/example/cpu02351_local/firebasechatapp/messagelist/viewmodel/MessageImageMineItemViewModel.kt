@@ -8,9 +8,14 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 
 
-class MessageImageMineItemViewModel(messageItem: MessageItem, var v: View, private val imageClick: MessageItemAdapter.ItemClickCallback) : MessageBaseItemViewModel(messageItem) {
+class MessageImageMineItemViewModel(messageItem: MessageItem, var v: View, private val imageClick: MessageItemAdapter.ItemClickCallback,
+                                    private val imageSendRetry: MessageItemAdapter.ItemClickCallback) : MessageBaseItemViewModel(messageItem) {
     fun imageClicked() {
         imageClick.onClick(messageItem)
+    }
+
+    fun retrySend() {
+        imageSendRetry.onClick(messageItem)
     }
 
     fun getAttributeBundle(): Bundle {

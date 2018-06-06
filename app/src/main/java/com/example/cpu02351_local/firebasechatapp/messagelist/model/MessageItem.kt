@@ -1,6 +1,5 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.model
 
-import android.os.Message
 import android.text.format.DateFormat
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.User
@@ -14,6 +13,7 @@ open class MessageItem(val message: AbstractMessage, var shouldDisplaySenderInfo
     var senderAvaUrl : String? = null
     var senderName: String? = null
     var isSending = message.isSending
+    var isFailed = message.isFailed
 
     override fun equalsItem(otherItem: ListItem): Boolean {
         return otherItem is MessageItem && otherItem.message.id == message.id

@@ -26,5 +26,6 @@
     <color name="backgroundTextAuthen">#457A86AA</color>
     <color name="textMessageStatus">#FAFAFA</color>
     <color name="backgroundUselessView">#bae2f9</color>
+    <color name="textMessageFail">#FA1010</color>
 </resources>
 

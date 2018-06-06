@@ -23,7 +23,7 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.Message
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageOtherHolder
 
 
-class MessageItemAdapter(context: Context)
+class MessageItemAdapter(context: Context, private val mViewModel: MessageViewModel)
     : BaseItemAdapter<MessageItem>() {
     private var infoMap: HashMap<String, User> ?= null
 
@@ -90,6 +90,13 @@ class MessageItemAdapter(context: Context)
         }
     }
 
+    private val imageSendRetry = object : ItemClickCallback {
+        override fun onClick(item: MessageItem) {
+
+        }
+
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {
         val layoutInflater = LayoutInflater.from(parent.context)
         lateinit var holder: BaseItemHolder<MessageItem>
@@ -104,7 +111,7 @@ class MessageItemAdapter(context: Context)
             }
             IMAGE_MINE -> {
                 val binding = ItemImageMessageBinding.inflate(layoutInflater, parent, false)
-                MessageImageMineHolder(binding, imageClick)
+                MessageImageMineHolder(binding, imageClick, imageSendRetry)
             }
             IMAGE_OTHER -> {
                 val binding = ItemImageMessageFromOtherBinding.inflate(layoutInflater, parent, false)

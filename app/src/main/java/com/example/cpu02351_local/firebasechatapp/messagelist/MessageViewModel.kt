@@ -1,9 +1,10 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
@@ -14,9 +15,6 @@ import io.reactivex.Observer
 import io.reactivex.SingleObserver
 import io.reactivex.disposables.Disposable
 import java.io.File
-import android.graphics.BitmapFactory
-import android.media.Image
-import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -95,6 +93,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private fun proceedSendMessage(message: AbstractMessage, participantIds: String) {
+        if (message is ImageMessage && message.byUser == messageView.getSender()) {
+            onMessageAdded(message)
+            return
+        }
+
         val list = participantIds.split(Conversation.ID_DELIM)
         val com = messageLoader.addMessage(conversationId, message, list)
         com.subscribe(object : CompletableObserver {
@@ -111,8 +114,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
         })
     }
-
-
     // rework this function
     fun sendNewTextMessage() {
         if (messageText.trim().isEmpty()) {
@@ -179,11 +180,17 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     private var mMessageItems = ArrayList<MessageItem>()
     private fun onFirstLoad(data: List<AbstractMessage>) {
-        data.sortedBy { item -> item.atTime }
+        val failedMessaged = mMessageItems.filter { it.isFailed && it.fromThisUser }
+        val newData = ArrayList<AbstractMessage>()
+        newData.addAll(failedMessaged.map { it.message })
+        newData.addAll(data)
+        newData.filter { it.byUser == messageView.getSender() }
+        newData.sortedBy { item -> item.atTime }
         mMessageItems.clear()
-        mMessageItems.addAll(data.mapIndexed { index, abstractMessage ->
-            val shouldDisplayTime = (index == data.size - 1) ||  (data[index + 1].byUser != abstractMessage.byUser)
-            val shouldDisplaySender = (index == 0) || (data[index - 1].byUser != abstractMessage.byUser)
+
+        mMessageItems.addAll(newData.mapIndexed { index, abstractMessage ->
+            val shouldDisplayTime = (index == newData.size - 1) ||  (newData[index + 1].byUser != abstractMessage.byUser)
+            val shouldDisplaySender = (index == 0) || (newData[index - 1].byUser != abstractMessage.byUser)
             val fromThisUser = abstractMessage.byUser == messageView.getSender()
             abstractMessage.toMessageItem(shouldDisplaySender, shouldDisplayTime, fromThisUser)
         })
@@ -210,7 +217,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         mMessageItems.addAll(tem)
         dispatchInfo()
     }
-
 
     private var firstLoad = true
     private fun onMessageAdded(addedMessage: AbstractMessage) {

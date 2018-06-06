@@ -7,4 +7,5 @@ open class MessageBaseItemViewModel(var messageItem: MessageItem) {
     fun shouldDisplayTime(): Boolean = messageItem.shouldDisplayTime
     fun getDisplayTime(): String = messageItem.displayTime
     fun isMessageSending(): Boolean = messageItem.isSending
+    fun isMessageFailed(): Boolean =  messageItem.isFailed
 }

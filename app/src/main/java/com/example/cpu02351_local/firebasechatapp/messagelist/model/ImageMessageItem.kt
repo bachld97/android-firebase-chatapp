@@ -1,6 +1,5 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.model
 
-import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 

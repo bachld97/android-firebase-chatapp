@@ -358,7 +358,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     fun sendVideoMessageWithPath(filePath: String, messageId: String) {
-        val info = VideoUploadInfo(filePath)
+        val info = VideoUploadInfo(filePath, messageId)
         messageView.startUploadService(info)
     }
 

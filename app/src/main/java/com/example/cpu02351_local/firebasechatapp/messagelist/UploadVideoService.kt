@@ -9,11 +9,13 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
+import com.google.firebase.storage.StorageReference
 import com.iceteck.silicompressorr.SiliCompressor
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.util.*
 
@@ -30,11 +32,11 @@ class UploadVideoService : IntentService("UploadVideoService") {
 
     private val handlerForCompressedVideo = object : CompletableObserver {
         override fun onComplete() {
-            // startUploadingTask()
+            startUploadingTask()
         }
 
         override fun onSubscribe(d: Disposable) {
-            disposable.add(d)
+            // disposable.add(d)
         }
 
         override fun onError(e: Throwable) {
@@ -56,7 +58,7 @@ class UploadVideoService : IntentService("UploadVideoService") {
 
     override fun onHandleIntent(intent: Intent?) {
         val info = intent?.getSerializableExtra(INFO) as VideoUploadInfo
-        mMessageId = "test"
+        mMessageId = info.messageId
         val videoPath = info.filePath
         mVideoPath = videoPath
         val storagePath = Environment.getExternalStorageDirectory().path + "/AwesomeChat/Video/"
@@ -64,32 +66,20 @@ class UploadVideoService : IntentService("UploadVideoService") {
             mVideoPath = SiliCompressor.with(applicationContext).compressVideo(videoPath, storagePath)
             emitter.onComplete()}
                 .subscribeOn(Schedulers.io())
-                // .subscribe()
-                .subscribe(object : CompletableObserver {
-                    override fun onComplete() {
-                        startUploadingTask()
-                    }
-
-                    override fun onSubscribe(d: Disposable) {
-                        // disposable.add(d)
-                    }
-
-                    override fun onError(e: Throwable) {
-                        // Do nothing, service ends itself
-                    }
-
-                })
+                .subscribe(handlerForCompressedVideo)
     }
 
     private lateinit var mMessageId: String
     private val mStorageReference = FirebaseHelper.getVideoMessageReference()
     private fun startUploadingTask() {
-        // val bitmap = generateThumbnail()
-        Log.d("DEBUG_PROGRESS", "Uploading")
+        val bitmap = generateThumbnail()
+        val stream = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        val byteArray = stream.toByteArray()
+        bitmap?.recycle()
 
         val thumbRef = mStorageReference.child("$mMessageId.jpg")
         val vidRef = mStorageReference.child("$mMessageId.mp4")
-
 
         vidRef.putFile(Uri.fromFile(File(mVideoPath)))
                 .continueWithTask { task ->
@@ -101,9 +91,28 @@ class UploadVideoService : IntentService("UploadVideoService") {
                     if (task.isSuccessful) {
                         val downloadUri = task.result
                         Log.d("DEBUG_PROGRESS", "Uploaded: $downloadUri")
+                        uploadBinary(thumbRef, byteArray)
                     }
                 }
     }
+
+    private fun uploadBinary(ref: StorageReference, data: ByteArray) {
+        ref.putBytes(data)
+                .continueWithTask { task ->
+                    if (!task.isSuccessful)
+                        throw Objects.requireNonNull(task.exception)!!
+                    ref.downloadUrl
+                }
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val downloadUri = task.result
+                        Log.d("DEBUG_PROGRESS", "Thumbnail uploaded: $downloadUri")
+                    }
+                }
+
+    }
+
+
 
     private fun generateThumbnail(): Bitmap? {
         var bitmap: Bitmap? = null
@@ -115,7 +124,7 @@ class UploadVideoService : IntentService("UploadVideoService") {
         } catch (e: Exception) {
             e.printStackTrace()
             throw Throwable(
-                    "Exception in retriveVideoFrameFromVideo(String videoPath)" + e.message)
+                    "Exception while getting thumbnail $mVideoPath ${e.message}")
 
         } finally {
             if (mediaMetadataRetriever != null) {

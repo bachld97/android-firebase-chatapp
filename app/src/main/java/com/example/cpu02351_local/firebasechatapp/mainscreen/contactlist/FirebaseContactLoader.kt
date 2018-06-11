@@ -27,9 +27,9 @@ class FirebaseContactLoader : ContactLoader {
         lateinit var listener: ValueEventListener
         val obs = Observable.create<List<User>> { emitter ->
             listener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    val res = snapshot?.children
-                            ?.map { it -> FirebaseUser().toUserFromMap(it.key, it.value) }
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val res = snapshot.children
+                            .map { it -> FirebaseUser().toUserFromMap(it.key!!, it.value) }
                     if (res != null) {
                         emitter.onNext(res)
                     } else {
@@ -37,7 +37,7 @@ class FirebaseContactLoader : ContactLoader {
                     }
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     emitter.onError(Throwable("No contact found"))
                 }
             }

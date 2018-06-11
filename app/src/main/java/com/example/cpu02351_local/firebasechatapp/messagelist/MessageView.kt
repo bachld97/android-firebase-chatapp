@@ -9,7 +9,8 @@ interface MessageView {
     fun getSender(): String
     fun getParticipants(): String
     fun updateMessageItem(messages: List<MessageItem>)
+    fun getVideoToSend(messageId: String)
     fun getImageToSend(messageId: String)
     fun createImageFile(messageId: String): File?
-    fun testPath(path: String)
+    fun startUploadService(info: VideoUploadInfo)
 }

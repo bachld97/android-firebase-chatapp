@@ -1,7 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Bitmap
-import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseConversation
@@ -17,10 +16,7 @@ import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.LAST_READ
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.MESSAGE
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.USERS
-import com.google.android.gms.tasks.Continuation
-import com.google.android.gms.tasks.Task
 import com.google.firebase.database.*
-import com.google.firebase.storage.UploadTask
 import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -44,17 +40,16 @@ class FirebaseMessageLoader : MessageLoader {
         lateinit var listener : ValueEventListener
         val s = Single.create<List<AbstractMessage>> { emitter ->
             listener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    val res = snapshot?.children
-                            ?.map { FirebaseMessage().toMessageFromMap(it.key, it.value) }
-                    if (res == null || res.isEmpty()) {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val res = snapshot.children.map { FirebaseMessage().toMessageFromMap(it.key!!, it.value) }
+                    if (res.isEmpty()) {
                         emitter.onError(Throwable("No message yet"))
                     } else {
                         emitter.onSuccess(res)
                     }
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     // Do nothing
                 }
 
@@ -77,29 +72,28 @@ class FirebaseMessageLoader : MessageLoader {
         val obs = Observable.create<AbstractMessage> { emitter ->
             // Subsequent loads
             listener = object : ChildEventListener {
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     // Do nothing here?
                 }
 
-                override fun onChildMoved(p0: DataSnapshot?, p1: String?) {
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
                     // Do nothing here
                 }
 
-                override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                     // Do nothing here
                 }
 
-                override fun onChildRemoved(p0: DataSnapshot?) {
+                override fun onChildRemoved(p0: DataSnapshot) {
                     // Do nothing here
                 }
 
-                override fun onChildAdded(snapshot: DataSnapshot?, previousChildName: String?) {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     val message = FirebaseMessage()
-                    message.fromMap(snapshot?.key as String, snapshot.value)
+                    message.fromMap(snapshot.key as String, snapshot.value)
                     emitter.onNext(message.toMessage())
 
                     // Update LastRead map for this user as well
-
                     databaseRef.child("$CONVERSATIONS/$conversationId/$LAST_READ/$thisUser")
                             .setValue(snapshot.key)
                 }
@@ -120,17 +114,17 @@ class FirebaseMessageLoader : MessageLoader {
         lateinit var listener: ValueEventListener
         val single = Single.create<List<AbstractMessage>> { emitter ->
             listener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    val res = snapshot?.children
-                            ?.filter { it.key != lastKey }
-                            ?.map { FirebaseMessage().toMessageFromMap(it.key, it.value) }
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val res = snapshot.children
+                            .filter { it.key != lastKey }
+                            .map { FirebaseMessage().toMessageFromMap(it.key!!, it.value) }
 
-                    if (res != null && res.isNotEmpty()) {
+                    if (res.isNotEmpty()) {
                         emitter.onSuccess(res)
                     }
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     emitter.onError(Throwable("Cannot load more message"))
                 }
             }
@@ -148,25 +142,25 @@ class FirebaseMessageLoader : MessageLoader {
         val obs = Observable.create<AbstractMessage> { emitter ->
             // Subsequent loads
             listener = object : ChildEventListener {
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     // Do nothing here?
                 }
 
-                override fun onChildMoved(p0: DataSnapshot?, p1: String?) {
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {
                     // Do nothing here
                 }
 
-                override fun onChildChanged(p0: DataSnapshot?, p1: String?) {
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {
                     // Do nothing here
                 }
 
-                override fun onChildRemoved(p0: DataSnapshot?) {
+                override fun onChildRemoved(p0: DataSnapshot) {
                     // Do nothing here
                 }
 
-                override fun onChildAdded(snapshot: DataSnapshot?, previousChildName: String?) {
+                override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
                     val message = FirebaseMessage()
-                    message.fromMap(snapshot?.key as String, snapshot.value)
+                    message.fromMap(snapshot.key as String, snapshot.value)
                     emitter.onNext(message.toMessage())
                 }
             }
@@ -177,15 +171,15 @@ class FirebaseMessageLoader : MessageLoader {
     }
 
     override fun getNewMessageId(conversationId: String): String {
-        return databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE").push().key
+        return databaseRef.child("$CONVERSATIONS/$conversationId/$MESSAGE").push().key!!
     }
 
     override fun addMessage(conversationId: String, message: AbstractMessage, byUsers: List<String>): Completable {
         return Completable.create { emitter ->
             val conversationRef = databaseRef.child(CONVERSATIONS)
             conversationRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    if (snapshot?.children?.map { it -> it.key }?.contains(conversationId) != true) {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (!snapshot.children.map { it -> it.key }.contains(conversationId)) {
                         addConversation(conversationId, byUsers, message.atTime.toString())
                     }
 
@@ -201,7 +195,7 @@ class FirebaseMessageLoader : MessageLoader {
                             }
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     emitter.onError(Throwable("Cannot send message"))
                 }
             })
@@ -226,9 +220,9 @@ class FirebaseMessageLoader : MessageLoader {
         byUsers.forEach { userId ->
             databaseRef.child("$USERS/$userId")
                     .runTransaction(object : Transaction.Handler {
-                        override fun doTransaction(mutableData: MutableData?): Transaction.Result {
+                        override fun doTransaction(mutableData: MutableData): Transaction.Result {
                             val u = FirebaseUser()
-                            u.fromMap(conversationId, mutableData?.value)
+                            u.fromMap(conversationId, mutableData.value)
                             val temp = ArrayList<String>()
                             temp.addAll(u.conversationIds.split(DELIM))
                             temp.remove(conversationId)

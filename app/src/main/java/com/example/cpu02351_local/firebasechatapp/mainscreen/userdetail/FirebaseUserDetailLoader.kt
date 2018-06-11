@@ -33,13 +33,13 @@ class FirebaseUserDetailLoader : UserDetailLoader {
         lateinit var listener: ValueEventListener
         val obs = Single.create<User> { emitter ->
             listener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
+                override fun onDataChange(snapshot: DataSnapshot) {
                     val con = FirebaseUser()
-                    con.fromMap(userId, snapshot?.value)
+                    con.fromMap(userId, snapshot.value)
                     emitter.onSuccess(con.toUser())
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     emitter.onError(Throwable("Cannot fetch user information"))
                 }
             }

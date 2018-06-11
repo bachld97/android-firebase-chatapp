@@ -1,13 +1,18 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
+import android.media.ThumbnailUtils
 import android.net.Uri
+import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -69,6 +74,10 @@ class MessageListActivity :
         mBinding.invalidateAll()
     }
 
+    override fun startUploadService(info: VideoUploadInfo) {
+        val service = UploadVideoService.newInstance(this, info)
+        startService(service)
+    }
 
     private lateinit var mBinding: ActivityMessageListBinding
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -165,9 +174,21 @@ class MessageListActivity :
     }
 
     private lateinit var mMessageId: String
+
     override fun getImageToSend(messageId: String) {
         mMessageId = messageId
         startImagePickerActivity()
+    }
+
+    override fun getVideoToSend(messageId: String) {
+        mMessageId = messageId
+        startVideoPickerActivity()
+    }
+
+    private val pickVideoRequest = 1212
+    private fun startVideoPickerActivity() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, pickVideoRequest)
     }
 
     private val captureImageRequest = 1111
@@ -189,11 +210,33 @@ class MessageListActivity :
 
     private var mPhoto: File? = null
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == Activity.RESULT_OK && requestCode == captureImageRequest) {
-
-             mMessageViewModel.sendImageMessageWithUri(Uri.fromFile(mPhoto), mMessageId)
-        } else super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK)
+            return super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            captureImageRequest -> {
+                mMessageViewModel.sendImageMessageWithUri(Uri.fromFile(mPhoto), mMessageId)
+            }
+            pickVideoRequest -> {
+                val uri = data?.data ?: return
+                val path = getPathFromUri(uri) ?: return
+                mMessageViewModel.sendVideoMessageWithPath(path, mMessageId)
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
     }
+
+    private fun getPathFromUri(uri: Uri) : String? {
+        var path: String? = null
+        val proj = arrayOf(MediaStore.MediaColumns.DATA)
+        val cursor = contentResolver.query(uri, proj, null, null, null)
+        if (cursor!!.moveToFirst()) {
+            val column_index = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)
+            path = cursor.getString(column_index)
+        }
+        cursor.close()
+        return path
+    }
+
 
     override fun createImageFile(messageId: String): File? {
         var imageFile: File? = null
@@ -229,11 +272,6 @@ class MessageListActivity :
                 startImagePickerActivity()
             }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun testPath(path: String) {
-        val b = BitmapFactory.decodeFile(path.substring(7))
-        sendImgMess.setImageBitmap(b)
     }
 }
 

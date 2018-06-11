@@ -53,7 +53,7 @@ class FirebaseConversation : FirebaseObject() {
     fun parseLastMess(last: DataSnapshot?): FirebaseConversation? {
         if (last == null) return null
         val mess = FirebaseMessage()
-        mess.fromMap(last.key, last.value)
+        mess.fromMap(last.key!!, last.value)
         this.lastMessage = mess
         return this
     }

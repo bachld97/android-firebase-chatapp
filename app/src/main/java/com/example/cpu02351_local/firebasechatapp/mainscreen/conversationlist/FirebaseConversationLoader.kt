@@ -25,13 +25,13 @@ class FirebaseConversationLoader : ConversationLoader {
         lateinit var listener: ValueEventListener
         val obs = Observable.create<List<Conversation>> { emitter ->
             listener = object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot?) {
-                    val res = snapshot?.children
-                            ?.mapNotNull { it ->
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val res = snapshot.children
+                            .mapNotNull { it ->
                                 FirebaseConversation().parseLastMess(snapshot.child("${it.key}/$MESSAGE").children.lastOrNull())
-                                                ?.toConversationFromMap(it.key, it.value, userId)
+                                        ?.toConversationFromMap(it.key!!, it.value, userId)
                             }
-                            ?.filter { it.participantIds.contains(userId) }
+                            .filter { it.participantIds.contains(userId) }
 
                     if (res != null) {
                         emitter.onNext(res.sortedByDescending { it.createdTime })
@@ -40,7 +40,7 @@ class FirebaseConversationLoader : ConversationLoader {
                     }
                 }
 
-                override fun onCancelled(p0: DatabaseError?) {
+                override fun onCancelled(p0: DatabaseError) {
                     emitter.onError(Throwable("Cannot load conversations"))
                 }
             }

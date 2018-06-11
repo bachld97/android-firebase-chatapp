@@ -45,12 +45,21 @@
 
                 <ImageView
                     android:onClick="@{() -> viewModel.initSendImage()}"
-                    
                     android:layout_marginStart="4dp"
                     android:padding="4dp"
                     android:layout_weight="0"
                     android:id="@+id/sendImgMess"
                     android:src="@drawable/ic_send_img"
+                    android:layout_width="@dimen/buttonSendMessage"
+                    android:layout_height="@dimen/buttonSendMessage" />
+
+                <ImageView
+                    android:onClick="@{() -> viewModel.initSendVideo()}"
+                    android:layout_marginStart="4dp"
+                    android:padding="4dp"
+                    android:layout_weight="0"
+                    android:id="@+id/sendVidMess"
+                    android:src="@drawable/ic_send_video"
                     android:layout_width="@dimen/buttonSendMessage"
                     android:layout_height="@dimen/buttonSendMessage" />
 

@@ -3,6 +3,7 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
@@ -18,6 +19,10 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import android.provider.MediaStore
+import android.media.ThumbnailUtils
+
+
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -135,6 +140,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     fun initSendImage() {
         val messageId = messageLoader.getNewMessageId(conversationId)
         messageView.getImageToSend(messageId)
+    }
+
+    fun initSendVideo() {
+        val messageId = messageLoader.getNewMessageId(conversationId)
+        messageView.getVideoToSend(messageId)
     }
 
     private fun updatePendingMessageState(message: AbstractMessage) {
@@ -345,6 +355,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId, fromFile) })
+    }
+
+    fun sendVideoMessageWithPath(filePath: String, messageId: String) {
+        val info = VideoUploadInfo(filePath)
+        messageView.startUploadService(info)
     }
 
     fun resume() {

@@ -41,8 +41,8 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
     fun firebaseSignUp(emitter: SingleEmitter<String>, reference: DatabaseReference,
                        username: String, password: String) : ValueEventListener {
         val listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot?) {
-                if (snapshot!!.hasChild(username)) {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.hasChild(username)) {
                     emitter.onError(Throwable("Username already exist"))
                     return
                 }
@@ -51,7 +51,7 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
                 snapshot.ref.child(username).setValue(u.toMap())
             }
 
-            override fun onCancelled(error: DatabaseError?) {
+            override fun onCancelled(error: DatabaseError) {
                 emitter.onError(Throwable("Network error, please try again later"))
             }
         }
@@ -61,14 +61,14 @@ class FirebaseChatAuthenticator : ChatAuthenticator() {
 
     fun firebaseSignIn(emitter: SingleEmitter<String>, username: String, password: String) {
         val listener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot?) {
-                if (snapshot?.value != null && snapshot.child(PASSWORD).value == password) {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.value != null && snapshot.child(PASSWORD).value == password) {
                         emitter.onSuccess(username)
                 } else
                     emitter.onError(Throwable("Invalid log in information"))
             }
 
-            override fun onCancelled(p0: DatabaseError?) {
+            override fun onCancelled(p0: DatabaseError) {
                 emitter.onError(Throwable("Network error, please try again later"))
             }
         }

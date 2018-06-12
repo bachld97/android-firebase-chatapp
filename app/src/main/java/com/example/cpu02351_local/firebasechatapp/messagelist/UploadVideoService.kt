@@ -62,9 +62,9 @@ class UploadVideoService : IntentService("UploadVideoService") {
         val videoPath = info.filePath
         mVideoPath = videoPath
         val storagePath = Environment.getExternalStorageDirectory().path + "/AwesomeChat/Video/"
-        Completable.create { emitter ->
-            mVideoPath = SiliCompressor.with(applicationContext).compressVideo(videoPath, storagePath)
-            emitter.onComplete()}
+        Completable.fromCallable {
+            apply { mVideoPath = SiliCompressor.with(applicationContext).compressVideo(videoPath, storagePath)
+            }}
                 .subscribeOn(Schedulers.io())
                 .subscribe(handlerForCompressedVideo)
     }

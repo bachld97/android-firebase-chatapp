@@ -12,7 +12,7 @@ import android.view.Display
 
 
 
-class RoundedImageView @JvmOverloads constructor(
+open class RoundedImageView @JvmOverloads constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : ImageView(context, attrs, defStyleAttr) {
     init {

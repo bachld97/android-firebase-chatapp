@@ -6,6 +6,7 @@ import android.arch.persistence.room.PrimaryKey
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
 
 
 @Entity(tableName = "Message")
@@ -39,8 +40,20 @@ data class RoomMessage(@PrimaryKey var id: String,
                     isSending = false
                     isFailed = true
                 }
-
                 ImageMessage(w, h)
+            }
+            "video" -> {
+                val additionalInfos = additionalContent.split("@")
+                val w = additionalInfos[0].toInt()
+                val h = additionalInfos[1].toInt()
+                val thumb = additionalInfos[2]
+
+                if (isSending) {
+                    isSending = false
+                    isFailed = true
+                }
+
+                VideoMessage(w, h, thumb)
             }
             else -> throw RuntimeException("Unexpected message type")
         }
@@ -74,6 +87,12 @@ data class RoomMessage(@PrimaryKey var id: String,
                     }
                     return RoomMessage(id, conversationId, byUser, atTime, content, isSending
                             , "image", "${mess.width}@${mess.height}")
+                }
+                is VideoMessage -> {
+                    val additionalContent = "${mess.width}@${mess.height}@${mess.thumbnailLink}"
+                    return RoomMessage(
+                            id, conversationId, byUser, atTime, content,
+                            isSending, "video", additionalContent)
                 }
                 else -> throw RuntimeException("Unexpected message type")
             }

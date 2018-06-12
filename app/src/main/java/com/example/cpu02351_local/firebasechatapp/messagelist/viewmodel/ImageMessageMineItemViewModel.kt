@@ -1,18 +1,14 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel
 
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.view.View
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageItemAdapter
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
-import java.io.ByteArrayOutputStream
 
 
-class MessageImageMineItemViewModel(messageItem: MessageItem, var v: View, private val imageClick: MessageItemAdapter.ItemClickCallback,
+class ImageMessageMineItemViewModel(messageItem: MessageItem, var v: View, private val imageClick: MessageItemAdapter.ItemClickCallback,
                                     private val imageSendRetry: MessageItemAdapter.ItemClickCallback) : MessageBaseItemViewModel(messageItem) {
 
 

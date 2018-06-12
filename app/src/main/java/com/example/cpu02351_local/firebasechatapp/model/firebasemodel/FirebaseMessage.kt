@@ -3,6 +3,7 @@ package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 
 class FirebaseMessage : FirebaseObject() {
@@ -53,7 +54,14 @@ class FirebaseMessage : FirebaseObject() {
                 tem.height = additionalContent!!["height"]!!.toInt()
                 return tem
             }
-            else -> throw IllegalStateException()
+            "video" -> {
+                val tem = VideoMessage(id, atTime, byUser, content)
+                tem.width = additionalContent!!["width"]!!.toInt()
+                tem.height = additionalContent!!["height"]!!.toInt()
+                tem.thumbnailLink = additionalContent!!["thumbnail"]!!
+                return tem
+            }
+            else -> throw RuntimeException("Message type is not supported")
         }
     }
 

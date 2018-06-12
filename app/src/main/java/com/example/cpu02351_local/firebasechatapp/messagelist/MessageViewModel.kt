@@ -21,8 +21,9 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import android.provider.MediaStore
 import android.media.ThumbnailUtils
-
-
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
+import com.example.cpu02351_local.firebasechatapp.model.Conversation.Companion.ID_DELIM
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
@@ -108,6 +109,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
         val list = participantIds.split(Conversation.ID_DELIM)
         val com = messageLoader.addMessage(conversationId, message, list)
+        com.subscribe()
+        /*
         com.subscribe(object : CompletableObserver {
             override fun onComplete() {
                 // messageView.onNewMessage(message)
@@ -120,9 +123,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             override fun onError(e: Throwable) {
                 messageView.onError()
             }
-        })
+        }) */
     }
-    // rework this function
+
     fun sendNewTextMessage() {
         if (messageText.trim().isEmpty()) {
             return
@@ -341,6 +344,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 MessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
             is ImageMessage ->
                 ImageMessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
+            is VideoMessage ->
+                VideoMessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
             else -> throw RuntimeException("Unsupported type")
         }
     }
@@ -358,7 +363,10 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     fun sendVideoMessageWithPath(filePath: String, messageId: String) {
-        val info = VideoUploadInfo(filePath, messageId)
+        val info = VideoUploadInfo(filePath, messageId, messageView.getSender(), conversationId)
+        info.byUsers = messageView.getParticipants()
+                .split(ID_DELIM).toMutableList()
+        // Add pending message
         messageView.startUploadService(info)
     }
 

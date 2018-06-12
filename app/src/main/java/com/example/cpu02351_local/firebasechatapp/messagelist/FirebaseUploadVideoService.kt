@@ -3,7 +3,7 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 import com.google.firebase.storage.StorageReference
 import java.io.File
@@ -20,7 +20,9 @@ class FirebaseUploadVideoService : UploadVideoService() {
     }
 
     private val mStorageReference = FirebaseHelper.getVideoMessageReference()
-    override fun upload(byteArray: ByteArray, videoPath: String, messageId: String) {
+
+    override fun upload(byteArray: ByteArray, videoPath: String, info: VideoUploadInfo) {
+        val messageId = info.messageId
         val thumbRef = mStorageReference.child("$messageId.jpg")
         val vidRef = mStorageReference.child("$messageId.mp4")
 
@@ -32,14 +34,13 @@ class FirebaseUploadVideoService : UploadVideoService() {
                 }
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        val downloadUri = task.result
-                        Log.d("DEBUG_PROGRESS", "Uploaded: $downloadUri")
-                        uploadBinary(thumbRef, byteArray)
+                        info.videoLink = task.result.toString()
+                        uploadBinary(thumbRef, byteArray, info)
                     }
                 }
     }
 
-    private fun uploadBinary(ref: StorageReference, data: ByteArray) {
+    private fun uploadBinary(ref: StorageReference, data: ByteArray, info: VideoUploadInfo) {
         ref.putBytes(data)
                 .continueWithTask { task ->
                     if (!task.isSuccessful)
@@ -48,9 +49,19 @@ class FirebaseUploadVideoService : UploadVideoService() {
                 }
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        val downloadUri = task.result
-                        Log.d("DEBUG_PROGRESS", "Thumbnail uploaded: $downloadUri")
+                        info.thumbnailLink = task.result.toString()
+                        updateFirebaseDatabase(info)
                     }
                 }
     }
+
+    private fun updateFirebaseDatabase(info: VideoUploadInfo) {
+        val mess = VideoMessage(info.messageId, System.currentTimeMillis(), info.senderId, info.videoLink)
+        mess.setMetadata(info.videoWidth, info.videoHeight)
+        mess.thumbnailLink = info.thumbnailLink
+
+        val firebaseMessLoader = FirebaseMessageLoader()
+        firebaseMessLoader.uploadVideoMessage(mess, info.conversationId, info.byUsers)
+    }
+
 }

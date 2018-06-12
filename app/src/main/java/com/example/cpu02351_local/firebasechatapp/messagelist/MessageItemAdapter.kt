@@ -4,11 +4,7 @@ import android.content.Context
 import android.support.v7.util.DiffUtil
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageBinding
-import com.example.cpu02351_local.firebasechatapp.databinding.ItemTextMessageFromOtherBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageTextMineHolder
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageTextOtherHolder
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemAdapter
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
@@ -18,11 +14,9 @@ import android.content.ClipboardManager
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import com.example.cpu02351_local.firebasechatapp.databinding.*
 import com.example.cpu02351_local.firebasechatapp.imagepreviewscreen.ImagePreviewActivity
-import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageBinding
-import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageFromOtherBinding
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageMineHolder
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.MessageImageOtherHolder
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.*
 import java.io.File
 
 
@@ -35,6 +29,8 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
         const val TEXT_OTHER = 1
         const val IMAGE_MINE = 2
         const val IMAGE_OTHER = 3
+        const val VIDEO_MINE = 4
+        const val VIDEO_OTHER = 5
     }
 
     fun updateUserInfo(info: HashMap<String, User> ) {
@@ -62,6 +58,8 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
             "text_other" -> TEXT_OTHER
             "image_other" -> IMAGE_OTHER
             "image_mine" -> IMAGE_MINE
+            "video_mine" -> VIDEO_MINE
+            "video_other" -> VIDEO_OTHER
             else -> throw IllegalStateException("ListItems cannot be null at " +
                     "this time or unsupported messageType found [application is outdated]")
         }
@@ -99,6 +97,19 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
         }
     }
 
+    private val videoClick = object : ItemClickCallback {
+        override fun onClick(item: MessageItem) {
+            // Do nothing for now
+        }
+    }
+
+    private val videoRetryClick = object : ItemClickCallback {
+        override fun onClick(item: MessageItem) {
+            // Do nothing for now
+        }
+
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {
         val layoutInflater = LayoutInflater.from(parent.context)
         lateinit var holder: BaseItemHolder<MessageItem>
@@ -118,6 +129,14 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
             IMAGE_OTHER -> {
                 val binding = ItemImageMessageFromOtherBinding.inflate(layoutInflater, parent, false)
                 MessageImageOtherHolder(binding, imageClick)
+            }
+            VIDEO_MINE -> {
+                val binding = ItemVideoMessageBinding.inflate(layoutInflater, parent, false)
+                MessageVideoMineHolder(binding, videoClick, videoRetryClick)
+            }
+            VIDEO_OTHER -> {
+                val binding = ItemVideoMessageFromOtherBinding.inflate(layoutInflater, parent, false)
+                MessageVideoOtherHolder(binding, videoClick)
             }
             else -> throw RuntimeException("Unsupported viewType")
         }

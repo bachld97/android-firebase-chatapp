@@ -1,14 +1,12 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist.viewholder
 
-import android.graphics.Bitmap
-import android.util.Log
 import android.widget.ImageView
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ItemImageMessageBinding
 import com.example.cpu02351_local.firebasechatapp.messagelist.MessageItemAdapter
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
-import com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.MessageImageMineItemViewModel
+import com.example.cpu02351_local.firebasechatapp.messagelist.viewmodel.ImageMessageMineItemViewModel
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
 
@@ -19,7 +17,7 @@ class MessageImageMineHolder(val binding: ItemImageMessageBinding, private val i
         val imageItem = ImageMessageItem(item.message, item.shouldDisplaySenderInfo, item.shouldDisplayTime, item.fromThisUser)
 
         if (binding.viewModel == null) {
-            binding.viewModel = MessageImageMineItemViewModel(imageItem, binding.root, imageClick, imageRetrySend)
+            binding.viewModel = ImageMessageMineItemViewModel(imageItem, binding.root, imageClick, imageRetrySend)
         } else {
             binding.viewModel!!.messageItem = imageItem
             binding.viewModel!!.v = binding.root

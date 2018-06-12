@@ -7,6 +7,7 @@ import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseCo
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
 import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
 import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper.Companion.BY_USERS
@@ -297,7 +298,12 @@ class FirebaseMessageLoader : MessageLoader {
         temImage.width = imageMessage.width
         temImage.height = imageMessage.height
         // imageMessage.content = resourceLink
-        addMessage(conversationId, temImage, byUsers).subscribe {  }
+        addMessage(conversationId, temImage, byUsers).subscribe()
+    }
+
+
+    fun uploadVideoMessage(videoMessage: VideoMessage, conversationId: String, byUsers: List<String>) {
+        addMessage(conversationId, videoMessage, byUsers).subscribe()
     }
 
 }

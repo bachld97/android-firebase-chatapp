@@ -1,7 +1,6 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.app.IntentService
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
@@ -12,6 +11,7 @@ import io.reactivex.CompletableObserver
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 abstract class UploadVideoService : IntentService("UploadVideoService") {
 
@@ -31,24 +31,22 @@ abstract class UploadVideoService : IntentService("UploadVideoService") {
         override fun onError(e: Throwable) {
             // Do nothing, service ends itself
         }
-
     }
     private lateinit var mVideoPath: String
-    private val disposable = mutableListOf<Disposable>()
-    override fun onDestroy() {
-        disposable.forEach {
-            if (!it.isDisposed)
-                it.dispose()
-        }
-        super.onDestroy()
-    }
+    private lateinit var mInfo: VideoUploadInfo
 
     override fun onHandleIntent(intent: Intent?) {
         val info = intent?.getSerializableExtra(INFO) as VideoUploadInfo
+        mInfo = info
         mMessageId = info.messageId
         val videoPath = info.filePath
         mVideoPath = videoPath
-        val storagePath = Environment.getExternalStorageDirectory().path + "/AwesomeChat/Video/"
+        val storagePath = Environment.getExternalStorageDirectory().path + "/AwesomeChat/Video2/"
+        val file = File(storagePath)
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+
         Completable.fromCallable {
             apply { mVideoPath = SiliCompressor.with(applicationContext).compressVideo(videoPath, storagePath)
             }}
@@ -65,10 +63,13 @@ abstract class UploadVideoService : IntentService("UploadVideoService") {
         val byteArray = stream.toByteArray()
         bitmap?.recycle()
 
-
-        upload(byteArray, mVideoPath, mMessageId)
+        // Save metadata
+        mInfo.videoWidth = bitmap!!.height
+        mInfo.videoHeight = bitmap.width
+        upload(byteArray, mVideoPath, mInfo)
     }
-    abstract fun upload(byteArray: ByteArray, videoPath: String, messageId: String)
+
+    abstract fun upload(byteArray: ByteArray, videoPath: String, info: VideoUploadInfo)
     private fun generateThumbnail(): Bitmap? {
         var bitmap: Bitmap? = null
         var mediaMetadataRetriever: MediaMetadataRetriever? = null

@@ -19,4 +19,6 @@
     <dimen name="marginMessageEndRight">16dp</dimen>
     <dimen name="marginMessageStartRight">62dp</dimen>
     <dimen name="marginImageMessageStartRight">128dp</dimen>
+    <dimen name="videoIcon">32dp</dimen>
+    <dimen name="videoIconPadding">8dp</dimen>
 </resources>

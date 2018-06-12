@@ -5,29 +5,18 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.Environment
-import android.util.Log
-import com.example.cpu02351_local.firebasechatapp.utils.FirebaseHelper
-import com.google.firebase.storage.StorageReference
 import com.iceteck.silicompressorr.SiliCompressor
 import io.reactivex.Completable
 import io.reactivex.CompletableObserver
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.util.*
 
-class UploadVideoService : IntentService("UploadVideoService") {
+abstract class UploadVideoService : IntentService("UploadVideoService") {
 
     companion object {
         const val INFO = "upload_info"
-        fun newInstance(context: Context, info: VideoUploadInfo): Intent {
-            val intent = Intent(context, UploadVideoService::class.java)
-            intent.putExtra(INFO, info)
-            return intent
-        }
     }
 
     private val handlerForCompressedVideo = object : CompletableObserver {
@@ -44,8 +33,6 @@ class UploadVideoService : IntentService("UploadVideoService") {
         }
 
     }
-
-
     private lateinit var mVideoPath: String
     private val disposable = mutableListOf<Disposable>()
     override fun onDestroy() {
@@ -70,7 +57,7 @@ class UploadVideoService : IntentService("UploadVideoService") {
     }
 
     private lateinit var mMessageId: String
-    private val mStorageReference = FirebaseHelper.getVideoMessageReference()
+
     private fun startUploadingTask() {
         val bitmap = generateThumbnail()
         val stream = ByteArrayOutputStream()
@@ -78,42 +65,10 @@ class UploadVideoService : IntentService("UploadVideoService") {
         val byteArray = stream.toByteArray()
         bitmap?.recycle()
 
-        val thumbRef = mStorageReference.child("$mMessageId.jpg")
-        val vidRef = mStorageReference.child("$mMessageId.mp4")
 
-        vidRef.putFile(Uri.fromFile(File(mVideoPath)))
-                .continueWithTask { task ->
-                    if (!task.isSuccessful)
-                        throw Objects.requireNonNull(task.exception)!!
-                    vidRef.downloadUrl
-                }
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val downloadUri = task.result
-                        Log.d("DEBUG_PROGRESS", "Uploaded: $downloadUri")
-                        uploadBinary(thumbRef, byteArray)
-                    }
-                }
+        upload(byteArray, mVideoPath, mMessageId)
     }
-
-    private fun uploadBinary(ref: StorageReference, data: ByteArray) {
-        ref.putBytes(data)
-                .continueWithTask { task ->
-                    if (!task.isSuccessful)
-                        throw Objects.requireNonNull(task.exception)!!
-                    ref.downloadUrl
-                }
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val downloadUri = task.result
-                        Log.d("DEBUG_PROGRESS", "Thumbnail uploaded: $downloadUri")
-                    }
-                }
-
-    }
-
-
-
+    abstract fun upload(byteArray: ByteArray, videoPath: String, messageId: String)
     private fun generateThumbnail(): Bitmap? {
         var bitmap: Bitmap? = null
         var mediaMetadataRetriever: MediaMetadataRetriever? = null

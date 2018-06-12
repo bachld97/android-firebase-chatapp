@@ -48,8 +48,7 @@
 
         <service
             android:enabled="true"
-            android:name=".messagelist.UploadVideoService"/>
-
+            android:name=".messagelist.FirebaseUploadVideoService"/>
 
     </application>
 

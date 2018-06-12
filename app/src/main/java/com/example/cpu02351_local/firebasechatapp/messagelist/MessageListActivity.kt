@@ -75,7 +75,7 @@ class MessageListActivity :
     }
 
     override fun startUploadService(info: VideoUploadInfo) {
-        val service = UploadVideoService.newInstance(this, info)
+        val service = FirebaseUploadVideoService.newInstance(this, info)
         startService(service)
     }
 

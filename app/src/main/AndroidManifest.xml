@@ -13,12 +13,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity
             android:name=".mainscreen.MainActivity"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".messagelist.MessageListActivity"
             android:screenOrientation="portrait" />
+
         <activity
             android:name=".loginscreen.AuthenticationActivity"
             android:screenOrientation="portrait"
@@ -29,11 +32,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity android:name=".changeinfoscreen.ChangeInfoActivity" />
-        <activity android:name=".imagepreviewscreen.ImagePreviewActivity"
+
+        <activity
+            android:name=".previewscreen.ImagePreviewActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.Transparent"
-            />
+            android:theme="@style/Theme.Transparent" />
+
+        <activity android:name=".previewscreen.VideoPreviewActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Transparent" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -45,10 +54,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-
         <service
-            android:enabled="true"
-            android:name=".messagelist.FirebaseUploadVideoService"/>
+            android:name=".messagelist.FirebaseUploadVideoService"
+            android:enabled="true" />
+
 
     </application>
 

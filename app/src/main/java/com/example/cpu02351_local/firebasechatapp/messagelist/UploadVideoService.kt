@@ -64,8 +64,8 @@ abstract class UploadVideoService : IntentService("UploadVideoService") {
         bitmap?.recycle()
 
         // Save metadata
-        mInfo.videoWidth = bitmap!!.height
-        mInfo.videoHeight = bitmap.width
+        mInfo.videoWidth = bitmap!!.width
+        mInfo.videoHeight = bitmap.height
         upload(byteArray, mVideoPath, mInfo)
     }
 

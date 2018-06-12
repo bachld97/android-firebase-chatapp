@@ -1,4 +1,4 @@
-package com.example.cpu02351_local.firebasechatapp.imagepreviewscreen
+package com.example.cpu02351_local.firebasechatapp.previewscreen
 
 import android.content.Context
 import android.content.Intent

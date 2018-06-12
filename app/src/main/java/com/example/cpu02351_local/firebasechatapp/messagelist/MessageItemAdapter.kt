@@ -11,13 +11,13 @@ import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 import android.content.ClipData
 import android.content.ClipboardManager
-import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.databinding.*
-import com.example.cpu02351_local.firebasechatapp.imagepreviewscreen.ImagePreviewActivity
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
+import com.example.cpu02351_local.firebasechatapp.previewscreen.ImagePreviewActivity
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.*
-import java.io.File
+import com.example.cpu02351_local.firebasechatapp.previewscreen.VideoPreviewActivity
 
 
 class MessageItemAdapter(context: Context, private val mViewModel: MessageViewModel)
@@ -99,7 +99,9 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
 
     private val videoClick = object : ItemClickCallback {
         override fun onClick(item: MessageItem) {
-            // Do nothing for now
+            val videoItem = item as VideoMessageItem
+            val intent = VideoPreviewActivity.videoPreviewIntent(context, videoItem.thumbnailUrl, videoItem.videoUrl)
+            context.startActivity(intent)
         }
     }
 

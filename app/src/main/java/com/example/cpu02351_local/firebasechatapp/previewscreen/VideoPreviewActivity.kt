@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.devbrackets.android.exomedia.ExoMedia
+import com.devbrackets.android.exomedia.core.exoplayer.ExoMediaPlayer
 import com.devbrackets.android.exomedia.listener.OnPreparedListener
 import com.devbrackets.android.exomedia.ui.widget.VideoView
 import com.example.cpu02351_local.firebasechatapp.R
@@ -27,11 +28,13 @@ class VideoPreviewActivity : AppCompatActivity(), OnPreparedListener {
     }
 
     private lateinit var mVideoUrl: String
+    private lateinit var mThumbnail: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video_preview)
         mVideoUrl = intent.getStringExtra(VIDEO_URL)
+        mThumbnail = intent.getStringExtra(THUMBNAIL_URL)
         videoView = findViewById(R.id.videoView)
     }
 
@@ -39,7 +42,8 @@ class VideoPreviewActivity : AppCompatActivity(), OnPreparedListener {
 
     private fun setupVideoView() {
         videoView.setOnPreparedListener(this)
-        videoView.setVideoURI(Uri.parse(mVideoUrl))
+        videoView.setPreviewImage(Uri.parse(mThumbnail))
+        videoView.setVideoPath(mVideoUrl)
     }
 
     private var currentTime = 0L
@@ -54,12 +58,18 @@ class VideoPreviewActivity : AppCompatActivity(), OnPreparedListener {
     }
 
     override fun onPrepared() {
-        videoView.start()
         videoView.seekTo(currentTime)
+        videoView.videoControlsCore!!.finishLoading()
+        videoView.start()
     }
 
     override fun onDestroy() {
         super.onDestroy()
         videoView.release()
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(0, 0)
     }
 }

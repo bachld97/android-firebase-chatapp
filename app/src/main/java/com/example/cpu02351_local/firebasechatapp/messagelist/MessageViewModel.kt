@@ -102,7 +102,12 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private fun proceedSendMessage(message: AbstractMessage, participantIds: String) {
-        if (message is ImageMessage && message.byUser == messageView.getSender()) {
+        if (message is ImageMessage) {
+            onMessageAdded(message)
+            return
+        }
+
+        if (message is VideoMessage) {
             onMessageAdded(message)
             return
         }
@@ -110,20 +115,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         val list = participantIds.split(Conversation.ID_DELIM)
         val com = messageLoader.addMessage(conversationId, message, list)
         com.subscribe()
-        /*
-        com.subscribe(object : CompletableObserver {
-            override fun onComplete() {
-                // messageView.onNewMessage(message)
-                updatePendingMessageState(message)
-            }
-
-            override fun onSubscribe(d: Disposable) {
-            }
-
-            override fun onError(e: Throwable) {
-                messageView.onError()
-            }
-        }) */
     }
 
     fun sendNewTextMessage() {
@@ -150,10 +141,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         messageView.getVideoToSend(messageId)
     }
 
+
     private fun updatePendingMessageState(message: AbstractMessage) {
         message.isSending = false
         mLocalDatabase?.saveMessageAll(arrayListOf(message), conversationId)
-                ?.subscribe { Log.d("DEBUGGING", "New message sent") }
+                ?.subscribe()
     }
 
     private fun addPendingMessage(message: AbstractMessage) {
@@ -315,7 +307,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             }
         }
 
-
         if (pos == -1)
             mMessageItems.add(0, curItem)
         else {
@@ -366,13 +357,15 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         val info = VideoUploadInfo(filePath, messageId, messageView.getSender(), conversationId)
         info.byUsers = messageView.getParticipants()
                 .split(ID_DELIM).toMutableList()
-        // Add pending message
+        val tem = VideoMessage(messageId, System.currentTimeMillis(), messageView.getSender(), filePath)
+        tem.setMetadata(360, 360)
+        onMessageAdded(tem)
+        addPendingMessage(tem)
         messageView.startUploadService(info)
     }
 
     fun resume() {
         observeNextMessage(mObserveFromHere)
     }
-
 }
 

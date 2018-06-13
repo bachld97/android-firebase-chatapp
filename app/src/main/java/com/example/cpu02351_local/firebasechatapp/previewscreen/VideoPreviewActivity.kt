@@ -6,6 +6,7 @@ import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import com.devbrackets.android.exomedia.ExoMedia
 import com.devbrackets.android.exomedia.listener.OnPreparedListener
 import com.devbrackets.android.exomedia.ui.widget.VideoView
 import com.example.cpu02351_local.firebasechatapp.R
@@ -40,7 +41,6 @@ class VideoPreviewActivity : AppCompatActivity(), OnPreparedListener {
         videoView.setOnPreparedListener(this)
         videoView.setVideoURI(Uri.parse(mVideoUrl))
     }
-
 
     private var currentTime = 0L
     override fun onStart() {

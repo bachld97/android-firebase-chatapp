@@ -1,6 +1,7 @@
 package com.example.cpu02351_local.firebasechatapp.model.firebasemodel
 
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.AudioMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
@@ -61,6 +62,7 @@ class FirebaseMessage : FirebaseObject() {
                 tem.thumbnailLink = additionalContent!!["thumbnail"]!!
                 return tem
             }
+            "audio" -> AudioMessage(id, atTime, byUser, content)
             else -> throw RuntimeException("Message type is not supported")
         }
     }

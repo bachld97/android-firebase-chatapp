@@ -7,12 +7,14 @@ import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Environment
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.AudioMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.Conversation.Companion.ID_DELIM
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.AudioMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
@@ -338,6 +340,8 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 ImageMessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
             is VideoMessage ->
                 VideoMessageItem(message, shouldDisplaySender, shouldDisplayTime, fromThisUser)
+            is AudioMessage ->
+                AudioMessageItem(message, shouldDisplaySender,shouldDisplayTime, fromThisUser)
             else -> throw RuntimeException("Unsupported type")
         }
     }
@@ -354,6 +358,14 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId, fromFile) })
     }
 
+    private fun sendAudioMessageWithUri(fromFile: Uri?, messageId: String) {
+        if (fromFile == null)
+            return
+
+        val tem = AudioMessage(messageId, System.currentTimeMillis(), messageView.getSender(), fromFile.toString())
+        onMessageAdded(tem)
+    }
+
     fun sendVideoMessageWithPath(filePath: String, messageId: String) {
         val info = VideoUploadInfo(filePath, messageId, messageView.getSender(), conversationId)
         info.byUsers = messageView.getParticipants()
@@ -366,7 +378,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private var mMediaRecorder = MediaRecorder()
-    private val maxDuration = 60000
     private val maxMovement = 40
     private lateinit var mAudioFile: File
     private val pathPrefix =
@@ -376,7 +387,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     private var isRecording = false
 
     private fun getFileName(): String {
-        return messageLoader.getNewMessageId(conversationId) + ".mp3"
+        return  messageLoader.getNewMessageId(conversationId) + ".mp3"
     }
 
     private fun configureOutputPath() {
@@ -384,7 +395,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         if (!storagePath.exists()) {
             storagePath.mkdirs()
         }
-        mAudioFile = File(pathPrefix + getFileName())
+        mAudioFile = File(pathPrefix + File.separator + getFileName())
     }
 
     fun resume() {
@@ -392,7 +403,6 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     private fun setupMediaRecorder() {
-        mMediaRecorder.setMaxDuration(maxDuration)
         mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
         mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
         mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
@@ -411,9 +421,10 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     override fun onActionEnded() {
-        if (isRecording) {
+        if (isRecording && !isCancel) {
             mMediaRecorder.stop()
             messageView.onStopAudioRecording(isCancel)
+            sendAudioMessageWithUri(Uri.fromFile(mAudioFile), messageView.getSender())
         }
     }
 
@@ -433,7 +444,5 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     override fun onClick() {
         messageView.showTip()
     }
-
-
 }
 

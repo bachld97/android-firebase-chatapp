@@ -4,6 +4,7 @@ import android.arch.persistence.room.Entity
 import android.arch.persistence.room.Ignore
 import android.arch.persistence.room.PrimaryKey
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.AudioMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
@@ -55,6 +56,9 @@ data class RoomMessage(@PrimaryKey var id: String,
 
                 VideoMessage(w, h, thumb)
             }
+            "audio" -> {
+                AudioMessage()
+            }
             else -> throw RuntimeException("Unexpected message type")
         }
         mess.id = id
@@ -78,8 +82,8 @@ data class RoomMessage(@PrimaryKey var id: String,
             var content = mess.content
 
             return when (mess) {
-                is TextMessage -> {
-                    RoomMessage(id, conversationId, byUser, atTime, content, isSending, "text", "")
+                is TextMessage, is AudioMessage -> {
+                    RoomMessage(id, conversationId, byUser, atTime, content, isSending, mess.getType(), "")
                 }
                 is ImageMessage -> {
                     if (mess.localUri.toString().isNotEmpty()) {

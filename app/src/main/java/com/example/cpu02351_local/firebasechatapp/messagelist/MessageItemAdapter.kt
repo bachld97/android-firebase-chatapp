@@ -11,16 +11,19 @@ import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
 import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.media.MediaPlayer
+import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.databinding.*
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.AudioMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
 import com.example.cpu02351_local.firebasechatapp.previewscreen.ImagePreviewActivity
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.*
 import com.example.cpu02351_local.firebasechatapp.previewscreen.VideoPreviewActivity
 
 
-class MessageItemAdapter(context: Context, private val mViewModel: MessageViewModel)
+class MessageItemAdapter(val context: Context, private val mViewModel: MessageViewModel)
     : BaseItemAdapter<MessageItem>() {
     private var infoMap: HashMap<String, User> ?= null
 
@@ -31,6 +34,8 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
         const val IMAGE_OTHER = 3
         const val VIDEO_MINE = 4
         const val VIDEO_OTHER = 5
+        const val AUDIO_MINE = 6
+        const val AUDIO_OTHER = 7
     }
 
     fun updateUserInfo(info: HashMap<String, User> ) {
@@ -60,6 +65,8 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
             "image_mine" -> IMAGE_MINE
             "video_mine" -> VIDEO_MINE
             "video_other" -> VIDEO_OTHER
+            "audio_mine" -> AUDIO_MINE
+            "audio_other" -> AUDIO_OTHER
             else -> throw IllegalStateException("ListItems cannot be null at " +
                     "this time or unsupported messageType found [application is outdated]")
         }
@@ -109,7 +116,44 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
         override fun onClick(item: MessageItem) {
             // Do nothing for now
         }
+    }
 
+    private var isAudioPlaying = false
+    private lateinit var mPlayer: MediaPlayer
+    private val audioClick = object : ItemClickCallback {
+        override fun onClick(item: MessageItem) {
+            val audioItem = item as? AudioMessageItem ?: return
+
+            if (!isAudioPlaying) {
+                playAudio(audioItem.getContent(), audioItem.currentPos)
+                return
+            }
+
+            if (audioItem.isPlaying) {
+                audioItem.currentPos = mPlayer.currentPosition
+                audioItem.isPlaying =  false
+                isAudioPlaying = false
+                mPlayer.stop()
+                mPlayer.release()
+            } else {
+                stopCurrentAudio()
+                playAudio(audioItem.getContent(), audioItem.currentPos)
+                mPlayer.stop()
+                mPlayer.release()
+            }
+        }
+    }
+
+    private fun playAudio(path: String, pos: Int) {
+        mPlayer = MediaPlayer.create(context, Uri.parse(path))
+        mPlayer.prepare()
+        mPlayer.start()
+        mPlayer.seekTo(pos)
+    }
+
+    private fun stopCurrentAudio() {
+        mPlayer.stop()
+        mPlayer.release()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseItemHolder<out ListItem> {
@@ -139,6 +183,14 @@ class MessageItemAdapter(context: Context, private val mViewModel: MessageViewMo
             VIDEO_OTHER -> {
                 val binding = ItemVideoMessageFromOtherBinding.inflate(layoutInflater, parent, false)
                 MessageVideoOtherHolder(binding, videoClick)
+            }
+            AUDIO_MINE -> {
+                val binding = ItemAudioMessageBinding.inflate(layoutInflater, parent, false)
+                MessageAudioMineHolder(binding, audioClick)
+            }
+            AUDIO_OTHER -> {
+                val binding = ItemAudioMessageFromOtherBinding.inflate(layoutInflater, parent, false)
+                MessageAudioOtherHolder(binding, audioClick)
             }
             else -> throw RuntimeException("Unsupported viewType")
         }

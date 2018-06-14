@@ -8,6 +8,7 @@
     <dimen name="textSmall">13sp</dimen>
     <dimen name="textLarge">16sp</dimen>
     <dimen name="buttonSendMessage">36dp</dimen>
+    <dimen name="buttonSendAudio">36dp</dimen>
     <dimen name="avaMain">248dp</dimen>
     <dimen name="fabMargin">16dp</dimen>
     <dimen name="textExtraLarge">25sp</dimen>

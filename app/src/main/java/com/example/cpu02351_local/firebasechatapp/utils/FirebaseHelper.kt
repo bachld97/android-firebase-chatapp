@@ -38,7 +38,7 @@ class FirebaseHelper {
 
         private const val STORAGE_BASE_URL = "gs://fir-chat-47b52.appspot.com"
         @JvmStatic
-        fun getFirebaseInstance() = FirebaseDatabase.getInstance()!!
+        fun getFirebaseInstance() = FirebaseDatabase.getInstance()
 
         @JvmStatic
         private fun getStorageReference() =  FirebaseStorage.getInstance()
@@ -57,7 +57,7 @@ class FirebaseHelper {
                 getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$VIDEO/")
 
     }
-    @Provides fun getFirebaseReference(): DatabaseReference = getFirebaseInstance().reference!!
+    @Provides fun getFirebaseReference(): DatabaseReference = getFirebaseInstance().reference
 }
 
 @Component(modules = [(FirebaseHelper::class)])

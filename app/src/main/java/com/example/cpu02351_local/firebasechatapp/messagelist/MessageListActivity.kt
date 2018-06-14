@@ -1,18 +1,13 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
-import android.media.ThumbnailUtils
+import android.graphics.Color
 import android.net.Uri
-import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -25,6 +20,8 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.util.Log
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.R
 import com.example.cpu02351_local.firebasechatapp.databinding.ActivityMessageListBinding
 import com.example.cpu02351_local.firebasechatapp.localdatabase.DaggerRoomLocalDatabaseComponent
@@ -34,6 +31,7 @@ import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
 import com.example.cpu02351_local.firebasechatapp.model.User
 import com.example.cpu02351_local.firebasechatapp.utils.ContextModule
+import com.example.cpu02351_local.firebasechatapp.utils.HoldForActionButton
 import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.activity_message_list.*
 import java.io.File
@@ -59,6 +57,7 @@ class MessageListActivity :
         const val BY_USERS_STRING = "by_users_string"
         const val CONVERSATION_ID = "conversation_id"
         const val STORAGE_PERM = 111
+        const val RECORD_PERM = 120
 
         @JvmStatic
         fun newInstance(context: Context, conId: String, byUsers: String? = null): Intent {
@@ -79,7 +78,9 @@ class MessageListActivity :
         startService(service)
     }
 
+    private lateinit var recorderButton: HoldForActionButton
     private lateinit var mBinding: ActivityMessageListBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mConversationId = intent.getStringExtra(CONVERSATION_ID)
@@ -89,6 +90,7 @@ class MessageListActivity :
         mBinding.viewModel = mMessageViewModel
         mBinding.executePendingBindings()
         val toolbar = findViewById<Toolbar>(R.id.my_toolbar)
+        recorderButton = findViewById(R.id.sendAudioMess)
         toolbar.alpha = 0.2f
         setSupportActionBar(toolbar)
         supportActionBar?.apply {
@@ -96,6 +98,17 @@ class MessageListActivity :
             setDisplayHomeAsUpEnabled(true)
         }
         init()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        recorderButton.addActionListener(mMessageViewModel)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mMessageViewModel.dispose()
+        recorderButton.removeActionListener(mMessageViewModel)
     }
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
@@ -168,11 +181,6 @@ class MessageListActivity :
         mMessageViewModel.resume()
     }
 
-    override fun onStop() {
-        super.onStop()
-        mMessageViewModel.dispose()
-    }
-
     private lateinit var mMessageId: String
 
     override fun getImageToSend(messageId: String) {
@@ -194,7 +202,7 @@ class MessageListActivity :
     private val captureImageRequest = 1111
     private fun startImagePickerActivity() {
         val file = try {
-               createImageFile(mMessageId)
+            createImageFile(mMessageId)
         } catch (exception: Exception) {
             null
         } ?: return
@@ -240,8 +248,8 @@ class MessageListActivity :
 
     override fun createImageFile(messageId: String): File? {
         var imageFile: File? = null
-        if (shouldAskPermission()) {
-            askPermission()
+        if (shouldAskPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            askPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERM)
         } else {
             val storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
@@ -256,15 +264,15 @@ class MessageListActivity :
         return imageFile
     }
 
-    private fun askPermission() {
+    private fun askPermission(permission: String, code: Int) {
         ActivityCompat.requestPermissions(this,
-                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                STORAGE_PERM)
+                arrayOf(permission),
+                code)
     }
 
-    private fun shouldAskPermission(): Boolean {
+    private fun shouldAskPermission(permission: String): Boolean {
         return ContextCompat
-                .checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED
+                .checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
     }
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == STORAGE_PERM)
@@ -273,6 +281,53 @@ class MessageListActivity :
             }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
+    override fun canStartRecording(): Boolean {
+        val res = !shouldAskPermission(Manifest.permission.RECORD_AUDIO)
+
+        if (!res) {
+            askPermission(Manifest.permission.RECORD_AUDIO, RECORD_PERM)
+        }
+
+        return res
+    }
+
+    override fun onStartAudioRecording() {
+        sendImgMess.visibility = View.INVISIBLE
+        sendVidMess.visibility = View.INVISIBLE
+        recordingStatus.visibility = View.VISIBLE
+        recordingCancel.visibility = View.VISIBLE
+    }
+
+    override fun onStopAudioRecording(isCancel: Boolean) {
+        sendAudioMess.visibility = View.VISIBLE
+        recordingStatus.visibility = View.INVISIBLE
+        recordingCancel.visibility = View.INVISIBLE
+        sendAudioMess.animate()
+                .translationX(0f)
+                .withEndAction {
+                    sendImgMess.visibility = View.VISIBLE
+                    sendVidMess.visibility = View.VISIBLE
+                }
+                .start()
+    }
+
+    override fun dispatchRecordingProgress(totalTimeSecond: Int) {
+        // Do nothing to simplify stuff
+    }
+
+    override fun dispatchRecorderMovement(difX: Int, difY: Int, isCancel: Boolean) {
+        sendAudioMess.translationX = difX.toFloat()
+        if (isCancel) {
+            sendAudioMess.visibility = View.INVISIBLE
+            recordingCancel.setTextColor(Color.RED)
+        } else {
+            sendAudioMess.visibility = View.VISIBLE
+            recordingCancel.setTextColor(Color.BLACK)
+        }
+    }
+
+    override fun showTip() {
+        Toast.makeText(this, "Hold to record audio", Toast.LENGTH_SHORT).show()
+    }
 }
-
-

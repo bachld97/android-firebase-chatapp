@@ -3,32 +3,33 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
+import android.media.MediaRecorder
 import android.net.Uri
-import android.util.Log
+import android.os.Environment
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.Conversation
+import com.example.cpu02351_local.firebasechatapp.model.Conversation.Companion.ID_DELIM
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.TextMessage
-import io.reactivex.*
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
+import com.example.cpu02351_local.firebasechatapp.utils.HoldForActionButton
+import io.reactivex.Observer
+import io.reactivex.Single
+import io.reactivex.SingleObserver
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import android.provider.MediaStore
-import android.media.ThumbnailUtils
-import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
-import com.example.cpu02351_local.firebasechatapp.model.Conversation.Companion.ID_DELIM
-import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
+import java.io.File
 
 
 class MessageViewModel(private val messageLoader: MessageLoader,
                        private val messageView: MessageView,
-                       private val conversationId: String) {
+                       private val conversationId: String) :
+        HoldForActionButton.ActionListener{
     var messageText =""
 
     private val messageLimit = 30
@@ -364,8 +365,75 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         messageView.startUploadService(info)
     }
 
+    private var mMediaRecorder = MediaRecorder()
+    private val maxDuration = 60000
+    private val maxMovement = 40
+    private lateinit var mAudioFile: File
+    private val pathPrefix =
+            Environment.getExternalStorageDirectory().absolutePath +
+            "/AwesomeChat/Audio"
+    private var isCancel = false
+    private var isRecording = false
+
+    private fun getFileName(): String {
+        return messageLoader.getNewMessageId(conversationId) + ".mp3"
+    }
+
+    private fun configureOutputPath() {
+        val storagePath = File(pathPrefix)
+        if (!storagePath.exists()) {
+            storagePath.mkdirs()
+        }
+        mAudioFile = File(pathPrefix + getFileName())
+    }
+
     fun resume() {
         observeNextMessage(mObserveFromHere)
     }
+
+    private fun setupMediaRecorder() {
+        mMediaRecorder.setMaxDuration(maxDuration)
+        mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.DEFAULT)
+        mMediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.DEFAULT)
+        configureOutputPath()
+        mMediaRecorder.setOutputFile(mAudioFile.absolutePath)
+        mMediaRecorder.prepare()
+    }
+
+    override fun onActionStarted() {
+        if (messageView.canStartRecording()) {
+            setupMediaRecorder()
+            mMediaRecorder.start()
+            isRecording = true
+            messageView.onStartAudioRecording()
+        }
+    }
+
+    override fun onActionEnded() {
+        if (isRecording) {
+            mMediaRecorder.stop()
+            messageView.onStopAudioRecording(isCancel)
+        }
+    }
+
+    override fun onHold(totalTimeMilli: Long) {
+        // messageView.dispatchRecordingProgress(totalTimeMilli / 1000)
+    }
+
+    override fun onMovement(startX: Int, startY: Int, currentX: Int, currentY: Int) {
+        val difX = currentX - startX
+        val difY = currentY - startY
+        if (difX > 0) {
+            isCancel = difX > maxMovement
+            messageView.dispatchRecorderMovement(difX, difY, isCancel)
+        }
+    }
+
+    override fun onClick() {
+        messageView.showTip()
+    }
+
+
 }
 

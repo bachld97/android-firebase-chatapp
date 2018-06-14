@@ -13,4 +13,11 @@ interface MessageView {
     fun getImageToSend(messageId: String)
     fun createImageFile(messageId: String): File?
     fun startUploadService(info: VideoUploadInfo)
+
+    fun canStartRecording(): Boolean
+    fun onStartAudioRecording()
+    fun onStopAudioRecording(isCancel: Boolean)
+    fun dispatchRecordingProgress(totalTimeSecond: Int)
+    fun dispatchRecorderMovement(difX: Int, difY: Int, isCancel: Boolean)
+    fun showTip()
 }

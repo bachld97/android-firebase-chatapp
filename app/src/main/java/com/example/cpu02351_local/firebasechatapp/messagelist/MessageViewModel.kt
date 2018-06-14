@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.localdatabase.LocalDatabase
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.AudioMessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.ImageMessageItem
@@ -281,6 +282,9 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     private var firstLoad = true
     private fun onMessageAdded(addedMessage: AbstractMessage) {
+
+        Log.d("DEBUG_ID", addedMessage.id)
+
         if (mObserveFromHere == null) {
             firstLoad = false
         }
@@ -358,11 +362,11 @@ class MessageViewModel(private val messageLoader: MessageLoader,
                 .subscribe({ b, _ -> sendImageMessageWithBitmap(b, messageId, fromFile) })
     }
 
-    private fun sendAudioMessageWithUri(fromFile: Uri?, messageId: String) {
+    private fun sendAudioMessageWithFilePath(fromFile: String?, messageId: String) {
         if (fromFile == null)
             return
 
-        val tem = AudioMessage(messageId, System.currentTimeMillis(), messageView.getSender(), fromFile.toString())
+        val tem = AudioMessage(messageId, System.currentTimeMillis(), messageView.getSender(), fromFile)
         onMessageAdded(tem)
     }
 
@@ -385,17 +389,15 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             "/AwesomeChat/Audio"
     private var isCancel = false
     private var isRecording = false
-
-    private fun getFileName(): String {
-        return  messageLoader.getNewMessageId(conversationId) + ".mp3"
-    }
+    private lateinit var mCurrentAudioMessageId: String
 
     private fun configureOutputPath() {
         val storagePath = File(pathPrefix)
         if (!storagePath.exists()) {
             storagePath.mkdirs()
         }
-        mAudioFile = File(pathPrefix + File.separator + getFileName())
+        mCurrentAudioMessageId = messageLoader.getNewMessageId(conversationId)
+        mAudioFile = File(pathPrefix + File.separator + mCurrentAudioMessageId + ".mp3")
     }
 
     fun resume() {
@@ -421,11 +423,17 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     override fun onActionEnded() {
-        if (isRecording && !isCancel) {
+        if (isRecording) {
             mMediaRecorder.stop()
-            messageView.onStopAudioRecording(isCancel)
-            sendAudioMessageWithUri(Uri.fromFile(mAudioFile), messageView.getSender())
         }
+
+        if (!isCancel) {
+            sendAudioMessageWithFilePath(mAudioFile.absolutePath, mCurrentAudioMessageId)
+        }
+
+        messageView.onStopAudioRecording(isCancel)
+        isRecording = false
+        isCancel = false
     }
 
     override fun onHold(totalTimeMilli: Long) {

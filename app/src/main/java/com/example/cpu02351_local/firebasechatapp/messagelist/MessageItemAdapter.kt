@@ -125,6 +125,7 @@ class MessageItemAdapter(val context: Context, private val mViewModel: MessageVi
             val audioItem = item as? AudioMessageItem ?: return
 
             if (!isAudioPlaying) {
+                audioItem.isPlaying = true
                 playAudio(audioItem.getContent(), audioItem.currentPos)
                 return
             }
@@ -133,19 +134,19 @@ class MessageItemAdapter(val context: Context, private val mViewModel: MessageVi
                 audioItem.currentPos = mPlayer.currentPosition
                 audioItem.isPlaying =  false
                 isAudioPlaying = false
-                mPlayer.stop()
-                mPlayer.release()
+                stopCurrentAudio()
             } else {
+                audioItem.isPlaying = true
                 stopCurrentAudio()
                 playAudio(audioItem.getContent(), audioItem.currentPos)
-                mPlayer.stop()
-                mPlayer.release()
             }
         }
     }
 
     private fun playAudio(path: String, pos: Int) {
-        mPlayer = MediaPlayer.create(context, Uri.parse(path))
+        isAudioPlaying = true
+        mPlayer = MediaPlayer()
+        mPlayer.setDataSource(path)
         mPlayer.prepare()
         mPlayer.start()
         mPlayer.seekTo(pos)

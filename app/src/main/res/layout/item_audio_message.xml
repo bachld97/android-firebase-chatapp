@@ -29,7 +29,6 @@
 
             <TextView
                 android:drawableStart="@drawable/ic_send_audio"
-                android:textIsSelectable="true"
                 android:textColor="@color/textPrimary"
                 android:gravity="center_vertical"
                 android:layout_gravity="end"

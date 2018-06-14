@@ -1,26 +1,24 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
+import android.media.MediaPlayer
 import android.support.v7.util.DiffUtil
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
-import com.example.cpu02351_local.firebasechatapp.model.User
-import com.example.cpu02351_local.firebasechatapp.utils.BaseItemAdapter
-import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
-import com.example.cpu02351_local.firebasechatapp.utils.ListItem
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.media.MediaPlayer
-import android.net.Uri
-import android.util.Log
 import android.widget.Toast
 import com.example.cpu02351_local.firebasechatapp.databinding.*
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.AudioMessageItem
+import com.example.cpu02351_local.firebasechatapp.messagelist.model.MessageItem
 import com.example.cpu02351_local.firebasechatapp.messagelist.model.VideoMessageItem
-import com.example.cpu02351_local.firebasechatapp.previewscreen.ImagePreviewActivity
 import com.example.cpu02351_local.firebasechatapp.messagelist.viewholder.*
+import com.example.cpu02351_local.firebasechatapp.model.User
+import com.example.cpu02351_local.firebasechatapp.previewscreen.ImagePreviewActivity
 import com.example.cpu02351_local.firebasechatapp.previewscreen.VideoPreviewActivity
+import com.example.cpu02351_local.firebasechatapp.utils.BaseItemAdapter
+import com.example.cpu02351_local.firebasechatapp.utils.BaseItemHolder
+import com.example.cpu02351_local.firebasechatapp.utils.ListItem
 
 
 class MessageItemAdapter(val context: Context, private val mViewModel: MessageViewModel)
@@ -126,7 +124,7 @@ class MessageItemAdapter(val context: Context, private val mViewModel: MessageVi
 
             if (!isAudioPlaying) {
                 audioItem.isPlaying = true
-                playAudio(audioItem.getContent(), audioItem.currentPos)
+                playAudio(audioItem, audioItem.getContent(), audioItem.currentPos)
                 return
             }
 
@@ -138,22 +136,31 @@ class MessageItemAdapter(val context: Context, private val mViewModel: MessageVi
             } else {
                 audioItem.isPlaying = true
                 stopCurrentAudio()
-                playAudio(audioItem.getContent(), audioItem.currentPos)
+                playAudio(audioItem, audioItem.getContent(), audioItem.currentPos)
             }
         }
     }
 
-    private fun playAudio(path: String, pos: Int) {
+    private fun playAudio(audioItem: AudioMessageItem, path: String, pos: Int) {
         isAudioPlaying = true
         mPlayer = MediaPlayer()
         mPlayer.setDataSource(path)
-        mPlayer.prepare()
-        mPlayer.start()
-        mPlayer.seekTo(pos)
+
+        mPlayer.setOnPreparedListener {
+            mPlayer.start()
+            mPlayer.seekTo(pos)
+        }
+        mPlayer.setOnCompletionListener {
+            audioItem.isPlaying = false
+            isAudioPlaying = false
+        }
+        mPlayer.prepareAsync()
     }
 
     private fun stopCurrentAudio() {
-        mPlayer.stop()
+        if (mPlayer.isPlaying) {
+            mPlayer.stop()
+        }
         mPlayer.release()
     }
 

@@ -35,6 +35,7 @@ class FirebaseHelper {
 
         private const val IMAGE = "image"
         private const val VIDEO = "video"
+        private const val AUDIO = "audio"
 
         private const val STORAGE_BASE_URL = "gs://fir-chat-47b52.appspot.com"
         @JvmStatic
@@ -55,6 +56,9 @@ class FirebaseHelper {
         @JvmStatic
         fun getVideoMessageReference() =
                 getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$VIDEO/")
+
+        fun getAudioMessageReference(messageId: String) =
+                getStorageReference().getReferenceFromUrl("$STORAGE_BASE_URL/$AUDIO/$messageId")
 
     }
     @Provides fun getFirebaseReference(): DatabaseReference = getFirebaseInstance().reference

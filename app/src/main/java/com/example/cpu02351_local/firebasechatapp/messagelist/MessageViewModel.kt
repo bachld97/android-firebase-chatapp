@@ -368,6 +368,10 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
         val tem = AudioMessage(messageId, System.currentTimeMillis(), messageView.getSender(), fromFile)
         onMessageAdded(tem)
+        val participantIds = messageView.getParticipants()
+        val list = participantIds.split(Conversation.ID_DELIM)
+
+        messageLoader.addAudioMessage(conversationId, tem, list).subscribe()
     }
 
     fun sendVideoMessageWithPath(filePath: String, messageId: String) {

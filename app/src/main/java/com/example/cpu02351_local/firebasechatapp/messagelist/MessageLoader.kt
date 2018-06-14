@@ -2,6 +2,7 @@ package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Bitmap
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.AudioMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import io.reactivex.Completable
 import io.reactivex.Observable
@@ -18,4 +19,6 @@ interface MessageLoader {
 
     fun uploadImageAndUpdateDatabase(imageMessage: ImageMessage, conversationId: String, byUsers: List<String>)
     fun uploadImageBitmap(b: Bitmap, imageMessage: ImageMessage, conversationId: String, byUsers: List<String>) : Completable
+
+    fun addAudioMessage(conversationId: String, audioMessage: AudioMessage, byUsers: List<String>): Completable
 }

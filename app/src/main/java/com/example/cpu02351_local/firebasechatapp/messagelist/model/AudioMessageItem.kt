@@ -7,4 +7,9 @@ class AudioMessageItem(message: AbstractMessage, shouldDisplaySenderInfo: Boolea
 
     var isPlaying = false
     var currentPos = 0
+
+    override fun diff(oldItem: MessageItem): MessageItem {
+        message.content = (oldItem.getContent())
+        return this
+    }
 }

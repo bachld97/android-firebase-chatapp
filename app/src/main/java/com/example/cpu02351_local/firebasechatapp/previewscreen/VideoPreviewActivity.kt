@@ -3,11 +3,8 @@ package com.example.cpu02351_local.firebasechatapp.previewscreen
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import com.devbrackets.android.exomedia.ExoMedia
-import com.devbrackets.android.exomedia.core.exoplayer.ExoMediaPlayer
+import android.support.v7.app.AppCompatActivity
 import com.devbrackets.android.exomedia.listener.OnPreparedListener
 import com.devbrackets.android.exomedia.ui.widget.VideoView
 import com.example.cpu02351_local.firebasechatapp.R

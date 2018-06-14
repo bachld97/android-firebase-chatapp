@@ -1,11 +1,13 @@
 package com.example.cpu02351_local.firebasechatapp.messagelist
 
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import com.example.cpu02351_local.firebasechatapp.model.AbstractMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseConversation
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseMessage
 import com.example.cpu02351_local.firebasechatapp.model.firebasemodel.FirebaseUser
+import com.example.cpu02351_local.firebasechatapp.model.messagetypes.AudioMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.ImageMessage
 import com.example.cpu02351_local.firebasechatapp.model.messagetypes.VideoMessage
 import com.example.cpu02351_local.firebasechatapp.utils.DaggerFirebaseReferenceComponent
@@ -22,6 +24,7 @@ import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.util.*
 import javax.inject.Inject
 
@@ -292,6 +295,38 @@ class FirebaseMessageLoader : MessageLoader {
                     }
         }
     }
+
+    override fun addAudioMessage(conversationId: String, audioMessage: AudioMessage, byUsers: List<String>): Completable {
+        return Completable.create {  emitter ->
+            val storageRef = FirebaseHelper.getAudioMessageReference(audioMessage.id)
+
+            storageRef.putFile(Uri.fromFile(File(audioMessage.content)))
+                    .continueWithTask { task ->
+                        if (!task.isSuccessful)
+                            throw Objects.requireNonNull(task.exception)!!
+                        storageRef.downloadUrl
+                    }
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            val downloadUri = task.result
+                            updateAudioMessage(audioMessage, conversationId, downloadUri.toString(), byUsers)
+                            emitter.onComplete()
+                        }
+                    }
+        }
+    }
+
+    private fun updateAudioMessage(audioMessage: AudioMessage, conversationId: String, resourceLink: String, byUsers: List<String>) {
+        val temMessage = AudioMessage()
+        audioMessage.apply {
+            temMessage.id = id
+            temMessage.atTime = atTime
+            temMessage.byUser = byUser
+            temMessage.content = resourceLink
+        }
+        addMessage(conversationId, temMessage, byUsers).subscribe()
+    }
+
 
     private fun updateImageMessage(imageMessage: ImageMessage, conversationId: String, resourceLink: String, byUsers: List<String>) {
         val temImage = ImageMessage(imageMessage.id, imageMessage.atTime, imageMessage.byUser, resourceLink)

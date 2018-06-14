@@ -60,7 +60,9 @@
             android:name=".messagelist.FirebaseUploadVideoService"
             android:enabled="true" />
 
-
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="d5684e4b21575e8b46d84fc30a18405695cda089" />
     </application>
 
 </manifest>

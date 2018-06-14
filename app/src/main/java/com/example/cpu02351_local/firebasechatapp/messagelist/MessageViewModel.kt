@@ -427,12 +427,17 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     }
 
     override fun onActionEnded() {
-        if (isRecording) {
-            mMediaRecorder.stop()
+        if (!isRecording) {
+            isRecording = false
+            isCancel = false
+            return
         }
-
+        mMediaRecorder.stop()
         if (!isCancel) {
             sendAudioMessageWithFilePath(mAudioFile.absolutePath, mCurrentAudioMessageId)
+        } else {
+            if (mAudioFile.exists())
+                mAudioFile.delete()
         }
 
         messageView.onStopAudioRecording(isCancel)
@@ -447,10 +452,13 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     override fun onMovement(startX: Int, startY: Int, currentX: Int, currentY: Int) {
         val difX = currentX - startX
         val difY = currentY - startY
+        isCancel = difX > maxMovement
         if (difX > 0) {
-            isCancel = difX > maxMovement
             messageView.dispatchRecorderMovement(difX, difY, isCancel)
+        } else {
+            messageView.dispatchRecorderMovement(0, 0, isCancel)
         }
+
     }
 
     override fun onClick() {

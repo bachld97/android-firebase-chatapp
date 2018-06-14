@@ -12,12 +12,14 @@ import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory
 import com.google.android.exoplayer2.upstream.DataSource
 import okhttp3.OkHttpClient
 import java.io.File
-
+import com.crashlytics.android.Crashlytics;
+import io.fabric.sdk.android.Fabric;
 
 class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        // Fabric.with(this, Crashlytics())
         configureExoMedia()
     }
 

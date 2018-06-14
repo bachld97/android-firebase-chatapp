@@ -260,7 +260,6 @@ class MessageListActivity :
         }
 
         mPhoto = imageFile
-        Log.d("DEBUG_PATH", imageFile?.absolutePath)
         return imageFile
     }
 
@@ -274,6 +273,22 @@ class MessageListActivity :
         return ContextCompat
                 .checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
     }
+
+    private fun shouldAskPermissions(permissions: Array<out String>): Boolean {
+        permissions.forEach {
+            if (shouldAskPermission(it))
+                return true
+        }
+        return false
+    }
+
+    private fun askPermissions(permissions: Array<out String>, code: Int) {
+        ActivityCompat.requestPermissions(this,
+                permissions,
+                code)
+    }
+
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == STORAGE_PERM)
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -283,10 +298,10 @@ class MessageListActivity :
     }
 
     override fun canStartRecording(): Boolean {
-        val res = !shouldAskPermission(Manifest.permission.RECORD_AUDIO)
-
+        val res = !shouldAskPermissions(arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE))
         if (!res) {
-            askPermission(Manifest.permission.RECORD_AUDIO, RECORD_PERM)
+            val permissions = arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            askPermissions(permissions, STORAGE_PERM)
         }
 
         return res
@@ -303,6 +318,7 @@ class MessageListActivity :
         sendAudioMess.visibility = View.VISIBLE
         recordingStatus.visibility = View.INVISIBLE
         recordingCancel.visibility = View.INVISIBLE
+        recordingCancel.setTextColor(Color.BLACK)
         sendAudioMess.animate()
                 .translationX(0f)
                 .withEndAction {

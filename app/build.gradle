@@ -53,7 +53,9 @@ dependencies {
     implementation ('com.google.android.exoplayer:extension-okhttp:r2.0.1') {
         exclude module: 'exoplayer'
     }
-
+    implementation ('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
+        transitive = true
+    }
 
     implementation 'org.greenrobot:eventbus:3.1.1'
     implementation 'com.iceteck.silicompressorr:silicompressor:2.1'

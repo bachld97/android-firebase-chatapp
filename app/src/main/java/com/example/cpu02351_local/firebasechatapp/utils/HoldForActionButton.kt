@@ -44,6 +44,7 @@ class HoldForActionButton @JvmOverloads constructor(
     }
 
 
+    private val startTask = Runnable { notifyStart() }
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val action = event?.actionMasked ?: return super.onTouchEvent(event)
 
@@ -52,23 +53,22 @@ class HoldForActionButton @JvmOverloads constructor(
                 startX = event.rawX.toInt()
                 startY = event.rawY.toInt()
                 startTime = System.currentTimeMillis()
+                mHandler.postDelayed(startTask, holdDelay.toLong())
                 return true
             }
-            MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL -> {
-                val curTime = System.currentTimeMillis()
-                if (!isHolding && curTime - startTime > holdDelay) {
-                    notifyStart()
-                } else {
+            MotionEvent.ACTION_MOVE -> {
+                if (isHolding) {
                     notifyMovement(startX, startY, event.rawX.toInt(), event.rawY.toInt())
                 }
                 return true
             }
-            MotionEvent.ACTION_UP -> {
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL-> {
                 if (isHolding) {
                     notifyEnd()
                 } else {
                     notifyClick()
                 }
+                mHandler.removeCallbacks(startTask)
                 return true
             }
         }

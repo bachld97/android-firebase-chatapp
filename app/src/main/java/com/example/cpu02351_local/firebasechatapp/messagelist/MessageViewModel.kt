@@ -432,6 +432,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             isCancel = false
             return
         }
+
         mMediaRecorder.stop()
         if (!isCancel) {
             sendAudioMessageWithFilePath(mAudioFile.absolutePath, mCurrentAudioMessageId)

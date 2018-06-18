@@ -42,7 +42,16 @@ class MessageViewModel(private val messageLoader: MessageLoader,
         loadMessages()
     }
 
-    fun dispose() {
+    fun disposeAll() {
+        disposeRx()
+        disposeMediaRecorder()
+    }
+
+    private fun disposeMediaRecorder() {
+        mMediaRecorder.release()
+    }
+
+    fun disposeRx() {
         if (mDisposable != null && !mDisposable!!.isDisposed) {
             mDisposable!!.dispose()
         }
@@ -53,7 +62,7 @@ class MessageViewModel(private val messageLoader: MessageLoader,
 
     private fun loadMessages() {
         val single = messageLoader.loadInitialMessages(conversationId, messageLimit)
-        dispose()
+        disposeRx()
         single.subscribe(object : SingleObserver<List<AbstractMessage>> {
             override fun onSuccess(t: List<AbstractMessage>) {
                 if (mLocalDisposable != null && !mLocalDisposable!!.isDisposed) {
@@ -84,10 +93,10 @@ class MessageViewModel(private val messageLoader: MessageLoader,
     fun observeNextMessage(lastKey: String?) {
         val obs = messageLoader
                 .observeNextMessages(conversationId, lastKey, messageView.getSender())
-        dispose()
+        disposeRx()
         obs.subscribe(object : Observer<AbstractMessage> {
             override fun onComplete() {
-                dispose()
+                disposeRx()
             }
 
             override fun onSubscribe(d: Disposable) {
@@ -433,7 +442,13 @@ class MessageViewModel(private val messageLoader: MessageLoader,
             return
         }
 
-        mMediaRecorder.stop()
+        try {
+            mMediaRecorder.stop()
+        } catch (e: RuntimeException) {
+            isCancel = true
+            mMediaRecorder.reset()
+        }
+
         if (!isCancel) {
             sendAudioMessageWithFilePath(mAudioFile.absolutePath, mCurrentAudioMessageId)
         } else {
